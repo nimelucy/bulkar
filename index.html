@@ -1,0 +1,2437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Article Generator Dashboard - Master Pro Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
+    <style>
+        :root {
+            --bg: #f8fafc; --card: #ffffff; --border: #e2e8f0;
+            --text-main: #0f172a; --text-muted: #64748b;
+            --primary: #3b82f6; --primary-hover: #2563eb;
+            --danger: #ef4444; --success: #10b981;
+            --sidebar-width: 72px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg); color: var(--text-main); font-size: 13px; height: 100vh; overflow: hidden; display: flex; }
+
+        /* --- Slim Sidebar --- */
+        .slim-sidebar { width: var(--sidebar-width); background: var(--card); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 20px 0; z-index: 50; flex-shrink: 0; }
+        .brand-logo { width: 40px; height: 40px; background: var(--text-main); color: #fff; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 30px; }
+        .nav-menu { flex: 1; display: flex; flex-direction: column; gap: 12px; width: 100%; align-items: center; }
+        .nav-item { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 10px; color: var(--text-muted); text-decoration: none; font-size: 18px; transition: all 0.2s ease; position: relative; cursor: pointer; border: none; background: transparent; }
+        .nav-item:hover { background: #f1f5f9; color: var(--text-main); }
+        .nav-item.active { background: #eff6ff; color: var(--primary); }
+        .nav-item::after { content: attr(data-tooltip); position: absolute; left: 56px; background: #1e293b; color: #fff; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; white-space: nowrap; opacity: 0; pointer-events: none; transform: translateX(-10px); transition: 0.2s; z-index: 100; }
+        .nav-item:hover::after { opacity: 1; transform: translateX(0); }
+
+        /* --- App Content & Views --- */
+        .app-content { flex: 1; position: relative; overflow: hidden; }
+        .view-section { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; padding: 16px; gap: 16px; max-width: 1400px; margin: 0 auto; opacity: 0; transition: opacity 0.3s ease; }
+        .view-section.active { display: flex; opacity: 1; z-index: 10; }
+        .view-single-col { flex-direction: column; padding: 30px 40px; overflow-y: auto;}
+
+        /* --- Custom Scrollbar --- */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+        /* --- Layout: Generator View --- */
+        aside { width: 330px; display: flex; flex-direction: column; flex-shrink: 0;}
+        main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0;}
+
+        /* --- UI Components --- */
+        .card { background: var(--card); border-radius: 10px; border: 1px solid var(--border); display: flex; flex-direction: column; box-shadow: 0 1px 3px rgba(0,0,0,0.02);}
+        .card-header { padding: 16px; border-bottom: 1px solid var(--border); font-weight: 600; display: flex; align-items: center; justify-content: space-between; gap: 8px;}
+        .card-body { padding: 16px; display: flex; flex-direction: column; flex: 1; }
+
+        textarea, input[type="text"], input[type="password"], input[type="date"], input[type="number"], select { 
+            width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; outline: none; transition: 0.2s; background: #f8fafc; height: 35px; box-sizing: border-box;
+        }
+        textarea { height: auto; }
+        textarea:focus, input:focus, select:focus { border-color: var(--primary); background: #fff;}
+        .keyword-box { flex: 1; resize: none; margin-bottom: 8px; min-height: 100px; } 
+
+        input[type="checkbox"], input[type="radio"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--primary); vertical-align: middle; }
+
+        .btn { padding: 8px 16px; border-radius: 6px; font-weight: 500; cursor: pointer; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; color: white; transition: all 0.2s; }
+        .btn:active { transform: scale(0.97); }
+        .btn:disabled { opacity: 0.7; cursor: not-allowed; }
+        .btn-primary { background: var(--primary); }
+        .btn-primary:hover:not(:disabled) { background: var(--primary-hover); }
+        .btn-dark { background: var(--text-main); }
+        .btn-dark:hover:not(:disabled) { background: #1e293b; }
+        .btn-outline { background: #fff; border: 1px solid var(--border); color: var(--text-main); }
+        .btn-outline:hover:not(:disabled) { background: var(--bg); }
+        .btn-danger { background: var(--danger); border: 1px solid var(--danger); color: white; }
+        .btn-danger:hover:not(:disabled) { background: #dc2626; }
+        .btn-outline-danger { background: transparent; border: 1px solid var(--danger); color: var(--danger); }
+        .btn-outline-danger:hover:not(:disabled) { background: #fef2f2; }
+        
+        .btn-icon { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 15px; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 6px;}
+        .btn-icon:hover { color: var(--text-main); background: #f1f5f9;}
+        .btn-icon.text-danger:hover { color: var(--danger); background: #fef2f2; }
+        
+        .btn-clear-text { background: transparent; border: none; color: var(--text-muted); font-size: 12px; font-weight: 600; cursor: pointer; padding: 4px 10px; border-radius: 6px; transition: all 0.2s ease; }
+        .btn-clear-text:hover { background: #e2e8f0; color: var(--text-main); }
+
+        .flex-between { display: flex; justify-content: space-between; align-items: center; }
+        .flex-gap { display: flex; gap: 10px; align-items: center; }
+        .responsive-flex { display: flex; gap: 10px; }
+        .responsive-flex-16 { display: flex; gap: 16px; }
+        
+        .text-muted { color: var(--text-muted); font-size: 12px; }
+        .mb-3 { margin-bottom: 12px; }
+        .font-weight-600 { font-weight: 600; }
+        .page-title { font-size: 24px; font-weight: 700; color: var(--text-main); margin-bottom: 24px;}
+        .text-truncate { display: inline-block; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: middle; }
+
+        /* Projects Grid */
+        .project-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .project-card { padding: 20px; cursor: pointer; transition: 0.2s; border: 1px solid var(--border); border-radius: 10px; background: #fff; position: relative;}
+        .project-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);}
+        .project-icon { width: 48px; height: 48px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 16px;}
+        .card-actions { position: absolute; top: 16px; right: 16px; display: flex; gap: 4px; opacity: 0; transition: 0.2s;}
+        .project-card:hover .card-actions { opacity: 1; }
+        
+        /* Prompts Layout */
+        .prompt-layout { display: flex; gap: 20px; height: calc(100vh - 120px); }
+        .prompt-sidebar { width: 280px; background: #fff; border-radius: 10px; border: 1px solid var(--border); overflow-y: auto; display: flex; flex-direction: column;}
+        
+        /* Prompt Item dengan Hover Action */
+        .prompt-item { padding: 12px 16px; border-bottom: 1px solid var(--border); cursor: pointer; border-left: 3px solid transparent; display: flex; justify-content: space-between; align-items: center;}
+        .prompt-item:hover { background: var(--bg); }
+        .prompt-item.active { background: #eff6ff; border-left-color: var(--primary); }
+        .prompt-actions { display: none; gap: 4px; }
+        .prompt-item:hover .prompt-actions { display: flex; }
+
+        .prompt-editor { flex: 1; background: #fff; border-radius: 10px; border: 1px solid var(--border); padding: 24px; display: flex; flex-direction: column; overflow-y: auto;}
+
+        /* Generator Table */
+        .table-container { flex: 1; overflow-y: auto; background: var(--card); border-radius: 10px; border: 1px solid var(--border); }
+        .toolbar { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: #fff; position: sticky; top: 0; z-index: 10;}
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 12px 16px; border-bottom: 1px solid var(--border); }
+        th { background: #f8fafc; color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;}
+        tr:hover { background: #fcfcfc; }
+        
+        /* Sortable Header */
+        .sortable { cursor: pointer; transition: color 0.2s; user-select: none; }
+        .sortable:hover { color: var(--primary); }
+        .sort-icon { margin-left: 4px; font-size: 10px; opacity: 0.5; }
+        .sortable.active .sort-icon { opacity: 1; color: var(--primary); }
+
+        .badge { padding: 4px 10px; border-radius: 20px; background: #f1f5f9; color: var(--text-muted); font-size: 11px; font-weight: 600; border: 1px solid var(--border); white-space: nowrap; display: inline-block;}
+        
+        /* Modals & Toast */
+        .modal { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; backdrop-filter: blur(2px);}
+        .modal.active { opacity: 1; pointer-events: auto; }
+        .modal-content { background: #fff; border-radius: 12px; display: flex; flex-direction: column; max-height: 90vh; transform: translateY(15px) scale(0.95); transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        .modal.active .modal-content { transform: translateY(0) scale(1); }
+        .modal-header { padding: 18px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; font-weight: 600; font-size: 15px;}
+        .modal-body { padding: 20px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 16px; }
+        .modal-footer { padding: 16px 20px; border-top: 1px solid var(--border); text-align: right; background: #fafafa; border-radius: 0 0 12px 12px; display: flex; justify-content: space-between; align-items: center;}
+
+        #toast { position: fixed; bottom: 20px; right: 20px; background: #1e293b; color: white; padding: 12px 20px; border-radius: 8px; display: none; z-index: 2000; font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.15);}
+        
+        .tab-btn { padding: 6px 16px; font-size: 12px; font-weight: 600; border: none; cursor: pointer; transition: 0.2s; background: transparent; color: var(--text-muted); }
+        .tab-btn.active { background: #fff; color: var(--text-main); box-shadow: 0 1px 3px rgba(0,0,0,0.05); border-radius: 4px;}
+        
+        .wp-account-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px;}
+        .wp-account-item .url { font-size: 11px; color: var(--primary); margin-top: 2px;}
+        select.fa-select { font-family: 'Inter', 'Font Awesome 6 Free'; font-weight: 900; }
+        .export-box { flex: 1; padding: 16px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: 0.2s; background: #fff; }
+        .export-box:hover { border-color: #cbd5e1; background: #f8fafc; }
+        .export-box input:checked + .export-content { color: var(--primary); }
+        .export-box.active { border-color: var(--primary); background: #eff6ff; }
+
+        /* ================= RESPONSIVE MEDIA QUERIES ================= */
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            
+            /* Bottom Navigation for Mobile */
+            .slim-sidebar { width: 100%; height: 60px; flex-direction: row; justify-content: space-around; padding: 0 10px; border-right: none; border-top: 1px solid var(--border); order: 2; }
+            .brand-logo { display: none; }
+            .nav-menu { flex-direction: row; justify-content: space-around; height: 100%; flex: 1; }
+            .nav-bottom { display: flex; align-items: center; justify-content: center; padding-left: 10px; border-left: 1px solid var(--border); margin-left: 10px; }
+            .nav-item { width: 45px; height: 45px; }
+            .nav-item::after { display: none !important; }
+            
+            .app-content { order: 1; flex: 1; overflow: hidden; }
+            .view-section { padding: 10px; }
+            .view-single-col { padding: 15px; }
+            
+            /* Generator Layout */
+            #view-generator { flex-direction: column; overflow-y: auto; display: flex; }
+            aside { width: 100%; flex-shrink: 0; margin-bottom: 16px; height: auto; }
+            main { flex-shrink: 0; min-height: 500px; display: flex; flex-direction: column; overflow: visible; }
+            
+            /* Forms & Flex wrapping */
+            .responsive-flex, .responsive-flex-16 { flex-direction: column; gap: 10px !important; }
+            .flex-between { flex-wrap: wrap; gap: 10px; }
+            
+            /* Tables */
+            .table-container { border-radius: 8px; overflow-y: visible; }
+            .toolbar { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .toolbar .flex-gap { width: 100%; flex-wrap: wrap; }
+            .toolbar .btn { flex: 1; justify-content: center; }
+            table { display: block; overflow-x: auto; white-space: nowrap; }
+            
+            /* Prompts Layout */
+            .prompt-layout { flex-direction: column; height: auto; }
+            .prompt-sidebar { width: 100%; height: 250px; flex-shrink: 0; }
+            .prompt-editor { padding: 15px; }
+            
+            /* Modals */
+            .modal-content { width: 95% !important; max-width: none !important; margin: 10px; max-height: 90vh; }
+            
+            /* Export & Settings Cards */
+            .card { min-width: 0 !important; width: 100%; }
+            .export-box { width: 100%; }
+            #export-xml-status { max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="slim-sidebar">
+    <div class="brand-logo"><i class="fa-solid fa-feather-pointed"></i></div>
+    <div class="nav-menu">
+        <button class="nav-item" data-target="view-projects" data-tooltip="Workspace Projects"><i class="fa-regular fa-folder-open"></i></button>
+        <button class="nav-item active" data-target="view-generator" data-tooltip="Article Manager"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
+        <button class="nav-item" data-target="view-prompts" data-tooltip="Prompt Library"><i class="fa-solid fa-terminal"></i></button>
+        <button class="nav-item" data-target="view-export" data-tooltip="Data Manager"><i class="fa-solid fa-database"></i></button>
+    </div>
+    <div class="nav-bottom">
+        <button class="nav-item" data-target="view-settings" data-tooltip="Global Settings"><i class="fa-solid fa-gear"></i></button>
+    </div>
+</nav>
+
+<div class="app-content">
+
+    <div id="view-generator" class="view-section active">
+        <aside>
+            <div class="card mb-3">
+                <div class="card-header" style="padding: 12px 16px; font-size: 13px;">
+                    <span style="display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-bullseye text-muted"></i> Configuration</span>
+                    <button class="btn-icon" onclick="downloadConfiguration()" title="Download Config (.txt)" style="width: 28px; height: 28px; font-size: 13px; color: var(--primary);"><i class="fa-solid fa-download"></i></button>
+                </div>
+                <div class="card-body" style="gap: 12px; padding: 12px 16px;">
+                    <div class="responsive-flex">
+                        <div style="flex: 1;"><label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Project</label><select id="gen-select-project" style="cursor: pointer;"></select></div>
+                        <div style="flex: 1;"><label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Prompt</label><select id="gen-select-prompt" style="cursor: pointer;"></select></div>
+                    </div>
+                    
+                    <div class="responsive-flex">
+                        <div style="flex: 1;"><label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Topic <span class="text-muted" style="font-weight:normal">[TOPIC]</span></label><input type="text" id="gen-input-topic" placeholder="e.g., Tech"></div>
+                        <div style="flex: 1;"><label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">WP Category</label><input type="text" id="gen-input-category" placeholder="e.g., News"></div>
+                    </div>
+
+                    <div class="responsive-flex">
+                        <div style="flex: 1;">
+                            <label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Language <span class="text-muted" style="font-weight:normal">[LANGUAGE]</span></label>
+                            <input type="text" id="gen-input-language" list="dl-language" placeholder="Select or type..." value="English">
+                            <datalist id="dl-language">
+                                <option value="English">
+                                <option value="Indonesian">
+                                <option value="Spanish">
+                                <option value="French">
+                            </datalist>
+                        </div>
+                        <div style="flex: 1;">
+                            <label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Audience <span class="text-muted" style="font-weight:normal">[AUDIENCE]</span></label>
+                            <input type="text" id="gen-input-audience" list="dl-audience" placeholder="Select or type..." value="General Public">
+                            <datalist id="dl-audience">
+                                <option value="General Public">
+                                <option value="Beginners">
+                                <option value="Professionals">
+                                <option value="Students">
+                                <option value="Business Owners">
+                            </datalist>
+                        </div>
+                    </div>
+
+                    <div class="responsive-flex">
+                        <div style="flex: 1;">
+                            <label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Style <span class="text-muted" style="font-weight:normal">[STYLE]</span></label>
+                            <input type="text" id="gen-input-style" list="dl-style" placeholder="Select or type..." value="Informative">
+                            <datalist id="dl-style">
+                                <option value="Informative">
+                                <option value="Casual">
+                                <option value="Professional">
+                                <option value="Persuasive">
+                            </datalist>
+                        </div>
+                        <div style="flex: 1;">
+                            <label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Length <span class="text-muted" style="font-weight:normal">[LENGTH]</span></label>
+                            <input type="text" id="gen-input-length" list="dl-length" placeholder="Select or type..." value="Write detailed content, exactly around 1000 words. Provide thorough sections.">
+                            <datalist id="dl-length">
+                                <option value="Write concisely, exactly around 500 words.">
+                                <option value="Write detailed content, exactly around 1000 words. Provide thorough sections.">
+                                <option value="Write a massive, comprehensive guide over 1500 words. Expand heavily on every point.">
+                            </datalist>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-3" style="flex: 1; min-height: 0; display: flex; flex-direction: column;">
+    <div class="card-header" style="padding: 12px 16px; font-size: 13px;">
+        <span style="display:flex; align-items:center; gap:8px;"><i class="fa-regular fa-pen-to-square text-muted"></i> Keyword Input <span class="text-muted" style="font-weight:normal">[KEYWORD]</span></span>
+    </div>
+    <div class="card-body" style="padding: 12px 16px; flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden;">
+        <textarea id="keyword-input" class="keyword-box" placeholder="Enter keywords (1 per line)..." style="flex: 1; margin-bottom: 8px; min-height: 0; overflow-y: auto;"></textarea>
+        <div class="flex-between text-muted" style="align-items: center; flex-shrink: 0;">
+            <span id="baris-count" style="font-weight: 500;">0 Lines</span>
+            <button class="btn-clear-text" id="btn-clear" style="margin: 0; padding: 4px 10px;">Clear</button>
+        </div>
+    </div>
+</div>
+            
+            <button class="btn btn-dark" id="btn-generate" style="padding: 14px; font-size: 14px; flex-shrink: 0;"><i class="fa-solid fa-wand-magic-sparkles"></i> Generate Articles</button>
+        </aside>
+
+        <main>
+            <div class="flex-between mb-3" style="padding: 0 4px; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <h2 style="font-size: 20px; margin: 0; display: flex; align-items: center;"><i class="fa-solid fa-layer-group text-muted" style="margin-right: 8px; font-size: 16px;"></i> Article Manager</h2>
+                    <span class="badge" id="total-article" style="background: #eff6ff; color: var(--primary); border: 1px solid #bfdbfe; font-size: 12px; padding: 4px 10px;">0 Articles</span>
+                </div>
+                <div class="responsive-flex" style="align-items: center;">
+                    <select id="filter-project" style="padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border); font-size: 13px; width: 160px; cursor: pointer; background: #fff;"><option value="ALL">All Projects</option></select>
+                    
+                    <div style="display: flex; gap: 6px; align-items: center;">
+                        <button class="btn btn-outline" id="btn-filter-bad-titles" onclick="toggleBadTitles()" style="width: 35px; height: 35px; padding: 0; display: flex; justify-content: center; align-items: center; border-color: var(--border);" title="Filter Judul Belang">
+                            <i class="fa-solid fa-filter" style="color: var(--danger);"></i>
+                        </button>
+                        
+                        <div style="display: flex; align-items: center; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; height: 35px; background: #fff;">
+                            <input type="number" id="input-word-limit" value="1800" step="100" style="width: 55px; border: none; height: 100%; border-radius: 0; padding: 0 4px; font-size: 13px; text-align: center; border-right: 1px solid var(--border); outline: none;" title="Batas Kata">
+                            <button class="btn btn-outline" id="btn-filter-words" onclick="toggleShortArticles()" style="border: none; border-radius: 0; height: 100%; width: 35px; padding: 0; display: flex; justify-content: center; align-items: center;" title="Filter artikel di bawah batas kata">
+                                <i class="fa-solid fa-down-long" style="color: var(--danger);"></i>
+                            </button>
+                        </div>
+
+                        <button class="btn btn-outline" id="btn-filter-errors" onclick="toggleErrorArticles()" style="width: 35px; height: 35px; padding: 0; display: flex; justify-content: center; align-items: center; border-color: var(--border);" title="Tampilkan artikel Error/Gagal">
+                            <i class="fa-solid fa-triangle-exclamation" style="color: #eab308;"></i>
+                        </button>
+                    </div>
+
+                    <div style="position: relative; margin-left: 4px;"><i class="fa-solid fa-magnifying-glass text-muted" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 13px;"></i><input type="text" id="search-article" placeholder="Search..." style="padding: 8px 10px 8px 32px; border-radius: 6px; border: 1px solid var(--border); font-size: 13px; width: 140px; background: #fff;"></div>
+                </div>
+            </div>
+
+            <div class="table-container flex-column">
+                <div class="toolbar">
+                    <div class="flex-gap" style="font-size: 13px; font-weight: 500;"><span id="selected-count" class="text-muted" style="background: var(--bg); padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border);">0 Selected</span></div>
+                    <div class="flex-gap">
+                        <button class="btn btn-outline" id="btn-bulk-regenerate" style="padding: 8px 14px; font-size: 13px; color: var(--primary); border-color: var(--border);"><i class="fa-solid fa-rotate-right"></i> Regenerate</button>
+                        
+                        <button class="btn btn-outline" style="padding: 8px 14px; font-size: 13px;" onclick="bulkEditCategory()"><i class="fa-solid fa-tags"></i> Edit Kategori</button>
+
+                        <button class="btn btn-primary" id="btn-post-wp" style="padding: 8px 14px; font-size: 13px;"><i class="fa-brands fa-wordpress"></i> Post to WP</button>
+                        <button class="btn btn-outline-danger" id="btn-delete" style="padding: 8px 14px; font-size: 13px;"><i class="fa-regular fa-trash-can"></i> Delete</button>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="40" style="text-align: center;"><input type="checkbox" id="master-checkbox" onclick="toggleAllArticles(this)"></th>
+                            <th class="sortable" onclick="sortTable('title')">Article Details <i class="fa-solid fa-sort sort-icon"></i></th>
+                            <th class="sortable" width="100" style="text-align: center;" onclick="sortTable('words')">Words <i class="fa-solid fa-sort sort-icon"></i></th>
+                            <th class="sortable" width="120" onclick="sortTable('date')">Date <i class="fa-solid fa-sort sort-icon"></i></th>
+                            <th class="sortable" width="130" style="text-align: center;" onclick="sortTable('status')">Status <i class="fa-solid fa-sort sort-icon"></i></th>
+                            <th width="110" style="text-align: center;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body"></tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <div id="view-projects" class="view-section view-single-col">
+        <div class="flex-between" style="margin-bottom: 30px;"><h1 class="page-title" style="margin: 0;">Workspace Projects</h1><button class="btn btn-primary" onclick="openProjectModal()" style="padding: 10px 20px; font-size: 14px;"><i class="fa-solid fa-plus"></i> New Project</button></div>
+        <div class="project-grid" id="project-list-container"></div>
+    </div>
+
+    <div id="view-prompts" class="view-section view-single-col">
+        <h1 class="page-title">Prompt Library</h1>
+        <div class="prompt-layout">
+            <div class="prompt-sidebar">
+                <div class="card-header" style="background: var(--card);">
+                    <span>Saved Templates</span>
+                    <div style="display: flex; gap: 4px;">
+                        <button class="btn-icon" onclick="document.getElementById('file-import-prompt').click()" title="Import Prompt (.txt)" style="background: var(--bg);"><i class="fa-solid fa-file-import"></i></button>
+                        <input type="file" id="file-import-prompt" accept=".txt" style="display:none" onchange="importPromptTxt(event)">
+                        
+                        <button class="btn-icon" id="btn-new-prompt" title="Create New Prompt" style="color: var(--primary); background: #eff6ff;"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                </div>
+                <div id="prompt-list-container" style="flex:1; overflow-y:auto;"></div>
+            </div>
+            
+            <div class="prompt-editor">
+                <input type="text" id="prompt-title" placeholder="Template Name (e.g., Ultimate SEO Review)" style="font-size: 20px; font-weight: 700; margin-bottom: 24px; padding: 12px 0; border: none; border-bottom: 2px solid var(--border); border-radius: 0; background: transparent; color: var(--text-main);">
+                
+                <div style="display: flex; flex-direction: column; gap: 20px; flex: 1;">
+                    <div>
+                        <label class="text-main font-weight-600" style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;"><i class="fa-solid fa-user-tie text-primary"></i> 1. System Persona (Role)</label>
+                        <p class="text-muted" style="margin-bottom: 8px; font-size: 12px;">Who is the AI? Define its expertise and character.</p>
+                        <textarea id="prompt-persona" rows="2" placeholder="e.g., You are an expert SEO Copywriter with 10 years of experience..." style="resize: vertical; font-family: monospace; font-size: 13px;"></textarea>
+                    </div>
+
+                    <div style="flex: 1; display: flex; flex-direction: column;">
+                        <label class="text-main font-weight-600" style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;"><i class="fa-solid fa-list-check text-primary"></i> 2. Main Task & Structure</label>
+                        <p class="text-muted" style="margin-bottom: 8px; font-size: 12px;">What should the AI write? (Tip: Ask AI to return JSON format to auto-fill Title and Meta!)</p>
+                        <textarea id="prompt-task" style="flex: 1; min-height: 150px; resize: vertical; font-family: monospace; font-size: 13px; line-height: 1.5;" placeholder="e.g., Write a [LENGTH] article about [TOPIC], specifically focusing on [KEYWORD]. Write in a [STYLE] tone tailored for [AUDIENCE] in [LANGUAGE]."></textarea>
+                    </div>
+
+                    <div>
+                        <label class="text-main font-weight-600" style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;"><i class="fa-solid fa-shield-halved text-danger"></i> 3. Strict Rules (Negative Prompt)</label>
+                        <p class="text-muted" style="margin-bottom: 8px; font-size: 12px;">What should the AI avoid? Set restrictions.</p>
+                        <textarea id="prompt-rules" rows="2" placeholder="e.g., Output ONLY valid JSON. No markdown code blocks." style="resize: vertical; font-family: monospace; font-size: 13px;"></textarea>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border);">
+                    <div class="text-muted" style="font-size: 12px; line-height: 1.8;">Available Variables:<br> <span class="badge" style="background:#fff;">[TOPIC]</span> <span class="badge" style="background:#fff;">[KEYWORD]</span> <span class="badge" style="background:#fff;">[LANGUAGE]</span> <span class="badge" style="background:#fff;">[AUDIENCE]</span> <span class="badge" style="background:#fff;">[STYLE]</span> <span class="badge" style="background:#fff;">[LENGTH]</span></div>
+                    <button class="btn btn-primary" id="btn-save-prompt" style="padding: 12px 24px; font-size: 14px;"><i class="fa-solid fa-floppy-disk"></i> Save Modular Template</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-export" class="view-section view-single-col">
+        <h1 class="page-title">Data Manager</h1>
+        
+        <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+            <div class="card" style="flex: 1; min-width: 400px; margin-bottom: 24px;">
+                <div class="card-header" style="background: #f8fafc;"><span style="color: var(--text-main); font-size: 14px;"><i class="fa-solid fa-cloud-arrow-down text-muted" style="margin-right:8px;"></i> Export Data</span></div>
+                <div class="card-body" style="gap: 20px;">
+                    <div>
+                        <label class="text-muted font-weight-600" style="display: block; margin-bottom: 12px;">1. Select Data to Export</label>
+                        <div class="responsive-flex">
+                            <label class="export-box active" id="lbl-exp-articles" onclick="toggleExportSource('articles')">
+                                <input type="radio" name="export_source" value="articles" checked style="display: none;">
+                                <div class="export-content text-center"><i class="fa-solid fa-file-lines" style="font-size: 20px; display: block; margin-bottom: 8px;"></i><span style="font-weight: 600; font-size: 13px;">Articles</span></div>
+                            </label>
+                            <label class="export-box" id="lbl-exp-prompts" onclick="toggleExportSource('prompts')">
+                                <input type="radio" name="export_source" value="prompts" style="display: none;">
+                                <div class="export-content text-center"><i class="fa-solid fa-terminal" style="font-size: 20px; display: block; margin-bottom: 8px;"></i><span style="font-weight: 600; font-size: 13px;">Prompts</span></div>
+                            </label>
+                            <label class="export-box" id="lbl-exp-backup" onclick="toggleExportSource('backup')">
+                                <input type="radio" name="export_source" value="backup" style="display: none;">
+                                <div class="export-content text-center"><i class="fa-solid fa-database" style="font-size: 20px; display: block; margin-bottom: 8px;"></i><span style="font-weight: 600; font-size: 13px;">Full Backup</span></div>
+                            </label>
+                        </div>
+                    </div>
+                    <div id="export-filter-container"><label class="text-muted font-weight-600" style="display: block; margin-bottom: 6px;">Filter by Project</label><select id="export-select-project" style="cursor: pointer;"><option value="ALL">All Projects (Download Everything)</option></select></div>
+                    <hr style="border: none; border-top: 1px solid var(--border);">
+                    <div>
+                        <label class="text-muted font-weight-600" style="display: block; margin-bottom: 12px;">2. Output Format</label>
+                        <div class="responsive-flex-16" style="align-items: center;">
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 500;"><input type="radio" name="export_format" value="csv" checked onchange="toggleExportFormat()"> CSV (Excel)</label>
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 500;"><input type="radio" name="export_format" value="json" onchange="toggleExportFormat()"> JSON</label>
+                            
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 500; color: var(--primary);"><input type="radio" name="export_format" value="xml_wp" onchange="toggleExportFormat()"> XML (WP WXR)</label>
+                        </div>
+                        <div id="format-warning" class="text-muted" style="font-size: 11px; margin-top: 8px; display: none; color: var(--danger);">*Full Backup is only available in JSON format.</div>
+                    </div>
+
+                    <div id="export-xml-options" style="display: none; margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border);">
+                        <label class="text-muted font-weight-600" style="display: block; margin-bottom: 8px;">3. WordPress Post Status</label>
+                        <select id="export-xml-status" style="width: 100%; max-width: 250px; cursor: pointer; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border); background: #fff;">
+                            <option value="draft" selected>Draft (Disarankan untuk Timbun)</option>
+                            <option value="publish">Publish (Langsung Tayang)</option>
+                            <option value="pending">Pending Review</option>
+                        </select>
+                    </div>
+
+                    <button class="btn btn-primary" style="padding: 14px; font-size: 14px; justify-content: center; margin-top: 16px;" onclick="executeExport()"><i class="fa-solid fa-download"></i> Generate & Download File</button>
+                </div>
+            </div>
+
+            <div class="card" style="flex: 1; min-width: 400px; margin-bottom: 24px; border-color: var(--primary);">
+                <div class="card-header" style="background: #eff6ff;"><span style="color: var(--primary); font-size: 14px;"><i class="fa-solid fa-cloud-arrow-up" style="margin-right:8px;"></i> Restore / Import Backup</span></div>
+                <div class="card-body" style="gap: 20px; align-items: center; justify-content: center; text-align: center;">
+                    <div style="color: var(--text-muted); font-size: 40px; margin-bottom: 10px;"><i class="fa-solid fa-file-import"></i></div>
+                    <div>
+                        <h3 style="margin-bottom: 8px; color: var(--text-main);">Restore Your Workspace</h3>
+                        <p class="text-muted" style="line-height: 1.5; max-width: 300px;">Upload a <b>.json</b> backup file generated by this app to restore all your Projects, Articles, Prompts, and Settings instantly.</p>
+                    </div>
+                    
+                    <input type="file" id="file-import-backup" accept=".json" style="display:none" onchange="importBackupJson(event)">
+                    <button class="btn btn-primary" style="padding: 14px 24px; font-size: 14px;" onclick="document.getElementById('file-import-backup').click()"><i class="fa-solid fa-upload"></i> Upload Backup File</button>
+                    
+                    <div style="font-size: 11px; color: var(--danger); font-weight: 600; padding: 10px; background: #fef2f2; border-radius: 6px; width: 100%;">Warning: This will overwrite your current workspace!</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-settings" class="view-section view-single-col">
+        <h1 class="page-title">Global Settings</h1>
+        
+        <div style="max-width: 900px; margin-bottom: 20px; padding: 12px 16px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; color: #b45309; font-size: 13px; line-height: 1.5;">
+            <i class="fa-solid fa-triangle-exclamation" style="margin-right: 6px;"></i> <b>Penting:</b> Untuk menghubungkan aplikasi HTML lokal ini dengan WordPress Anda secara aman, pastikan Anda telah memasang kode <i>CORS (Cross-Origin Resource Sharing)</i> dan <i>Basic Auth</i> di file <code>functions.php</code> tema WordPress Anda.
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 24px; max-width: 900px; width: 100%; margin-bottom: 40px;">
+            
+            <div class="card">
+                <div class="card-header" style="background: #f8fafc;"><span style="color: var(--text-main); font-size: 14px;"><i class="fa-solid fa-plug text-muted" style="margin-right:8px;"></i> API & Model Connection</span></div>
+                <div class="card-body" style="gap: 16px;">
+                    <div class="responsive-flex-16">
+                        <div style="flex: 1;">
+                            <label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">AI Provider</label>
+                            <select id="setting-provider" style="cursor: pointer;" onchange="updateModelOptions()">
+                                <option value="openai">OpenAI (ChatGPT)</option>
+                                <option value="gemini">Google Gemini</option>
+                                <option value="sumopod">SumoPod AI</option>
+                            </select>
+                        </div>
+                        <div style="flex: 1;">
+                            <label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">AI Model</label>
+                            <select id="setting-model" style="cursor: pointer;" onchange="toggleCustomBoxes()"></select>
+                        </div>
+                    </div>
+                    
+                    <div class="responsive-flex-16">
+                        <div style="flex: 2;">
+                            <label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">API Key</label>
+                            <input type="password" id="setting-api-key" placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxxx">
+                        </div>
+                        <div style="flex: 1;">
+                            <label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Temperature (0.0 - 1.0)</label>
+                            <input type="number" id="setting-temp" step="0.1" min="0" max="1" value="0.7">
+                        </div>
+                        <div style="flex: 1;">
+                            <label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Workers <span style="font-weight:normal; font-size:11px;">(Speed)</span></label>
+                            <input type="number" id="setting-workers" min="1" max="10" value="1" title="How many articles to generate concurrently">
+                        </div>
+                    </div>
+
+                    <div id="setting-custom-url-box" style="display: none; margin-top: 16px;">
+                        <hr style="border: none; border-top: 1px dashed var(--border); margin-bottom: 16px;">
+                        <div class="responsive-flex-16">
+                            <div style="flex: 1;">
+                                <label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Custom Model ID</label>
+                                <input type="text" id="setting-custom-model" placeholder="e.g., deepseek-chat">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header" style="background: #f8fafc;"><span style="color: var(--text-main); font-size: 14px;"><i class="fa-brands fa-wordpress text-muted" style="margin-right:8px;"></i> WordPress API Configuration</span></div>
+                <div class="card-body" style="gap: 20px;">
+                    <div>
+                        <label class="text-muted font-weight-600" style="display:block; margin-bottom:12px;">Saved Accounts</label>
+                        <div id="wp-settings-list"></div>
+                    </div>
+                    <hr style="border: none; border-top: 1px solid var(--border);">
+                    <div>
+                        <label class="text-main font-weight-600" style="display:block; margin-bottom:12px; font-size: 14px;">Add New Account</label>
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <div><label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">WordPress URL</label><input type="text" id="new-wp-url" placeholder="e.g., https://domain.com"></div>
+                            <div class="responsive-flex-16">
+                                <div style="flex: 1;"><label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Username / Email</label><input type="text" id="new-wp-user" placeholder="Admin username"></div>
+                                <div style="flex: 1;"><label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Application Password</label><input type="password" id="new-wp-pass" placeholder="xxxx xxxx xxxx xxxx"></div>
+                            </div>
+                            <button class="btn btn-outline" style="width: fit-content; align-self: flex-start; margin-top: 4px;" onclick="addWpAccount()">
+                                <i class="fa-solid fa-link"></i> Test & Save Connection
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card" style="border-color: var(--danger);">
+                <div class="card-header" style="background: #fef2f2; color: var(--danger);">
+                    <span style="font-size: 14px;"><i class="fa-solid fa-triangle-exclamation" style="margin-right:8px;"></i> Danger Zone (Data Cleanup)</span>
+                </div>
+                <div class="card-body" style="gap: 16px;">
+                    <div style="display: flex; gap: 16px; align-items: center; justify-content: space-between; padding-bottom: 16px; border-bottom: 1px dashed var(--border); flex-wrap: wrap;">
+                        <div>
+                            <div style="font-weight: 600; color: var(--text-main); margin-bottom: 4px;">Clear All Articles</div>
+                            <div class="text-muted" style="font-size: 12px;">Hapus seluruh artikel di tabel. Pengaturan API, Prompt, dan WP akan tetap aman.</div>
+                        </div>
+                        <button class="btn btn-outline-danger" onclick="clearAllArticles()"><i class="fa-solid fa-broom"></i> Clear Articles</button>
+                    </div>
+                    
+                    <div style="display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+                        <div>
+                            <div style="font-weight: 600; color: var(--danger); margin-bottom: 4px;">Factory Reset</div>
+                            <div class="text-muted" style="font-size: 12px;">Hapus <b>SEMUA</b> data (Artikel, Prompt, API Key, WP). Aplikasi kembali seperti baru.</div>
+                        </div>
+                        <button class="btn btn-danger" onclick="factoryReset()"><i class="fa-solid fa-skull-crossbones"></i> Factory Reset</button>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
+                <button class="btn btn-primary" onclick="saveSettingsUI()"><i class="fa-solid fa-floppy-disk"></i> Save All Settings</button>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<div class="modal" id="project-modal">
+    <div class="modal-content" style="width: 450px;">
+        <div class="modal-header">
+            <span style="display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-folder text-muted"></i> <span id="project-modal-title">New Project</span></span>
+            <button class="btn-icon" onclick="closeModal('project-modal')"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="proj-edit-id">
+            <div><label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Project Name</label><input type="text" id="proj-name" placeholder="e.g., Tech Blog Network"></div>
+            <div><label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Description</label><textarea id="proj-desc" rows="2" placeholder="Brief description..."></textarea></div>
+            <div class="responsive-flex-16">
+                <div style="flex: 1;">
+                    <label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Icon</label>
+                    <select id="proj-icon" class="fa-select" style="cursor: pointer;">
+                        <option value="fa-folder">&#xf07b; Folder</option>
+                        <option value="fa-laptop-code">&#xf5e4; Tech</option>
+                        <option value="fa-leaf">&#xf06c; Nature</option>
+                        <option value="fa-cart-shopping">&#xf07a; Shop</option>
+                        <option value="fa-heart">&#xf004; Health</option>
+                        <option value="fa-gamepad">&#xf11b; Gaming</option>
+                        <option value="fa-building">&#xf1ad; Building</option>
+                    </select>
+                </div>
+                <div style="flex: 1;">
+                    <label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Color Theme</label>
+                    <select id="proj-color" style="cursor: pointer;">
+                        <option value="blue">Blue</option>
+                        <option value="green">Green</option>
+                        <option value="pink">Pink</option>
+                        <option value="purple">Purple</option>
+                        <option value="orange">Orange</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('project-modal')" style="margin-right: 8px;">Cancel</button><button class="btn btn-primary" id="btn-save-project" onclick="saveProject()">Save Project</button></div>
+    </div>
+</div>
+
+<div class="modal" id="edit-modal">
+    <div class="modal-content" style="width: 750px;">
+        <div class="modal-header">
+            <span style="display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-pen-to-square text-muted"></i> Advanced Editor</span>
+            <button class="btn-icon" onclick="closeModal('edit-modal')"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body custom-scroll" style="padding: 24px; gap: 16px;">
+            <div>
+                <label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Article Title</label>
+                <div style="display: flex; gap: 8px;">
+                    <input type="text" id="edit-judul" placeholder="Enter Article Title" style="flex: 1;">
+                    <button class="btn btn-outline" style="padding: 0 12px; height: 35px; color: var(--primary); border-color: var(--border);" onclick="generateTitleOnly()" title="Auto-Generate Title from Keyword">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div><label class="text-muted font-weight-600" style="display:block; margin-bottom:6px; color: var(--primary);">Rank Math Focus Keyword</label><input type="text" id="edit-keyword" placeholder="Target keyword"></div>
+            
+            <div class="responsive-flex-16">
+                <div style="flex: 1;"><label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Slug (URL)</label><input type="text" id="edit-slug" placeholder="your-article-slug"></div>
+                <div style="flex: 1;"><label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">WP Category</label><input type="text" id="edit-kategori" placeholder="e.g., Food, Tech"></div>
+            </div>
+            <div class="responsive-flex-16">
+                <div style="flex: 1;"><label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Publish Date</label><input type="date" id="edit-tanggal" style="cursor: pointer;"></div>
+                
+                <div style="flex: 1;">
+                    <label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Prompt Used</label>
+                    <div style="display: flex; gap: 6px;">
+                        <div style="flex: 1; padding: 8px 10px; height: 35px; background: #f1f5f9; border: 1px solid var(--border); border-radius: 6px; color: var(--text-muted); font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: not-allowed; box-sizing: border-box;">
+                            <i class="fa-solid fa-terminal"></i> <span id="edit-used-prompt" class="text-truncate" style="max-width: 200px;">-</span>
+                        </div>
+                        <button class="btn btn-outline" style="height: 35px; width: 35px; padding: 0; display: flex; align-items: center; justify-content: center; flex-shrink: 0;" onclick="downloadArticlePrompt()" title="Download Prompt (.txt)">
+                            <i class="fa-solid fa-download"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: column;">
+                <div class="flex-between" style="margin-bottom: 8px;">
+                    <label class="text-muted font-weight-600">Content Body (HTML)</label>
+                    <div style="display: flex; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; padding: 2px;"><button id="tab-visual" class="tab-btn active">Visual</button><button id="tab-code" class="tab-btn">Code</button></div>
+                </div>
+                <div style="border: 1px solid var(--border); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column;">
+                    <div id="editor-toolbar" style="padding: 8px 12px; background: #f8fafc; border-bottom: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 4px;">
+                        <button class="btn-icon" style="width:28px; height:28px; font-size:13px;" title="Bold"><i class="fa-solid fa-bold"></i></button>
+                        <button class="btn-icon" style="width:28px; height:28px; font-size:13px;" title="Italic"><i class="fa-solid fa-italic"></i></button>
+                        <button class="btn-icon" style="width:28px; height:28px; font-size:13px;" title="Heading 2"><b>H2</b></button>
+                        <button class="btn-icon" style="width:28px; height:28px; font-size:13px;" title="List"><i class="fa-solid fa-list-ul"></i></button>
+                        <span style="border-right: 1px solid var(--border); margin: 0 4px;"></span>
+                        <button class="btn-icon" style="width:28px; height:28px; font-size:13px;" title="Insert Link"><i class="fa-solid fa-link"></i></button>
+                        <button class="btn-icon" style="width:28px; height:28px; font-size:13px;" title="Insert Image"><i class="fa-regular fa-image"></i></button>
+                    </div>
+                    <div id="edit-body-visual" contenteditable="true" style="padding: 16px; min-height: 200px; max-height: 400px; overflow-y: auto; outline: none; line-height: 1.6; font-size: 14px;"></div>
+                    <textarea id="edit-body-code" style="padding: 16px; min-height: 200px; display: none; border: none; border-radius: 0; font-family: monospace; font-size: 13px; line-height: 1.5; resize: vertical;"></textarea>
+                </div>
+            </div>
+            <div><label class="text-muted font-weight-600" style="display:block; margin-bottom:6px; color: var(--primary);">Rank Math Meta Description</label><textarea id="edit-meta" rows="2" placeholder="Short summary for Google search..." style="resize: vertical;"></textarea></div>
+        </div>
+        <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <button class="btn btn-outline" style="color: var(--primary); border-color: var(--border);" onclick="regenerateFromModal()" title="Regenerate with current sidebar settings"><i class="fa-solid fa-rotate-right"></i> Regenerate Article</button>
+            <div style="display: flex; gap: 8px;">
+                <button class="btn btn-outline" onclick="closeModal('edit-modal')">Cancel</button>
+                <button class="btn btn-primary" id="btn-save-edit">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="wp-modal">
+    <div class="modal-content" style="width: 450px;">
+        <div class="modal-header">
+            <span class="flex-gap" style="color: var(--text-main);"><i class="fa-brands fa-wordpress" style="color: var(--primary); font-size: 18px;"></i> Post to WordPress</span>
+            <button class="btn-icon" onclick="closeModal('wp-modal')"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body" style="padding: 24px;">
+            <div style="margin-bottom: 16px;">
+                <label class="text-muted font-weight-600" style="margin-bottom: 8px; display: block;">Select WP Account</label>
+                <select id="wp-account" style="cursor: pointer;"></select>
+            </div>
+            <div style="margin-bottom: 16px;">
+                <label class="text-muted font-weight-600" style="margin-bottom: 8px; display: block;">Post Status</label>
+                <select id="wp-status" style="cursor: pointer;">
+                    <option value="publish">Publish Immediately</option>
+                    <option value="draft">Save as Draft</option>
+                    <option value="schedule" selected>Auto Schedule</option>
+                </select>
+            </div>
+            <div id="schedule-config" class="responsive-flex" style="background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid var(--border);">
+                <div style="flex: 1;"><label class="text-muted font-weight-600" style="margin-bottom: 6px; display: block; font-size: 12px;">Start Date</label><input type="date" id="wp-start-date" style="padding: 10px;"></div>
+                <div style="flex: 1;"><label class="text-muted font-weight-600" style="margin-bottom: 6px; display: block; font-size: 12px;">Posts / Day</label><input type="number" id="wp-post-per-day" value="3" min="1" style="padding: 10px;"></div>
+            </div>
+        </div>
+        <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('wp-modal')" style="padding: 10px 20px; margin-right:8px;">Cancel</button><button class="btn btn-primary" id="btn-submit-wp" style="padding: 10px 24px; font-size: 14px;">Submit Post</button></div>
+    </div>
+</div>
+
+<div id="toast"><i class="fa-solid fa-circle-info" style="margin-right: 8px;"></i> <span id="toast-msg">Notification</span></div>
+
+<script>
+    // ================= 1. STATE MANAGEMENT & AUTOSAVE (INDEXEDDB) =================
+    
+    function generateId() { return Date.now().toString(36) + Math.random().toString(36).substring(2); }
+
+    let defaultAppData = {
+        projects: [
+            { id: 1, name: "Tech Blog Network", desc: "Technology & gadget niche.", icon: "fa-laptop-code", color: "blue" }
+        ],
+        prompts: [
+            { 
+                id: 1, name: "Master SEO Copywriter (Strict JSON)", 
+                persona: "You are an expert SEO Copywriter. You MUST output ONLY a valid JSON object. No markdown wrapping (no ```json). STOP IMMEDIATELY after the closing brace `}`.", 
+                task: "Write about [KEYWORD] (Topic: [TOPIC]). Target audience: [AUDIENCE]. Language: [LANGUAGE] (American - US Government style). Tone: [STYLE]. Target length: [LENGTH].\n\n### HTML STRUCTURE\n1. Intro: Hook + [KEYWORD] mention.\n2. Direct Answer (H2): Immediate concise answer to the core question.\n3. Deep Dive (Body): H2/H3 headers + <ul> lists explaining details.\n4. Table: STRICT HTML `<table class=\"responsive-table\">`, <thead>, <tbody>. NO Markdown pipes (|).\n5. FAQ Section: You MUST use <h3> tags for each of the 7 questions. Each answer MUST be strictly between 40-50 words. Every answer MUST include 1 specific trivia or real-world statistic (e.g., from a recent study, government data, or historical fact) to build E-A-T (Expertise, Authoritativeness, Trustworthiness).\n6. Conclusion (H2): Max 2 short paragraphs. Appreciation + Tip + CTA.\n\nReturn EXACTLY these 3 keys:\n- \"title\": A creative, high-CTR SEO title. MUST contain \"[KEYWORD]\". DO NOT use generic phrases like 'A Comprehensive Guide', mention the audience directly, or include any year (e.g., 2024, 2025, 2026) in the title.\n- \"meta\": Summary with \"[KEYWORD]\" (max 160 chars).\n- \"content\": The full HTML body. Escape all quotes.", 
+                rules: "STRICTLY 8th-grade level. Simple words. No jargon. Smooth transitions. DO NOT write labels like 'Bridge Sentence'. Use <strong> for emphasis, <em> for titles. Banned words: Delve, Realm, Tapestry, Unlock, Game-changer. Output ONLY pure JSON. NO extra text." 
+            },
+            { 
+                id: 2, name: "Comprehensive Guide & FAQ (JSON)", 
+                persona: "You are an expert content writer and researcher. You write highly structured, factual, and easy-to-read content (8th-grade reading level). You MUST output ONLY a valid JSON object. No markdown wrapping.", 
+                task: "Write a comprehensive guide and FAQ about [KEYWORD] (Topic: [TOPIC]). Target audience: [AUDIENCE]. Language: [LANGUAGE]. Tone: [STYLE]. [LENGTH].\n\nStructure Requirements:\n1. Opening Paragraph: A direct answer/overview (Inverted Pyramid style).\n2. Main Body: Explain concepts using proper H2 and H3 tags.\n3. Comparison/Data: MUST include an HTML <table> to compare relevant data.\n4. Lists: MUST include structured bullet points <ul> or numbered lists <ol>.\n5. FAQ Section: Create a dedicated 'FAQs' section at the end with 4-5 common questions.\n6. Conclusion: A brief closing paragraph.\n\nReturn a JSON object with EXACTLY 3 keys:\n- \"title\": A catchy and factual title. YOU MUST INCLUDE THE EXACT PHRASE \"[KEYWORD]\" IN THE TITLE.\n- \"meta\": A concise meta description (max 150 chars).\n- \"content\": The full article in pure HTML format.", 
+                rules: "Output ONLY pure JSON. Do not include ```json tags. NEVER rephrase or change the exact [KEYWORD] in the title. No complex jargon. No fluff or filler sentences." 
+            },
+            { 
+                id: 3, name: "Advanced Entity-Based SEO (JSON)", 
+                persona: "You are an advanced SEO strategist and entity-based content writer. You MUST output ONLY a valid JSON object. No markdown wrapping.", 
+                task: "Write a highly optimized SEO article about [KEYWORD] focusing on [TOPIC]. Target audience: [AUDIENCE]. Language: [LANGUAGE]. Tone: [STYLE]. [LENGTH].\n\nStructure Requirements:\n- Use Subject-Predicate-Object (SPO) methodology for clear sentences.\n- Use proper HTML tags (<h2>, <h3>, <p>, <strong>).\n- MUST include at least one informative HTML <table> to compare data/attributes.\n- MUST include structured bullet points <ul>.\n- Place the keyword naturally in the first paragraph, one H2, and the closing paragraph. Highlight entities in bold.\n\nReturn a JSON object with EXACTLY 3 keys:\n- \"title\": A high-CTR SEO title. YOU MUST INCLUDE THE EXACT PHRASE \"[KEYWORD]\" IN THE TITLE.\n- \"meta\": The SEO meta description (max 150 chars).\n- \"content\": The full article in HTML format.", 
+                rules: "Output ONLY pure JSON. Do not include ```json tags. NEVER rephrase or change the exact [KEYWORD] in the title. No keyword stuffing. No robotic transition words (e.g., 'In conclusion', 'Moreover')." 
+            },
+            {
+                id: 4, name: "🔥 Ultimate Blaze Mode (6-Step)",
+                persona: "You are an elite SEO Content Strategist and Copywriter. You use the 6-Step Blaze Framework to craft high-converting, authoritative content. You MUST output ONLY a valid JSON object. No markdown wrapping.",
+                task: "Execute the following 6-Step Blaze Framework about [KEYWORD] (Topic: [TOPIC]). Target: [AUDIENCE]. Language: [LANGUAGE]. Tone: [STYLE]. Target length: [LENGTH].\n\n1. TITLE: Create a click-magnet, SEO-friendly title (max 60 chars) using honest clickbait techniques. Must contain \"[KEYWORD]\".\n2. OPENING (Hook): Write an emotional or provocative opening paragraph using the PAS (Problem, Agitation, Solution) method to hook the reader in 3 seconds.\n3. SECTION (Outline): Create a logical outline with H2 and H3 subheadings using the inverted pyramid structure.\n4. DETAIL (Body): Write deep, comprehensive explanations for each subheading. Use short sentences, bullet points for readability, and natural transitions. Insert relevant internal link placeholders like `<a href=\"#\">relevant text</a>` naturally.\n5. META: Write a 150-160 character Meta Description summarizing the content with a strong CTA. Must start with \"[KEYWORD]\".\n6. CLOSING: Summarize main points. End with a question to provoke comments or a strong Call to Action (CTA).\n\nReturn EXACTLY this JSON format:\n{\n  \"title\": \"(Step 1)\",\n  \"meta\": \"(Step 5)\",\n  \"content\": \"(HTML containing Step 2, Step 3, Step 4, and Step 6)\"\n}",
+                rules: "Output ONLY pure JSON. Do not include ```json tags. NEVER rephrase the exact [KEYWORD] in the title. Maintain strict 8th-grade reading level. Do not use generic filler words."
+            }
+        ],
+        wpAccounts: [], 
+        articles: [],
+        settings: { provider: 'sumopod', model: 'gpt-4o-mini', apiKey: '', temp: 0.7, customModel: '', workers: 1 }
+    };
+
+    let appData = defaultAppData;
+
+    // Konfigurasi Database LocalForage
+    localforage.config({
+        name: 'SumoPodApp',
+        storeName: 'workspace_data',
+        description: 'Penyimpanan monster untuk artikel SumoPod'
+    });
+
+    let editId = null; 
+    let currentSort = { col: null, asc: true }; 
+    let isGenerating = false;
+    let abortController = null;
+    
+    // VARIABEL FILTER QUALITY CONTROL (QC)
+    let searchTimeout = null; 
+    let showOnlyBadTitles = false; 
+    let showOnlyShortArticles = false;
+    let showOnlyErrors = false;
+
+    const colorMap = {
+        blue: { bg: "#eff6ff", text: "#3b82f6" }, green: { bg: "#ecfdf5", text: "#10b981" },
+        pink: { bg: "#fdf2f8", text: "#db2777" }, purple: { bg: "#faf5ff", text: "#8b5cf6" }, orange: { bg: "#fff7ed", text: "#f59e0b" }
+    };
+
+    // FITUR PEMBERSIH ARTIFAK JSON
+    function cleanFinalHTML(htmlStr) {
+        if(!htmlStr) return "";
+        let cleaned = htmlStr.replace(/\\*"\s*}\s*$/, ''); // Hapus trailing "} atau \"}
+        cleaned = cleaned.replace(/\\*"\s*$/, ''); // Hapus trailing quote " atau \"
+        return cleaned.trim();
+    }
+
+    // Tarik data dari IndexedDB saat aplikasi dibuka
+    localforage.getItem('sumoArticleGenerator').then(function(value) {
+        if (value) {
+            appData = value;
+        }
+        
+        if(!appData.settings) appData.settings = defaultAppData.settings; 
+        if(!appData.settings.workers) appData.settings.workers = 1;
+        
+        // Memastikan ke-4 prompt default ada jika library kosong atau baru di-update
+        if(appData.prompts.length < 4 && appData.prompts.filter(p => p.name.includes("Blaze Mode")).length === 0) {
+            appData.prompts = [...defaultAppData.prompts];
+        }
+
+        appData.articles.forEach(art => { if(!art.id) art.id = generateId(); });
+
+        // Jalankan UI setelah data berhasil ditarik
+        syncAllData(); 
+        renderArticleTable();
+    }).catch(function(err) {
+        console.error("Gagal menarik data dari IndexedDB:", err);
+        syncAllData(); renderArticleTable();
+    });
+
+    function saveData() { 
+        localforage.setItem('sumoArticleGenerator', appData).catch(function(err) {
+            console.error("Gagal menyimpan data:", err);
+        }); 
+    }
+
+    // ================= 2. UI SYNCING FUNCTIONS =================
+    function syncAllData() {
+        renderProjectsGrid(); renderPromptsList(); renderGeneratorDropdowns(); renderWpAccounts(); renderExportDropdown();
+        loadSettingsUI();
+        const filterSelect = document.getElementById('filter-project'); const currentFilter = filterSelect.value;
+        filterSelect.innerHTML = `<option value="ALL">All Projects</option>` + appData.projects.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
+        if (appData.projects.some(p => p.name === currentFilter)) filterSelect.value = currentFilter;
+    }
+
+    function renderGeneratorDropdowns() {
+        document.getElementById('gen-select-project').innerHTML = appData.projects.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
+        document.getElementById('gen-select-prompt').innerHTML = appData.prompts.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
+    }
+    
+    function renderExportDropdown() {
+        document.getElementById('export-select-project').innerHTML = `<option value="ALL">All Projects (Download Everything)</option>` + 
+            appData.projects.map(p => `<option value="${p.name}">Project: ${p.name}</option>`).join('');
+    }
+
+    function renderProjectsGrid() {
+        document.getElementById('project-list-container').innerHTML = appData.projects.map(p => {
+            const colors = colorMap[p.color] || colorMap.blue;
+            return `
+            <div class="project-card" onclick="openProjectWorkspace('${p.name}')">
+                <div class="card-actions">
+                    <button class="btn-icon" style="width: 24px; height: 24px; font-size: 11px; background: #f1f5f9;" onclick="event.stopPropagation(); openEditProject(${p.id})" title="Edit Project"><i class="fa-solid fa-pen"></i></button>
+                    <button class="btn-icon text-danger" style="width: 24px; height: 24px; font-size: 11px; background: #fef2f2;" onclick="event.stopPropagation(); deleteProject(${p.id})" title="Delete Project"><i class="fa-solid fa-trash-can"></i></button>
+                </div>
+                <div class="project-icon" style="background: ${colors.bg}; color: ${colors.text};"><i class="fa-solid ${p.icon}"></i></div>
+                <h3 style="font-size: 16px; margin-bottom: 8px;">${p.name}</h3>
+                <p class="text-muted">${p.desc}</p>
+            </div>`;
+        }).join('');
+    }
+
+    function renderPromptsList() {
+        document.getElementById('prompt-list-container').innerHTML = appData.prompts.map(p => `
+            <div class="prompt-item" onclick="loadModularPromptToEditor('${p.name}')">
+                <div style="flex: 1;">
+                    <div style="font-weight: 500; margin-bottom: 4px; color: var(--text-main);">${p.name}</div>
+                    <div class="text-muted" style="font-size: 11px;">Modular Template</div>
+                </div>
+                <div class="prompt-actions">
+                    <button class="btn-icon" style="width:28px; height:28px; font-size:12px;" onclick="event.stopPropagation(); downloadPromptText(${p.id})" title="Download as .txt"><i class="fa-solid fa-download"></i></button>
+                    <button class="btn-icon text-danger" style="width:28px; height:28px; font-size:12px;" onclick="event.stopPropagation(); deletePrompt(${p.id})" title="Delete Template"><i class="fa-solid fa-trash-can"></i></button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function renderWpAccounts() {
+        document.getElementById('wp-settings-list').innerHTML = appData.wpAccounts.map((wp, idx) => `
+            <div class="wp-account-item">
+                <div><div style="font-weight: 600; color: var(--text-main); font-size: 13px;">${wp.name}</div><div class="url">${wp.url}</div></div>
+                <button class="btn-icon text-danger" onclick="deleteWpAccount(${idx})" title="Remove"><i class="fa-solid fa-trash-can"></i></button>
+            </div>
+        `).join('');
+        document.getElementById('wp-account').innerHTML = appData.wpAccounts.map(wp => `<option value="${wp.id}">${wp.name} (${wp.url})</option>`).join('');
+    }
+
+    // ================= 3. DATA MANAGER (EXPORT & IMPORT) =================
+    window.toggleExportFormat = function() {
+        const formatEle = document.querySelector('input[name="export_format"]:checked');
+        const xmlOptions = document.getElementById('export-xml-options');
+        if (formatEle && formatEle.value === 'xml_wp') {
+            xmlOptions.style.display = 'block';
+        } else {
+            if(xmlOptions) xmlOptions.style.display = 'none';
+        }
+    };
+
+    window.toggleExportSource = function(source) {
+        document.querySelectorAll('.export-box').forEach(b => b.classList.remove('active'));
+        document.getElementById(`lbl-exp-${source}`).classList.add('active');
+        
+        const filterContainer = document.getElementById('export-filter-container'); 
+        const formatWarning = document.getElementById('format-warning');
+        const csvRadio = document.querySelector('input[name="export_format"][value="csv"]'); 
+        const jsonRadio = document.querySelector('input[name="export_format"][value="json"]');
+        const xmlRadio = document.querySelector('input[name="export_format"][value="xml_wp"]');
+        
+        if(source === 'articles') { 
+            filterContainer.style.display = 'block'; 
+            formatWarning.style.display = 'none'; 
+            csvRadio.disabled = false; 
+            jsonRadio.disabled = false;
+            if(xmlRadio) xmlRadio.disabled = false;
+        } 
+        else if (source === 'prompts') { 
+            filterContainer.style.display = 'none'; 
+            formatWarning.style.display = 'none'; 
+            csvRadio.disabled = false; 
+            jsonRadio.disabled = false;
+            if(xmlRadio) { 
+                xmlRadio.disabled = true; 
+                if(xmlRadio.checked) csvRadio.checked = true; 
+            }
+        } 
+        else if (source === 'backup') { 
+            filterContainer.style.display = 'none'; 
+            formatWarning.style.display = 'block'; 
+            jsonRadio.checked = true; 
+            csvRadio.disabled = true; 
+            if(xmlRadio) xmlRadio.disabled = true;
+        }
+        window.toggleExportFormat();
+    }
+
+    window.executeExport = function() {
+        const source = document.querySelector('input[name="export_source"]:checked').value; 
+        const format = document.querySelector('input[name="export_format"]:checked').value;
+        let dataToExport = null; let filename = `export-${source}-${Date.now()}`;
+        
+        if (source === 'articles') {
+            const projectFilter = document.getElementById('export-select-project').value;
+            dataToExport = projectFilter === "ALL" ? appData.articles : appData.articles.filter(a => a.project === projectFilter);
+            if(projectFilter !== "ALL") filename += `-${projectFilter.replace(/\s+/g, '')}`;
+        } else if (source === 'prompts') { 
+            dataToExport = appData.prompts; 
+        } else if (source === 'backup') { 
+            dataToExport = appData; filename = `article-generator-backup-${Date.now()}`; 
+        }
+
+        if(!dataToExport || (Array.isArray(dataToExport) && dataToExport.length === 0)) return alert("No data found to export!");
+
+        if (format === 'json') { 
+            downloadFile(JSON.stringify(dataToExport, null, 2), `${filename}.json`, 'application/json'); 
+        } 
+        else if (format === 'csv') {
+            const arrayData = Array.isArray(dataToExport) ? dataToExport : [dataToExport];
+            if(arrayData.length === 0) return;
+            const keys = Object.keys(arrayData[0]);
+            const csvContent = [ keys.join(','), ...arrayData.map(row => keys.map(k => {
+                let cell = row[k] === null || row[k] === undefined ? '' : row[k].toString(); cell = cell.replace(/"/g, '""'); if (cell.search(/("|,|\n)/g) >= 0) cell = `"${cell}"`; return cell;
+            }).join(',')) ].join('\n');
+            downloadFile(csvContent, `${filename}.csv`, 'text/csv');
+        }
+        else if (format === 'xml_wp') {
+            // === LOGIKA EXPORT KE WORDPRESS XML (WXR) ===
+            if (source !== 'articles') return alert("XML WordPress format is only available for Articles export!");
+            
+            const exportStatus = document.getElementById('export-xml-status').value;
+            
+            let xmlContent = `<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0" xmlns:excerpt="http://wordpress.org/export/1.2/excerpt/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:wfw="http://wellformedweb.org/CommentAPI/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:wp="http://wordpress.org/export/1.2/">
+<channel>
+    <title>SumoPod Articles Export</title>
+    <link>http://localhost</link>
+    <description>Bulk Exported from SumoPod App</description>
+    <pubDate>${new Date().toUTCString()}</pubDate>
+    <language>en-US</language>
+    <wp:wxr_version>1.2</wp:wxr_version>\n`;
+
+            dataToExport.forEach(art => {
+                let postDate = new Date().toISOString().replace('T', ' ').substring(0, 19);
+                if (art.date && art.date !== '-') {
+                    postDate = `${art.date} 10:00:00`; 
+                }
+                
+                let categories = (art.category || 'Uncategorized').split(',').map(c => c.trim());
+                let catTags = categories.map(c => `<category domain="category" nicename="${generateSlug(c)}"><![CDATA[${c}]]></category>`).join('\n        ');
+
+                xmlContent += `
+    <item>
+        <title><![CDATA[${art.title}]]></title>
+        <link>http://localhost/${art.slug}</link>
+        <pubDate>${new Date(postDate).toUTCString()}</pubDate>
+        <dc:creator><![CDATA[admin]]></dc:creator>
+        ${catTags}
+        <description></description>
+        <content:encoded><![CDATA[${art.body}]]></content:encoded>
+        <excerpt:encoded><![CDATA[]]></excerpt:encoded>
+        <wp:post_date><![CDATA[${postDate}]]></wp:post_date>
+        <wp:comment_status><![CDATA[open]]></wp:comment_status>
+        <wp:ping_status><![CDATA[open]]></wp:ping_status>
+        <wp:post_name><![CDATA[${art.slug}]]></wp:post_name>
+        <wp:status><![CDATA[${exportStatus}]]></wp:status>
+        <wp:post_parent>0</wp:post_parent>
+        <wp:menu_order>0</wp:menu_order>
+        <wp:post_type><![CDATA[post]]></wp:post_type>
+        <wp:is_sticky>0</wp:is_sticky>
+        
+        <wp:postmeta>
+            <wp:meta_key><![CDATA[rank_math_focus_keyword]]></wp:meta_key>
+            <wp:meta_value><![CDATA[${art.keyword ? art.keyword.split(':')[0].trim() : art.title}]]></wp:meta_value>
+        </wp:postmeta>
+        <wp:postmeta>
+            <wp:meta_key><![CDATA[rank_math_description]]></wp:meta_key>
+            <wp:meta_value><![CDATA[${art.meta || ""}]]></wp:meta_value>
+        </wp:postmeta>
+        <wp:postmeta>
+            <wp:meta_key><![CDATA[rank_math_title]]></wp:meta_key>
+            <wp:meta_value><![CDATA[${art.title}]]></wp:meta_value>
+        </wp:postmeta>
+    </item>\n`;
+            });
+
+            xmlContent += `</channel>\n</rss>`;
+            downloadFile(xmlContent, `${filename}-wordpress.xml`, 'application/xml');
+        }
+
+        showToast("Download started!");
+    }
+
+    function downloadFile(content, fileName, contentType) {
+        const a = document.createElement("a"); const file = new Blob([content], {type: contentType});
+        a.href = URL.createObjectURL(file); a.download = fileName; a.click(); URL.revokeObjectURL(a.href);
+    }
+
+    window.importBackupJson = function(event) {
+        const file = event.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = JSON.parse(e.target.result);
+                if(data.projects && data.articles) {
+                    if(confirm("DANGER! \n\nImporting this backup will OVERWRITE and REPLACE your entire current workspace.\n\nAre you sure you want to proceed?")) {
+                        appData = data;
+                        saveData();
+                        syncAllData();
+                        renderArticleTable();
+                        showToast("Workspace Backup Restored Successfully!");
+                    }
+                } else {
+                    alert("Invalid JSON format. Please select a valid backup JSON file generated by this app.");
+                }
+            } catch(err) {
+                alert("Failed to read the JSON file. It might be corrupted.");
+            }
+            event.target.value = '';
+        };
+        reader.readAsText(file);
+    };
+
+    // ================= FUNGSI DOWNLOAD CONFIGURATION (.txt) =================
+    window.downloadConfiguration = function() {
+        const proj = document.getElementById('gen-select-project').value || '-';
+        const prompt = document.getElementById('gen-select-prompt').value || '-';
+        const topic = document.getElementById('gen-input-topic').value || '-';
+        const cat = document.getElementById('gen-input-category').value || '-';
+        const lang = document.getElementById('gen-input-language').value || '-';
+        const aud = document.getElementById('gen-input-audience').value || '-';
+        const style = document.getElementById('gen-input-style').value || '-';
+        const length = document.getElementById('gen-input-length').value || '-';
+
+        let content = `=== SUMOPOD GENERATOR CONFIGURATION ===\r\n`;
+        content += `Date Exported: ${new Date().toLocaleString()}\r\n\r\n`;
+        content += `Project     : ${proj}\r\n`;
+        content += `Prompt      : ${prompt}\r\n`;
+        content += `Topic       : ${topic}\r\n`;
+        content += `WP Category : ${cat}\r\n`;
+        content += `Language    : ${lang}\r\n`;
+        content += `Audience    : ${aud}\r\n`;
+        content += `Style       : ${style}\r\n`;
+        content += `Length      : ${length}\r\n`;
+
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = `Config_${generateSlug(proj)}.txt`;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+        showToast("Configuration downloaded!");
+    };
+
+    // ================= 4. REAL API LOGIC: SETTINGS =================
+    window.updateModelOptions = function() {
+        const provider = document.getElementById('setting-provider').value;
+        const modelSelect = document.getElementById('setting-model');
+        const customUrlBox = document.getElementById('setting-custom-url-box');
+        let options = ""; 
+        if (provider === 'openai') { 
+            options = `<optgroup label="OpenAI"><option value="gpt-4o-mini" selected>GPT-4o Mini</option><option value="gpt-4o">GPT-4o</option></optgroup>`; 
+        } else if (provider === 'gemini') { 
+            options = `<optgroup label="Google Gemini"><option value="gemini-2.5-flash" selected>Gemini 2.5 Flash</option><option value="gemini-2.5-pro">Gemini 2.5 Pro</option></optgroup>`; 
+        } else if (provider === 'sumopod') { 
+            options = `
+                <optgroup label="OpenAI">
+                    <option value="gpt-4o-mini" selected>GPT-4o Mini</option>
+                    <option value="gpt-4o">GPT-4o</option>
+                    <option value="gpt-4.1-nano">GPT-4.1 Nano</option>
+                    <option value="gpt-4.1-mini">GPT-4.1 Mini</option>
+                    <option value="gpt-4.1">GPT-4.1</option>
+                    <option value="gpt-5-nano">GPT-5 Nano</option>
+                    <option value="gpt-5-mini">GPT-5 Mini</option>
+                    <option value="gpt-5">GPT-5</option>
+                    <option value="gpt-5.1">GPT-5.1</option>
+                    <option value="gpt-5.1-codex">GPT-5.1 Codex</option>
+                    <option value="gpt-5.1-codex-mini">GPT-5.1 Codex Mini</option>
+                    <option value="gpt-5.2">GPT-5.2</option>
+                    <option value="gpt-5.2-codex">GPT-5.2 Codex</option>
+                    <option value="text-embedding-3-small">Text Embedding 3 Small</option>
+                    <option value="text-embedding-3-large">Text Embedding 3 Large</option>
+                </optgroup>
+                <optgroup label="Google Gemini">
+                    <option value="gemini/gemini-2.0-flash-lite">Gemini 2.0 Flash Lite</option>
+                    <option value="gemini/gemini-2.0-flash">Gemini 2.0 Flash</option>
+                    <option value="gemini/gemini-2.5-flash-lite">Gemini 2.5 Flash Lite</option>
+                    <option value="gemini/gemini-2.5-flash">Gemini 2.5 Flash</option>
+                    <option value="gemini/gemini-2.5-pro">Gemini 2.5 Pro</option>
+                    <option value="gemini/gemini-3-flash-preview">Gemini 3 Flash Preview</option>
+                    <option value="gemini/gemini-3-pro-preview">Gemini 3 Pro Preview</option>
+                    <option value="gemini/gemini-3.1-flash-lite-preview">Gemini 3.1 Flash Lite Preview</option>
+                    <option value="gemini/gemini-3.1-pro-preview">Gemini 3.1 Pro Preview</option>
+                </optgroup>
+                <optgroup label="Anthropic">
+                    <option value="claude-haiku-4-5">Claude Haiku 4.5</option>
+                    <option value="claude-sonnet-4-6">Claude Sonnet 4.6</option>
+                    <option value="claude-opus-4-6">Claude Opus 4.6</option>
+                </optgroup>
+                <optgroup label="Alibaba (Qwen)">
+                    <option value="qwen3.6-flash">Qwen 3.6 Flash (50% Off)</option>
+                    <option value="qwen3.6-plus">Qwen 3.6 Plus (50% Off)</option>
+                </optgroup>
+                <optgroup label="BytePlus (DeepSeek, GLM, Seed, Kimi)">
+                    <option value="deepseek-v3-2">DeepSeek V3.2 (50% Off)</option>
+                    <option value="glm-4-7">GLM 4.7 (90% Off)</option>
+                    <option value="kimi-k2-5-260127">Kimi K2.5 (90% Off)</option>
+                    <option value="seed-2-0-mini">Seed 2.0 Mini (90% Off)</option>
+                    <option value="seed-2-0-lite">Seed 2.0 Lite (90% Off)</option>
+                    <option value="seed-2-0-pro">Seed 2.0 Pro (90% Off)</option>
+                </optgroup>
+                <optgroup label="Zhipu GLM (Z.ai)">
+                    <option value="glm-5">GLM 5 (90% Off)</option>
+                    <option value="glm-5-turbo">GLM 5 Turbo (90% Off)</option>
+                    <option value="glm-5.1">GLM 5.1 (90% Off)</option>
+                </optgroup>
+                <optgroup label="MiniMax">
+                    <option value="MiniMax-M2.7-highspeed">MiniMax M2.7 (90% Off)</option>
+                    <option value="minimax/speech-2.8-hd">MiniMax Speech 2.8 HD</option>
+                </optgroup>
+                <optgroup label="Mimo">
+                    <option value="mimo-v2-flash">Mimo V2 Flash</option>
+                    <option value="mimo-v2-omni">Mimo V2 Omni (100% Off)</option>
+                    <option value="mimo-v2-pro">Mimo V2 Pro (100% Off)</option>
+                </optgroup>
+                <option value="custom">Custom Model ID</option>
+            `; 
+        }
+        modelSelect.innerHTML = options;
+        toggleCustomBoxes();
+    }
+    
+    window.toggleCustomBoxes = function() {
+        const provider = document.getElementById('setting-provider').value; const modelSelect = document.getElementById('setting-model').value; const customUrlBox = document.getElementById('setting-custom-url-box');
+        if (provider === 'sumopod' && modelSelect === 'custom') { customUrlBox.style.display = 'block'; } else { customUrlBox.style.display = 'none'; }
+    }
+
+    function loadSettingsUI() {
+        if(appData.settings) {
+            document.getElementById('setting-provider').value = appData.settings.provider || 'sumopod'; updateModelOptions();
+            document.getElementById('setting-model').value = appData.settings.model || 'gpt-4o-mini';
+            document.getElementById('setting-api-key').value = appData.settings.apiKey || '';
+            document.getElementById('setting-temp').value = appData.settings.temp || '0.7';
+            document.getElementById('setting-custom-model').value = appData.settings.customModel || ''; 
+            document.getElementById('setting-workers').value = appData.settings.workers || 1;
+            toggleCustomBoxes();
+        }
+    }
+
+    window.saveSettingsUI = function() {
+        appData.settings = { 
+            provider: document.getElementById('setting-provider').value, 
+            model: document.getElementById('setting-model').value, 
+            apiKey: document.getElementById('setting-api-key').value, 
+            temp: parseFloat(document.getElementById('setting-temp').value) || 0.7, 
+            customModel: document.getElementById('setting-custom-model').value,
+            workers: parseInt(document.getElementById('setting-workers').value) || 1 
+        };
+        saveData(); showToast('Global Settings Saved Successfully!');
+    }
+
+    window.addWpAccount = async function() {
+        const url = document.getElementById('new-wp-url').value; const user = document.getElementById('new-wp-user').value; const pass = document.getElementById('new-wp-pass').value;
+        if(!url || !user || !pass) return alert("Please fill all fields to add WP account.");
+        const baseUrl = url.replace(/\/$/, ''); const credentials = btoa(`${user}:${pass}`); 
+        const btn = document.querySelector('button[onclick="addWpAccount()"]'); const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Testing...'; btn.disabled = true;
+
+        try {
+            const response = await fetch(`${baseUrl}/wp-json/wp/v2/users/me`, { method: 'GET', headers: { 'Authorization': `Basic ${credentials}`, 'Content-Type': 'application/json' } });
+            if(response.ok) {
+                appData.wpAccounts.push({ id: Date.now(), name: `WP - ${user.split('@')[0]}`, url: baseUrl, user: user, pass: pass });
+                document.getElementById('new-wp-url').value = ''; document.getElementById('new-wp-user').value = ''; document.getElementById('new-wp-pass').value = '';
+                saveData(); syncAllData(); showToast("Connection Success! WP Account saved.");
+            } else { alert("Connection failed! Ensure Application Password and Username are correct."); }
+        } catch (error) { alert("CORS or Network Error: " + error.message); }
+        btn.innerHTML = originalText; btn.disabled = false;
+    }
+
+    window.deleteWpAccount = function(idx) { if(confirm("Remove this WordPress connection?")) { appData.wpAccounts.splice(idx, 1); saveData(); syncAllData(); showToast("Connection removed."); } }
+
+    // ================= 5. PROJECTS LOGIC =================
+    window.openProjectModal = function() {
+        document.getElementById('project-modal-title').innerText = "New Project";
+        document.getElementById('proj-edit-id').value = ""; document.getElementById('proj-name').value = ""; document.getElementById('proj-desc').value = "";
+        document.getElementById('proj-icon').value = "fa-folder"; document.getElementById('proj-color').value = "blue"; openModal('project-modal');
+    }
+
+    window.openEditProject = function(id) {
+        const proj = appData.projects.find(p => p.id === id); if(!proj) return;
+        document.getElementById('project-modal-title').innerText = "Edit Project";
+        document.getElementById('proj-edit-id').value = proj.id; document.getElementById('proj-name').value = proj.name; document.getElementById('proj-desc').value = proj.desc;
+        document.getElementById('proj-icon').value = proj.icon; document.getElementById('proj-color').value = proj.color; openModal('project-modal');
+    }
+
+    window.saveProject = function() {
+        const id = document.getElementById('proj-edit-id').value; const name = document.getElementById('proj-name').value; const desc = document.getElementById('proj-desc').value;
+        const icon = document.getElementById('proj-icon').value; const color = document.getElementById('proj-color').value;
+        if(name.trim() === "") return alert("Project name is required.");
+
+        if(id) { 
+            const proj = appData.projects.find(p => p.id == id);
+            if(proj) {
+                const oldName = proj.name; proj.name = name; proj.desc = desc; proj.icon = icon; proj.color = color;
+                appData.articles.forEach(a => { if(a.project === oldName) a.project = name; });
+            }
+        } else { appData.projects.push({ id: Date.now(), name: name, desc: desc, icon: icon, color: color }); }
+        
+        saveData(); closeModal('project-modal'); syncAllData(); renderArticleTable(); showToast("Project saved!");
+    }
+
+    window.deleteProject = function(id) {
+        const proj = appData.projects.find(p => p.id === id);
+        if(confirm(`Are you sure you want to delete "${proj.name}"?\nWARNING: This will also delete all articles inside this project.`)) {
+            appData.projects = appData.projects.filter(p => p.id !== id); appData.articles = appData.articles.filter(a => a.project !== proj.name);
+            saveData(); syncAllData(); renderArticleTable(); showToast("Project deleted.");
+        }
+    }
+
+    window.openProjectWorkspace = function(projectName) {
+        document.querySelector('.nav-item[data-target="view-generator"]').click();
+        document.getElementById('filter-project').value = projectName; document.getElementById('gen-select-project').value = projectName;
+        renderArticleTable(); showToast(`Entered Workspace: ${projectName}`);
+    };
+
+    // ================= 6. ROUTING & VIEW LOGIC =================
+    const navItems = document.querySelectorAll('.nav-menu .nav-item, .nav-bottom .nav-item'); const views = document.querySelectorAll('.view-section');
+    navItems.forEach(item => {
+        item.addEventListener('click', () => {
+            navItems.forEach(nav => nav.classList.remove('active')); item.classList.add('active');
+            views.forEach(view => { view.classList.remove('active'); view.style.display = 'none'; });
+            const targetView = document.getElementById(item.getAttribute('data-target'));
+            if (targetView) { targetView.style.display = 'flex'; setTimeout(() => targetView.classList.add('active'), 10); }
+        });
+    });
+
+    function showToast(msg) {
+        const toast = document.getElementById('toast'); toast.innerText = msg; toast.style.display = 'block'; toast.style.animation = 'slideUp 0.3s ease forwards';
+        setTimeout(() => toast.style.display = 'none', 3000);
+    }
+    function openModal(id) { document.getElementById(id).classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+    document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e => { if (e.target === m) m.classList.remove('active'); }));
+
+    // ================= 7. MODULAR PROMPTS LOGIC =================
+    document.getElementById('btn-new-prompt').onclick = () => { 
+        document.getElementById('prompt-title').value = ""; document.getElementById('prompt-persona').value = ""; document.getElementById('prompt-task').value = ""; document.getElementById('prompt-rules').value = ""; 
+        document.querySelectorAll('.prompt-item').forEach(i => i.classList.remove('active')); document.getElementById('prompt-title').focus(); 
+    };
+    
+    document.getElementById('btn-save-prompt').onclick = () => {
+        const title = document.getElementById('prompt-title').value; const persona = document.getElementById('prompt-persona').value; const task = document.getElementById('prompt-task').value; const rules = document.getElementById('prompt-rules').value;
+        if (title.trim() === "") return alert("Template Name cannot be empty."); if (task.trim() === "") return alert("Main Task cannot be empty.");
+        let existing = appData.prompts.find(p => p.name === title);
+        if(existing) { existing.persona = persona; existing.task = task; existing.rules = rules; } else { appData.prompts.push({ id: Date.now(), name: title, persona: persona, task: task, rules: rules }); }
+        saveData(); syncAllData(); showToast("Modular Template saved successfully!");
+    };
+    
+    window.loadModularPromptToEditor = function(name) { 
+        const prompt = appData.prompts.find(p => p.name === name); if(!prompt) return;
+        document.getElementById('prompt-title').value = prompt.name; document.getElementById('prompt-persona').value = prompt.persona || ""; document.getElementById('prompt-task').value = prompt.task || prompt.content || ""; document.getElementById('prompt-rules').value = prompt.rules || ""; 
+        document.querySelectorAll('.prompt-item').forEach(i => i.classList.remove('active'));
+        const activeItem = document.querySelector(`.prompt-item[data-name="${name}"]`); if(activeItem) activeItem.classList.add('active');
+    };
+
+    window.deletePrompt = function(id) {
+        if(confirm("Apakah Anda yakin ingin menghapus Template Prompt ini?")) {
+            appData.prompts = appData.prompts.filter(p => p.id !== id);
+            saveData(); syncAllData(); showToast("Template deleted.");
+            document.getElementById('btn-new-prompt').click();
+        }
+    };
+
+    window.downloadPromptText = function(id) {
+        const p = appData.prompts.find(x => x.id === id);
+        if(!p) return;
+        let content = `=== PROMPT TEMPLATE: ${p.name} ===\r\n\r\n`;
+        content += `1. SYSTEM PERSONA\r\n--------------------\r\n${p.persona}\r\n\r\n`;
+        content += `2. MAIN TASK\r\n--------------------\r\n${p.task}\r\n\r\n`;
+        content += `3. STRICT RULES\r\n--------------------\r\n${p.rules}\r\n`;
+
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = `Template_${generateSlug(p.name)}.txt`;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+    };
+
+    window.downloadArticlePrompt = function() {
+        if(!editId) return;
+        const art = appData.articles.find(a => a.id === editId);
+        if(!art || !art.usedPrompt) return alert("No prompt data found for this article.");
+        const p = appData.prompts.find(x => x.name === art.usedPrompt);
+        if(!p) return alert("The prompt template used for this article no longer exists in your library.");
+
+        let content = `=== PROMPT TEMPLATE: ${p.name} ===\r\n\r\n`;
+        content += `1. SYSTEM PERSONA\r\n--------------------\r\n${p.persona}\r\n\r\n`;
+        content += `2. MAIN TASK\r\n--------------------\r\n${p.task}\r\n\r\n`;
+        content += `3. STRICT RULES\r\n--------------------\r\n${p.rules}\r\n`;
+
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = `Prompt_Used_${generateSlug(p.name)}.txt`;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+    };
+
+    window.importPromptTxt = function(event) {
+        const file = event.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const text = e.target.result;
+            try {
+                let nameMatch = text.match(/Template Name:\s*([^\r\n]+)/) || text.match(/=== PROMPT TEMPLATE:\s*([^\r\n]+)===/);
+                let personaMatch = text.match(/1\. SYSTEM PERSONA[^\n]*\r?\n-+\r?\n([\s\S]*?)2\. MAIN TASK/);
+                let taskMatch = text.match(/2\. MAIN TASK[^\n]*\r?\n-+\r?\n([\s\S]*?)3\. STRICT RULES/);
+                let rulesMatch = text.match(/3\. STRICT RULES[^\n]*\r?\n-+\r?\n([\s\S]*)$/);
+
+                if((nameMatch && taskMatch) || (personaMatch && taskMatch)) {
+                    document.getElementById('prompt-title').value = nameMatch ? nameMatch[1].trim() + " (Imported)" : "Imported Prompt";
+                    document.getElementById('prompt-persona').value = personaMatch ? personaMatch[1].trim() : "";
+                    document.getElementById('prompt-task').value = taskMatch[1].trim();
+                    document.getElementById('prompt-rules').value = rulesMatch ? rulesMatch[1].trim() : "";
+                    showToast("Prompt loaded into editor. Click Save to add it to your library.");
+                } else {
+                    alert("Invalid Prompt format. Harap upload file .txt yang di-generate dari aplikasi ini.");
+                }
+            } catch(err) {
+                alert("Failed to parse .txt file.");
+            }
+            event.target.value = ''; 
+        };
+        reader.readAsText(file);
+    };
+
+    // ================= 8. RENDER TABLE & SORTING LOGIC =================
+    const tableBody = document.getElementById('table-body'); const keywordInput = document.getElementById('keyword-input'); const searchInput = document.getElementById('search-article');
+
+    function getWordCount(htmlString) {
+        if (!htmlString || htmlString.length < 15) return 0;
+        let text = htmlString.replace(/<[^>]+>/g, ' '); 
+        let words = text.trim().match(/\S+/g);
+        return words ? words.length : 0;
+    }
+
+    window.sortTable = function(column) {
+        if(currentSort.col === column) {
+            currentSort.asc = !currentSort.asc;
+        } else {
+            currentSort.col = column;
+            currentSort.asc = true;
+        }
+
+        document.querySelectorAll('.sortable').forEach(th => th.classList.remove('active'));
+        const activeTh = document.querySelector(`th[onclick="sortTable('${column}')"]`);
+        if(activeTh) {
+            activeTh.classList.add('active');
+            const icon = activeTh.querySelector('i');
+            icon.className = currentSort.asc ? 'fa-solid fa-sort-up sort-icon' : 'fa-solid fa-sort-down sort-icon';
+        }
+        renderArticleTable();
+    }
+
+    // FUNGSI FILTER QC BARU DENGAN ICON SAJA
+    window.toggleBadTitles = function() {
+        showOnlyBadTitles = !showOnlyBadTitles;
+        const btn = document.getElementById('btn-filter-bad-titles');
+        if(showOnlyBadTitles) {
+            btn.style.background = '#fef2f2'; btn.style.borderColor = 'var(--danger)';
+            btn.innerHTML = '<i class="fa-solid fa-xmark" style="color: var(--danger);"></i>';
+        } else {
+            btn.style.background = '#fff'; btn.style.borderColor = 'var(--border)';
+            btn.innerHTML = '<i class="fa-solid fa-filter" style="color: var(--danger);"></i>';
+        }
+        renderArticleTable();
+    };
+
+    window.toggleShortArticles = function() {
+        showOnlyShortArticles = !showOnlyShortArticles;
+        const btn = document.getElementById('btn-filter-words');
+        const inputLimit = document.getElementById('input-word-limit');
+        
+        if(showOnlyShortArticles) {
+            btn.style.background = '#fef2f2';
+            btn.innerHTML = '<i class="fa-solid fa-xmark" style="color: var(--danger);"></i>';
+            inputLimit.disabled = true; 
+            inputLimit.style.background = '#f8fafc';
+        } else {
+            btn.style.background = 'transparent';
+            btn.innerHTML = '<i class="fa-solid fa-down-long" style="color: var(--danger);"></i>';
+            inputLimit.disabled = false; 
+            inputLimit.style.background = '#fff';
+        }
+        renderArticleTable();
+    };
+
+    window.toggleErrorArticles = function() {
+        showOnlyErrors = !showOnlyErrors;
+        const btn = document.getElementById('btn-filter-errors');
+        if(showOnlyErrors) {
+            btn.style.background = '#fef08a'; btn.style.borderColor = '#ca8a04';
+            btn.innerHTML = '<i class="fa-solid fa-xmark" style="color: #854d0e;"></i>';
+        } else {
+            btn.style.background = '#fff'; btn.style.borderColor = 'var(--border)';
+            btn.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color: #eab308;"></i>';
+        }
+        renderArticleTable();
+    };
+
+    function renderArticleTable() {
+        const searchTerm = searchInput.value.toLowerCase(); const filterProject = document.getElementById('filter-project').value;
+        let visibleArticles = 0, selectedCount = 0;
+
+        function formatDateToDisplay(isoString) {
+            if(!isoString || isoString === '-') return '-';
+            const parts = isoString.split('-'); return parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : isoString.substring(0, 10); 
+        }
+
+        if(currentSort.col) {
+            appData.articles.sort((a, b) => {
+                let valA, valB;
+                if(currentSort.col === 'words') {
+                    valA = a.wordCount || 0; valB = b.wordCount || 0;
+                } else if(currentSort.col === 'date') {
+                    valA = a.date === '-' ? '0000-00-00' : a.date; valB = b.date === '-' ? '0000-00-00' : b.date;
+                } else {
+                    valA = (a[currentSort.col] || '').toLowerCase(); valB = (b[currentSort.col] || '').toLowerCase();
+                }
+                if (valA < valB) return currentSort.asc ? -1 : 1;
+                if (valA > valB) return currentSort.asc ? 1 : -1;
+                return 0;
+            });
+        }
+
+        let htmlContent = '';
+
+        appData.articles.forEach((art, idx) => {
+            if (filterProject !== "ALL" && art.project !== filterProject) return;
+            if (searchTerm && !art.title.toLowerCase().includes(searchTerm)) return; 
+            
+            // Logika untuk Bad Titles
+            const primaryKey = art.keyword ? art.keyword.split(':')[0].trim().toLowerCase() : '';
+            if (showOnlyBadTitles && art.title.trim().toLowerCase() !== primaryKey) return;
+            
+            // Logika untuk Kata Dinamis
+            if (showOnlyShortArticles) {
+                let words = art.wordCount;
+                if (!words && art.body) words = getWordCount(art.body);
+                const targetLimit = parseInt(document.getElementById('input-word-limit').value) || 1800;
+                if (words >= targetLimit) return; 
+            }
+
+            // Logika untuk Show Errors
+            if (showOnlyErrors) {
+                const statusText = (art.status || '').toLowerCase();
+                const titleText = (art.title || '').toLowerCase();
+                const isError = statusText.includes('error') || statusText.includes('failed') || titleText.includes('error');
+                if (!isError) return; 
+            }
+
+            visibleArticles++; if(art.checked) selectedCount++;
+            
+            if(art.wordCount === undefined) {
+                art.wordCount = getWordCount(art.body);
+            }
+            let wc = art.wordCount;
+            let wcBadge = wc < 100 ? 'background: #fef2f2; color: var(--danger); border: 1px solid #fecaca;' : 'background: #ecfdf5; color: var(--success); border: 1px solid #a7f3d0;';
+
+            htmlContent += `
+                <tr style="background: ${art.checked ? '#f8fafc' : 'transparent'}">
+                    <td style="text-align: center; vertical-align: top; padding-top: 16px;"><input type="checkbox" ${art.checked ? 'checked' : ''} onclick="toggleArticleCheck('${art.id}')"></td>
+                    <td>
+                        <div style="font-weight: 600; font-size: 14px; color: var(--text-main); margin-bottom: 8px;">${art.title}</div>
+                        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                            <span class="badge" style="background:#f1f5f9; color:#475569; border:none; padding: 3px 8px; font-size: 10px;"><i class="fa-regular fa-folder-open" style="margin-right:3px;"></i>${art.project}</span>
+                            <span class="badge" style="background:#f1f5f9; color:#475569; border:none; padding: 3px 8px; font-size: 10px;"><i class="fa-solid fa-tag" style="margin-right:3px;"></i>${art.category || 'Uncategorized'}</span>
+                        </div>
+                    </td>
+                    <td style="text-align: center; vertical-align: top; padding-top: 16px;"><span class="badge" style="${wcBadge}; font-size: 12px; padding: 4px 10px;">${wc} w</span></td>
+                    <td class="text-muted" style="font-size: 12px; vertical-align: top; padding-top: 16px;"><i class="fa-regular fa-calendar" style="margin-right:4px;"></i> ${formatDateToDisplay(art.date)}</td>
+                    <td style="text-align: center; vertical-align: top; padding-top: 16px;"><span class="badge" style="font-size: 11px;">${art.status}</span></td>
+                    <td style="text-align: center; white-space: nowrap; vertical-align: top; padding-top: 12px;">
+                        <button class="btn-icon" style="color: var(--primary);" onclick="regenerateArticle('${art.id}')" title="Regenerate Article"><i class="fa-solid fa-rotate-right"></i></button>
+                        <button class="btn-icon" onclick="openEditArticle('${art.id}')" title="Edit Content"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button class="btn-icon text-danger" onclick="deleteSingleArticle('${art.id}')" title="Delete Article"><i class="fa-regular fa-trash-can"></i></button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        if (visibleArticles === 0) {
+            htmlContent = `<tr><td colspan="6" style="text-align:center; padding: 40px; color: #94a3b8;">${appData.articles.length === 0 ? 'No articles in pipeline.' : 'No articles match the current filter.'}</td></tr>`;
+        }
+        
+        tableBody.innerHTML = htmlContent;
+        document.getElementById('total-article').innerText = `${visibleArticles} Articles`; 
+        document.getElementById('selected-count').innerText = `${selectedCount} Selected`;
+        
+        const masterCb = document.getElementById('master-checkbox'); 
+        if(masterCb) masterCb.checked = (visibleArticles > 0 && selectedCount === visibleArticles);
+    }
+
+    searchInput.addEventListener('input', () => { clearTimeout(searchTimeout); searchTimeout = setTimeout(renderArticleTable, 300); });
+    document.getElementById('filter-project').addEventListener('change', renderArticleTable);
+    
+    window.toggleAllArticles = function(source) {
+        const filterProject = document.getElementById('filter-project').value; const searchTerm = searchInput.value.toLowerCase();
+        appData.articles.forEach((art) => {
+            let isVisible = true; 
+            if (filterProject !== "ALL" && art.project !== filterProject) isVisible = false; 
+            if (searchTerm && !art.title.toLowerCase().includes(searchTerm)) isVisible = false;
+            
+            const primaryKey = art.keyword ? art.keyword.split(':')[0].trim().toLowerCase() : '';
+            if (showOnlyBadTitles && art.title.trim().toLowerCase() !== primaryKey) isVisible = false;
+            
+            if (showOnlyShortArticles) {
+                let words = art.wordCount; if (!words && art.body) words = getWordCount(art.body);
+                const targetLimit = parseInt(document.getElementById('input-word-limit').value) || 1800;
+                if (words >= targetLimit) isVisible = false;
+            }
+
+            if (showOnlyErrors) {
+                const statusText = (art.status || '').toLowerCase(); const titleText = (art.title || '').toLowerCase();
+                const isError = statusText.includes('error') || statusText.includes('failed') || titleText.includes('error');
+                if (!isError) isVisible = false;
+            }
+
+            if(isVisible) art.checked = source.checked;
+        }); renderArticleTable();
+    }
+
+    window.toggleArticleCheck = function(id) { 
+        const art = appData.articles.find(a => a.id === id);
+        if(art) { art.checked = !art.checked; saveData(); renderArticleTable(); }
+    };
+    
+    document.getElementById('btn-delete').onclick = () => { 
+        const initialLen = appData.articles.length; appData.articles = appData.articles.filter(a => !a.checked); 
+        if(appData.articles.length < initialLen) { document.getElementById('master-checkbox').checked = false; saveData(); renderArticleTable(); showToast("Selected articles deleted."); }
+    };
+    
+    window.deleteSingleArticle = function(id) { 
+        const art = appData.articles.find(a => a.id === id);
+        if(!art) return;
+        if(confirm(`Delete article: ${art.title}?`)) { 
+            appData.articles = appData.articles.filter(a => a.id !== id);
+            saveData(); renderArticleTable(); showToast("Article deleted."); 
+        } 
+    };
+
+    window.bulkEditCategory = function() {
+        const selectedArticles = appData.articles.filter(a => a.checked);
+        if (selectedArticles.length === 0) return alert("Pilih minimal 1 artikel (centang kotaknya) untuk diubah kategorinya!");
+        
+        const newCategory = prompt(`Masukkan nama kategori WordPress baru untuk ${selectedArticles.length} artikel terpilih:\n\n(Tips: Bisa multi-kategori, pisahkan dengan koma. Contoh: Tech, Gadget)`);
+        
+        if (newCategory !== null && newCategory.trim() !== "") {
+            selectedArticles.forEach(art => {
+                art.category = newCategory.trim();
+            });
+            
+            saveData();
+            renderArticleTable();
+            showToast(`Kategori untuk ${selectedArticles.length} artikel berhasil diubah!`);
+        }
+    };
+
+    // ================= FUNGSI BULK REGENERATE (MASAL) =================
+    document.getElementById('btn-bulk-regenerate').onclick = async () => {
+        const selectedArticles = appData.articles.filter(a => a.checked);
+        if (selectedArticles.length === 0) return alert("Pilih minimal 1 artikel (centang kotaknya) untuk di-regenerate!");
+        
+        if (isGenerating) return alert("Harap tunggu proses saat ini selesai atau klik Stop terlebih dahulu.");
+        if (!confirm(`Regenerate ${selectedArticles.length} artikel terpilih?\n\n(Ini akan menimpa artikel sebelumnya menggunakan pengaturan di sidebar kiri saat ini)`)) return;
+
+        const btnBulk = document.getElementById('btn-bulk-regenerate');
+        const origHtml = btnBulk.innerHTML;
+        btnBulk.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+        btnBulk.disabled = true;
+
+        const apiKey = appData.settings.apiKey.trim();
+        const provider = appData.settings.provider;
+        const modelStr = appData.settings.model; 
+        const temp = appData.settings.temp;
+        const isSimulation = !apiKey; 
+        const workerCount = parseInt(document.getElementById('setting-workers').value) || 1;
+
+        const selectedProject = document.getElementById('gen-select-project').value;
+        const selectedPromptName = document.getElementById('gen-select-prompt').value; 
+        const selectedCat = document.getElementById('gen-input-category').value.trim() || 'Uncategorized';
+        const valTopic = document.getElementById('gen-input-topic').value.trim() || 'General';
+        const valLanguage = document.getElementById('gen-input-language').value || 'English';
+        const valAudience = document.getElementById('gen-input-audience').value || 'General Audience';
+        const valStyle = document.getElementById('gen-input-style').value || 'Standard';
+        const valLength = document.getElementById('gen-input-length').value || 'Standard Length';
+
+        const promptTemplate = appData.prompts.find(p => p.name === selectedPromptName);
+        if(!promptTemplate && !isSimulation) {
+            btnBulk.innerHTML = origHtml; btnBulk.disabled = false;
+            return alert("Prompt Template is missing!");
+        }
+
+        isGenerating = true;
+        abortController = new AbortController(); 
+        const signal = abortController.signal;
+
+        const btnGen = document.getElementById('btn-generate');
+        btnGen.innerHTML = '<i class="fa-solid fa-stop"></i> Stop Generation';
+        btnGen.classList.remove('btn-dark'); btnGen.classList.add('btn-danger');
+
+        for (let i = 0; i < selectedArticles.length; i += workerCount) {
+            if (!isGenerating) break; 
+            const chunk = selectedArticles.slice(i, i + workerCount);
+            
+            chunk.forEach(art => {
+                art.status = "Regenerating...";
+                art.project = selectedProject;
+                art.category = selectedCat;
+                art.usedPrompt = selectedPromptName;
+            });
+            renderArticleTable();
+
+            const chunkPromises = chunk.map(async (art) => {
+                const cleanTitle = art.keyword ? art.keyword.split(':')[0].trim() : art.title;
+                const replaceVars = (text) => {
+                    if(!text) return "";
+                    return text.replace(/\[KEYWORD\]/gi, art.keyword).replace(/\[TOPIC\]/gi, valTopic).replace(/\[LANGUAGE\]/gi, valLanguage).replace(/\[AUDIENCE\]/gi, valAudience).replace(/\[STYLE\]/gi, valStyle).replace(/\[LENGTH\]/gi, valLength);
+                };
+
+                let finalPersona = replaceVars(promptTemplate ? promptTemplate.persona : "");
+                let finalTask = replaceVars(promptTemplate ? promptTemplate.task : "Write about [KEYWORD]");
+                let finalRules = replaceVars(promptTemplate ? promptTemplate.rules : "");
+                let userMessageContent = `${finalTask}\n\nSTRICT RULES:\n${finalRules}`;
+
+                if (isSimulation) {
+                    await new Promise(r => setTimeout(r, 600));
+                    art.status = "Draft (Sim)";
+                    art.body = `<h2>${cleanTitle}</h2><p><b>[REGENERATED SIMULATION]</b></p><p>Language: ${valLanguage} | Length: ${valLength}</p>`;
+                    art.wordCount = getWordCount(art.body);
+                } else {
+                    if (provider === 'openai' || provider === 'sumopod') {
+                        try {
+                            let apiModel = "gpt-4o-mini";
+                            let apiUrl = ["https://", "api.openai.com", "/v1/chat/completions"].join("");
+                            if (provider === 'openai') {
+                                apiModel = modelStr;
+                            } else if (provider === 'sumopod') {
+                                apiUrl = ["https://", "ai.sumopod.com", "/v1/chat/completions"].join("");
+                                apiModel = modelStr; 
+                                const customModelValue = document.querySelector('#setting-custom-url-box input#setting-custom-model').value.trim();
+                                if(modelStr === 'custom' && customModelValue) apiModel = customModelValue;
+                            }
+
+                            // Anti-Crash untuk Mimo & Claude di OpenAI schema (Token Limit & System Role fix)
+                            let maxT = 8000;
+                            let reqMessages = [ { role: "system", content: finalPersona || "You are a helpful assistant." }, { role: "user", content: userMessageContent } ];
+                            if(apiModel.includes('mimo') || apiModel.includes('claude') || apiModel.includes('qwen')) {
+                                maxT = 4000;
+                                reqMessages = [ { role: "user", content: `SYSTEM INSTRUCTION:\n${finalPersona || "You are a helpful assistant."}\n\nUSER PROMPT:\n${userMessageContent}` } ];
+                            }
+
+                            const response = await fetch(apiUrl, {
+                                method: 'POST', signal: signal, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                                body: JSON.stringify({ model: apiModel, temperature: temp, max_tokens: maxT, messages: reqMessages })
+                            });
+
+                            const rawText = await response.text();
+                            if(!rawText || rawText.trim() === "") throw new Error("Server API membalas kosong.");
+                            let data; try { data = JSON.parse(rawText); } catch(e) { throw new Error("Invalid JSON dari API."); }
+
+                            if(response.ok) {
+                                let aiText = data.choices[0].message.content.trim();
+                                try {
+                                    let cleanJson = aiText;
+                                    if(cleanJson.startsWith('```json')) { cleanJson = cleanJson.substring(7); if(cleanJson.endsWith('```')) cleanJson = cleanJson.substring(0, cleanJson.length - 3); }
+                                    let parsed = JSON.parse(cleanJson.trim());
+                                    if(parsed.title) art.title = parsed.title;
+                                    if(parsed.meta || parsed.meta_description) art.meta = parsed.meta || parsed.meta_description;
+                                    if(parsed.content || parsed.content_html) aiText = parsed.content || parsed.content_html;
+                                } catch(e) {
+                                    let titleMatch = aiText.match(/"title"\s*:\s*"([^"]+)"/i); if(titleMatch) art.title = titleMatch[1];
+                                    let metaMatch = aiText.match(/"meta"\s*:\s*"([^"]+)"/i); if(metaMatch) art.meta = metaMatch[1];
+                                    let contentMatch = aiText.match(/"content"\s*:\s*"([\s\S]*)/i);
+                                    if(contentMatch) { aiText = contentMatch[1].replace(/"}$/g, '').replace(/\\"/g, '"').replace(/\\n/g, '<br>'); } 
+                                    else { aiText = aiText.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>'); if(!aiText.startsWith('<p>') && !aiText.startsWith('<h')) aiText = '<p>' + aiText + '</p>'; aiText = aiText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); }
+                                }
+                                aiText = cleanFinalHTML(aiText);
+                                art.body = aiText; art.wordCount = getWordCount(aiText); art.status = "Draft";
+                            } else {
+                                art.status = "API Error"; art.body = `API Error: ${data.error ? data.error.message : JSON.stringify(data)}`;
+                            }
+                        } catch (err) {
+                            if(err.name === 'AbortError') { art.status = "Stopped"; art.body = "Proses dihentikan."; } 
+                            else { art.status = "Network Error"; art.body = `Failed. Message: ${err.message}`; }
+                        }
+                    } else if (provider === 'gemini') {
+                        try {
+                            let apiModel = modelStr;
+                            let defaultGeminiUrl = ["https://", "generativelanguage.googleapis.com", "/v1beta/models/", apiModel, ":generateContent"].join("");
+                            const finalUrl = defaultGeminiUrl.includes('?') ? `${defaultGeminiUrl}&key=${apiKey}` : `${defaultGeminiUrl}?key=${apiKey}`;
+
+                            let requestBody = { contents: [{ parts: [{ text: userMessageContent }] }], generationConfig: { temperature: temp, maxOutputTokens: 8192 } };
+                            if (finalPersona) requestBody.systemInstruction = { parts: [{ text: finalPersona }] };
+
+                            const response = await fetch(finalUrl, { method: 'POST', signal: signal, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(requestBody) });
+
+                            const rawText = await response.text();
+                            if(!rawText || rawText.trim() === "") throw new Error("Server API membalas kosong.");
+                            let data; try { data = JSON.parse(rawText); } catch(e) { throw new Error("Invalid JSON dari API."); }
+
+                            if(response.ok) {
+                                let aiText = data.candidates[0].content.parts[0].text.trim();
+                                try {
+                                    let cleanJson = aiText;
+                                    if(cleanJson.startsWith('```json')) { cleanJson = cleanJson.substring(7); if(cleanJson.endsWith('```')) cleanJson = cleanJson.substring(0, cleanJson.length - 3); }
+                                    let parsed = JSON.parse(cleanJson.trim());
+                                    if(parsed.title) art.title = parsed.title;
+                                    if(parsed.meta || parsed.meta_description) art.meta = parsed.meta || parsed.meta_description;
+                                    if(parsed.content || parsed.content_html) aiText = parsed.content || parsed.content_html;
+                                } catch(e) {
+                                    let titleMatch = aiText.match(/"title"\s*:\s*"([^"]+)"/i); if(titleMatch) art.title = titleMatch[1];
+                                    let metaMatch = aiText.match(/"meta"\s*:\s*"([^"]+)"/i); if(metaMatch) art.meta = metaMatch[1];
+                                    let contentMatch = aiText.match(/"content"\s*:\s*"([\s\S]*)/i);
+                                    if(contentMatch) { aiText = contentMatch[1].replace(/"}$/g, '').replace(/\\"/g, '"').replace(/\\n/g, '<br>'); } 
+                                    else { aiText = aiText.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>'); if(!aiText.startsWith('<p>') && !aiText.startsWith('<h')) aiText = '<p>' + aiText + '</p>'; aiText = aiText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); }
+                                }
+                                aiText = cleanFinalHTML(aiText);
+                                art.body = aiText; art.wordCount = getWordCount(aiText); art.status = "Draft";
+                            } else {
+                                art.status = "API Error"; art.body = `Gemini Error: ${data.error ? data.error.message : JSON.stringify(data)}`;
+                            }
+                        } catch (err) {
+                            if(err.name === 'AbortError') { art.status = "Stopped"; art.body = "Proses dihentikan."; } 
+                            else { art.status = "Network Error"; art.body = `Failed. Message: ${err.message}`; }
+                        }
+                    }
+                }
+            });
+
+            await Promise.all(chunkPromises);
+            saveData();
+            renderArticleTable();
+            await new Promise(r => setTimeout(r, 100)); // Jeda UI
+        }
+        
+        isGenerating = false;
+        btnBulk.innerHTML = origHtml;
+        btnBulk.disabled = false;
+        btnGen.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Generate Articles';
+        btnGen.classList.remove('btn-danger'); btnGen.classList.add('btn-dark');
+        
+        if(!isSimulation && (!abortController || !abortController.signal.aborted)) showToast(`Bulk Regeneration Completed!`);
+    };
+
+    keywordInput.addEventListener('input', (e) => { document.getElementById('baris-count').innerText = `${e.target.value.split('\n').filter(l => l.trim() !== '').length} Lines`; });
+    document.getElementById('btn-clear').onclick = () => { keywordInput.value = ''; document.getElementById('baris-count').innerText = '0 Lines'; };
+    function generateSlug(text) { return text.toString().toLowerCase().trim().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '').replace(/\-\-+/g, '-'); }
+
+    // ================= 9. REAL API LOGIC: GENERATE MULTI-WORKERS =================
+    document.getElementById('btn-generate').onclick = async () => {
+        const btnGen = document.getElementById('btn-generate');
+        
+        if (isGenerating) {
+            isGenerating = false;
+            if(abortController) abortController.abort(); 
+            btnGen.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Generate Articles';
+            btnGen.classList.remove('btn-danger'); btnGen.classList.add('btn-dark');
+            showToast("Generation stopped by user.");
+            return;
+        }
+
+        const keywords = keywordInput.value.split('\n').filter(l => l.trim() !== '');
+        if(keywords.length === 0) return alert("Please enter keywords first!");
+        
+        const workerCount = parseInt(document.getElementById('setting-workers').value) || 1;
+
+        const apiKey = appData.settings.apiKey.trim();
+        const provider = appData.settings.provider;
+        const modelStr = appData.settings.model; 
+        const temp = appData.settings.temp;
+        const isSimulation = !apiKey; 
+
+        const selectedProject = document.getElementById('gen-select-project').value;
+        const selectedPromptName = document.getElementById('gen-select-prompt').value; 
+        const selectedCat = document.getElementById('gen-input-category').value.trim() || 'Uncategorized';
+        
+        const valTopic = document.getElementById('gen-input-topic').value.trim() || 'General';
+        const valLanguage = document.getElementById('gen-input-language').value || 'English';
+        const valAudience = document.getElementById('gen-input-audience').value || 'General Audience';
+        const valStyle = document.getElementById('gen-input-style').value || 'Standard';
+        const valLength = document.getElementById('gen-input-length').value || 'Standard Length';
+        
+        const promptTemplate = appData.prompts.find(p => p.name === selectedPromptName);
+        if(!promptTemplate && !isSimulation) return alert("Prompt Template is missing!");
+
+        isGenerating = true;
+        abortController = new AbortController(); 
+        const signal = abortController.signal;
+
+        btnGen.innerHTML = '<i class="fa-solid fa-stop"></i> Stop Generation';
+        btnGen.classList.remove('btn-dark'); btnGen.classList.add('btn-danger');
+
+        for (let i = 0; i < keywords.length; i += workerCount) {
+            if (!isGenerating) break; 
+
+            const chunk = keywords.slice(i, i + workerCount);
+            
+            const pendingArticles = chunk.map(kw => {
+                const fullInput = kw.trim();
+                const primaryKeyword = fullInput.split(':')[0].trim(); 
+
+                let newArticle = { 
+                    id: generateId(), checked: false, keyword: fullInput, title: primaryKeyword, slug: generateSlug(primaryKeyword), meta: `Article about ${primaryKeyword}`, 
+                    project: selectedProject, category: selectedCat, usedPrompt: selectedPromptName, 
+                    status: "Generating...", date: "-", body: "Waiting for AI...", wordCount: 0
+                };
+                appData.articles.unshift(newArticle);
+                return newArticle;
+            });
+            renderArticleTable(); 
+
+            const chunkPromises = pendingArticles.map(async (art) => {
+                const replaceVars = (text) => {
+                    if(!text) return "";
+                    return text.replace(/\[KEYWORD\]/gi, art.keyword).replace(/\[TOPIC\]/gi, valTopic).replace(/\[LANGUAGE\]/gi, valLanguage).replace(/\[AUDIENCE\]/gi, valAudience).replace(/\[STYLE\]/gi, valStyle).replace(/\[LENGTH\]/gi, valLength);
+                };
+
+                let finalPersona = replaceVars(promptTemplate ? promptTemplate.persona : "");
+                let finalTask = replaceVars(promptTemplate ? promptTemplate.task : "Write about [KEYWORD]");
+                let finalRules = replaceVars(promptTemplate ? promptTemplate.rules : "");
+                let userMessageContent = `${finalTask}\n\nSTRICT RULES:\n${finalRules}`;
+
+                if (isSimulation) {
+                    await new Promise(r => setTimeout(r, 600 + Math.random() * 500));
+                    art.status = "Draft (Sim)";
+                    art.body = `<h2>${art.title}</h2><p><b>[SIMULATION MODE]</b> No API Key found.</p><p>Language: ${valLanguage} | Length: ${valLength}</p>`;
+                    art.wordCount = getWordCount(art.body);
+                } else {
+                    if (provider === 'openai' || provider === 'sumopod') {
+                        try {
+                            let apiModel = "gpt-4o-mini";
+                            let apiUrl = ["https://", "api.openai.com", "/v1/chat/completions"].join("");
+
+                            if (provider === 'openai') {
+                                apiModel = modelStr;
+                            } else if (provider === 'sumopod') {
+                                apiUrl = ["https://", "ai.sumopod.com", "/v1/chat/completions"].join("");
+                                apiModel = modelStr; 
+                                const customModelValue = document.querySelector('#setting-custom-url-box input#setting-custom-model').value.trim();
+                                if(modelStr === 'custom' && customModelValue) apiModel = customModelValue;
+                            }
+
+                            // Anti-Crash untuk Mimo & Claude di OpenAI schema (Token Limit & System Role fix)
+                            let maxT = 8000;
+                            let reqMessages = [ { role: "system", content: finalPersona || "You are a helpful assistant." }, { role: "user", content: userMessageContent } ];
+                            if(apiModel.includes('mimo') || apiModel.includes('claude') || apiModel.includes('qwen')) {
+                                maxT = 4000;
+                                reqMessages = [ { role: "user", content: `SYSTEM INSTRUCTION:\n${finalPersona || "You are a helpful assistant."}\n\nUSER PROMPT:\n${userMessageContent}` } ];
+                            }
+
+                            const response = await fetch(apiUrl, {
+                                method: 'POST',
+                                signal: signal, 
+                                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                                body: JSON.stringify({
+                                    model: apiModel, temperature: temp, max_tokens: maxT,
+                                    messages: reqMessages
+                                })
+                            });
+
+                            const rawText = await response.text();
+                            if(!rawText || rawText.trim() === "") throw new Error("Server API membalas kosong.");
+                            
+                            let data;
+                            try { data = JSON.parse(rawText); } catch(e) { throw new Error("Invalid JSON dari API."); }
+
+                            if(response.ok) {
+                                let aiText = data.choices[0].message.content.trim();
+                                try {
+                                    let cleanJson = aiText;
+                                    if(cleanJson.startsWith('```json')) { cleanJson = cleanJson.substring(7); if(cleanJson.endsWith('```')) cleanJson = cleanJson.substring(0, cleanJson.length - 3); }
+                                    let parsed = JSON.parse(cleanJson.trim());
+                                    if(parsed.title) art.title = parsed.title;
+                                    if(parsed.meta || parsed.meta_description) art.meta = parsed.meta || parsed.meta_description;
+                                    if(parsed.content || parsed.content_html) aiText = parsed.content || parsed.content_html;
+                                } catch(e) {
+                                    let titleMatch = aiText.match(/"title"\s*:\s*"([^"]+)"/i);
+                                    if(titleMatch) art.title = titleMatch[1];
+                                    let metaMatch = aiText.match(/"meta"\s*:\s*"([^"]+)"/i);
+                                    if(metaMatch) art.meta = metaMatch[1];
+                                    let contentMatch = aiText.match(/"content"\s*:\s*"([\s\S]*)/i);
+                                    if(contentMatch) { aiText = contentMatch[1].replace(/"}$/g, '').replace(/\\"/g, '"').replace(/\\n/g, '<br>'); } 
+                                    else { aiText = aiText.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>'); if(!aiText.startsWith('<p>') && !aiText.startsWith('<h')) aiText = '<p>' + aiText + '</p>'; aiText = aiText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); }
+                                }
+                                aiText = cleanFinalHTML(aiText);
+                                art.body = aiText; art.wordCount = getWordCount(aiText); art.status = "Draft";
+                            } else {
+                                art.status = "API Error"; art.body = `API Error: ${data.error ? data.error.message : JSON.stringify(data)}`;
+                            }
+                        } catch (err) {
+                            if(err.name === 'AbortError') { art.status = "Stopped"; art.body = "Proses dihentikan."; } 
+                            else { art.status = "Network Error"; art.body = `Failed. Message: ${err.message}`; }
+                        }
+
+                    } else if (provider === 'gemini') {
+                        try {
+                            let apiModel = modelStr;
+                            let defaultGeminiUrl = ["https://", "generativelanguage.googleapis.com", "/v1beta/models/", apiModel, ":generateContent"].join("");
+                            const finalUrl = defaultGeminiUrl.includes('?') ? `${defaultGeminiUrl}&key=${apiKey}` : `${defaultGeminiUrl}?key=${apiKey}`;
+
+                            let requestBody = { contents: [{ parts: [{ text: userMessageContent }] }], generationConfig: { temperature: temp, maxOutputTokens: 8192 } };
+                            if (finalPersona) requestBody.systemInstruction = { parts: [{ text: finalPersona }] };
+
+                            const response = await fetch(finalUrl, { method: 'POST', signal: signal, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(requestBody) });
+
+                            const rawText = await response.text();
+                            if(!rawText || rawText.trim() === "") throw new Error("Server API membalas kosong.");
+                            let data; try { data = JSON.parse(rawText); } catch(e) { throw new Error("Invalid JSON dari API."); }
+
+                            if(response.ok) {
+                                let aiText = data.candidates[0].content.parts[0].text.trim();
+                                try {
+                                    let cleanJson = aiText;
+                                    if(cleanJson.startsWith('```json')) { cleanJson = cleanJson.substring(7); if(cleanJson.endsWith('```')) cleanJson = cleanJson.substring(0, cleanJson.length - 3); }
+                                    let parsed = JSON.parse(cleanJson.trim());
+                                    if(parsed.title) art.title = parsed.title;
+                                    if(parsed.meta || parsed.meta_description) art.meta = parsed.meta || parsed.meta_description;
+                                    if(parsed.content || parsed.content_html) aiText = parsed.content || parsed.content_html;
+                                } catch(e) {
+                                    let titleMatch = aiText.match(/"title"\s*:\s*"([^"]+)"/i);
+                                    if(titleMatch) art.title = titleMatch[1];
+                                    let metaMatch = aiText.match(/"meta"\s*:\s*"([^"]+)"/i);
+                                    if(metaMatch) art.meta = metaMatch[1];
+                                    let contentMatch = aiText.match(/"content"\s*:\s*"([\s\S]*)/i);
+                                    if(contentMatch) { aiText = contentMatch[1].replace(/"}$/g, '').replace(/\\"/g, '"').replace(/\\n/g, '<br>'); } 
+                                    else { aiText = aiText.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>'); if(!aiText.startsWith('<p>') && !aiText.startsWith('<h')) aiText = '<p>' + aiText + '</p>'; aiText = aiText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); }
+                                }
+                                aiText = cleanFinalHTML(aiText);
+                                art.body = aiText; art.wordCount = getWordCount(aiText); art.status = "Draft";
+                            } else {
+                                art.status = "API Error"; art.body = `Gemini Error: ${data.error ? data.error.message : JSON.stringify(data)}`;
+                            }
+                        } catch (err) {
+                            if(err.name === 'AbortError') { art.status = "Stopped"; art.body = "Proses dihentikan."; } 
+                            else { art.status = "Network Error"; art.body = `Failed. Message: ${err.message}`; }
+                        }
+                    }
+                }
+            });
+
+            await Promise.all(chunkPromises);
+            saveData();
+            renderArticleTable();
+            await new Promise(r => setTimeout(r, 100)); // Jeda UI
+        }
+        
+        isGenerating = false;
+        btnGen.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Generate Articles';
+        btnGen.classList.remove('btn-danger'); btnGen.classList.add('btn-dark');
+        
+        if(!isSimulation && (!abortController || !abortController.signal.aborted)) showToast(`Generation Completed!`);
+    };
+
+    window.regenerateArticle = async function(id) {
+        const art = appData.articles.find(a => a.id === id);
+        if(!art) return;
+        
+        if (isGenerating) return alert("Harap tunggu proses generate saat ini selesai atau Stop terlebih dahulu.");
+        if(!confirm(`Regenerate artikel untuk keyword: "${art.keyword}"?\n\n(Ini akan menimpa artikel sebelumnya menggunakan pengaturan di sidebar kiri saat ini)`)) return;
+
+        const apiKey = appData.settings.apiKey.trim();
+        const provider = appData.settings.provider;
+        const modelStr = appData.settings.model; 
+        const temp = appData.settings.temp;
+        const isSimulation = !apiKey; 
+
+        const selectedProject = document.getElementById('gen-select-project').value;
+        const selectedPromptName = document.getElementById('gen-select-prompt').value; 
+        const selectedCat = document.getElementById('gen-input-category').value.trim() || 'Uncategorized';
+        const valTopic = document.getElementById('gen-input-topic').value.trim() || 'General';
+        const valLanguage = document.getElementById('gen-input-language').value || 'English';
+        const valAudience = document.getElementById('gen-input-audience').value || 'General Audience';
+        const valStyle = document.getElementById('gen-input-style').value || 'Standard';
+        const valLength = document.getElementById('gen-input-length').value || 'Standard Length';
+        
+        const promptTemplate = appData.prompts.find(p => p.name === selectedPromptName);
+        if(!promptTemplate && !isSimulation) return alert("Prompt Template is missing!");
+
+        art.status = "Regenerating...";
+        renderArticleTable();
+
+        const cleanTitle = art.keyword;
+        const replaceVars = (text) => {
+            if(!text) return "";
+            return text.replace(/\[KEYWORD\]/gi, cleanTitle).replace(/\[TOPIC\]/gi, valTopic).replace(/\[LANGUAGE\]/gi, valLanguage).replace(/\[AUDIENCE\]/gi, valAudience).replace(/\[STYLE\]/gi, valStyle).replace(/\[LENGTH\]/gi, valLength);
+        };
+
+        let finalPersona = replaceVars(promptTemplate ? promptTemplate.persona : "");
+        let finalTask = replaceVars(promptTemplate ? promptTemplate.task : "Write about [KEYWORD]");
+        let finalRules = replaceVars(promptTemplate ? promptTemplate.rules : "");
+        let userMessageContent = `${finalTask}\n\nSTRICT RULES:\n${finalRules}`;
+
+        art.project = selectedProject;
+        art.category = selectedCat;
+        art.usedPrompt = selectedPromptName;
+
+        if (isSimulation) {
+            await new Promise(r => setTimeout(r, 600));
+            art.status = "Draft (Sim)";
+            art.body = `<h2>${cleanTitle.split(':')[0].trim()}</h2><p><b>[REGENERATED SIMULATION]</b></p><p>Language: ${valLanguage} | Length: ${valLength}</p>`;
+            art.wordCount = getWordCount(art.body);
+            saveData(); renderArticleTable();
+            showToast("Article Regenerated!");
+        } else {
+            let localAbort = new AbortController();
+            const signal = localAbort.signal;
+
+            if (provider === 'openai' || provider === 'sumopod') {
+                try {
+                    let apiModel = "gpt-4o-mini";
+                    let apiUrl = ["https://", "api.openai.com", "/v1/chat/completions"].join("");
+
+                    if (provider === 'openai') {
+                        apiModel = modelStr;
+                    } else if (provider === 'sumopod') {
+                        apiUrl = ["https://", "ai.sumopod.com", "/v1/chat/completions"].join("");
+                        apiModel = modelStr; 
+                        const customModelValue = document.querySelector('#setting-custom-url-box input#setting-custom-model').value.trim();
+                        if(modelStr === 'custom' && customModelValue) apiModel = customModelValue;
+                    }
+
+                    // Anti-Crash untuk Mimo & Claude di OpenAI schema (Token Limit & System Role fix)
+                    let maxT = 8000;
+                    let reqMessages = [ { role: "system", content: finalPersona || "You are a helpful assistant." }, { role: "user", content: userMessageContent } ];
+                    if(apiModel.includes('mimo') || apiModel.includes('claude') || apiModel.includes('qwen')) {
+                        maxT = 4000;
+                        reqMessages = [ { role: "user", content: `SYSTEM INSTRUCTION:\n${finalPersona || "You are a helpful assistant."}\n\nUSER PROMPT:\n${userMessageContent}` } ];
+                    }
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST', signal: signal, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                        body: JSON.stringify({ model: apiModel, temperature: temp, max_tokens: maxT, messages: reqMessages })
+                    });
+
+                    const rawText = await response.text();
+                    if(!rawText || rawText.trim() === "") throw new Error("Server API membalas kosong.");
+                    let data; try { data = JSON.parse(rawText); } catch(e) { throw new Error("Invalid JSON dari API."); }
+
+                    if(response.ok) {
+                        let aiText = data.choices[0].message.content.trim();
+                        try {
+                            let cleanJson = aiText;
+                            if(cleanJson.startsWith('```json')) { cleanJson = cleanJson.substring(7); if(cleanJson.endsWith('```')) cleanJson = cleanJson.substring(0, cleanJson.length - 3); }
+                            let parsed = JSON.parse(cleanJson.trim());
+                            if(parsed.title) art.title = parsed.title;
+                            if(parsed.meta || parsed.meta_description) art.meta = parsed.meta || parsed.meta_description;
+                            if(parsed.content || parsed.content_html) aiText = parsed.content || parsed.content_html;
+                        } catch(e) {
+                            let titleMatch = aiText.match(/"title"\s*:\s*"([^"]+)"/i); if(titleMatch) art.title = titleMatch[1];
+                            let metaMatch = aiText.match(/"meta"\s*:\s*"([^"]+)"/i); if(metaMatch) art.meta = metaMatch[1];
+                            let contentMatch = aiText.match(/"content"\s*:\s*"([\s\S]*)/i);
+                            if(contentMatch) { aiText = contentMatch[1].replace(/"}$/g, '').replace(/\\"/g, '"').replace(/\\n/g, '<br>'); } 
+                            else { aiText = aiText.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>'); if(!aiText.startsWith('<p>') && !aiText.startsWith('<h')) aiText = '<p>' + aiText + '</p>'; aiText = aiText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); }
+                        }
+                        aiText = cleanFinalHTML(aiText);
+                        art.body = aiText; art.wordCount = getWordCount(aiText); art.status = "Draft";
+                    } else {
+                        art.status = "API Error"; art.body = `API Error: ${data.error ? data.error.message : JSON.stringify(data)}`;
+                    }
+                } catch (err) {
+                    if(err.name === 'AbortError') { art.status = "Stopped"; art.body = "Proses dihentikan."; } 
+                    else { art.status = "Network Error"; art.body = `Failed. Message: ${err.message}`; }
+                }
+            } else if (provider === 'gemini') {
+                try {
+                    let apiModel = modelStr;
+                    let defaultGeminiUrl = ["https://", "generativelanguage.googleapis.com", "/v1beta/models/", apiModel, ":generateContent"].join("");
+                    const finalUrl = defaultGeminiUrl.includes('?') ? `${defaultGeminiUrl}&key=${apiKey}` : `${defaultGeminiUrl}?key=${apiKey}`;
+
+                    let requestBody = { contents: [{ parts: [{ text: userMessageContent }] }], generationConfig: { temperature: temp, maxOutputTokens: 8192 } };
+                    if (finalPersona) requestBody.systemInstruction = { parts: [{ text: finalPersona }] };
+
+                    const response = await fetch(finalUrl, { method: 'POST', signal: signal, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(requestBody) });
+
+                    const rawText = await response.text();
+                    if(!rawText || rawText.trim() === "") throw new Error("Server API membalas kosong.");
+                    let data; try { data = JSON.parse(rawText); } catch(e) { throw new Error("Invalid JSON dari API."); }
+
+                    if(response.ok) {
+                        let aiText = data.candidates[0].content.parts[0].text.trim();
+                        try {
+                            let cleanJson = aiText;
+                            if(cleanJson.startsWith('```json')) { cleanJson = cleanJson.substring(7); if(cleanJson.endsWith('```')) cleanJson = cleanJson.substring(0, cleanJson.length - 3); }
+                            let parsed = JSON.parse(cleanJson.trim());
+                            if(parsed.title) art.title = parsed.title;
+                            if(parsed.meta || parsed.meta_description) art.meta = parsed.meta || parsed.meta_description;
+                            if(parsed.content || parsed.content_html) aiText = parsed.content || parsed.content_html;
+                        } catch(e) {
+                            let titleMatch = aiText.match(/"title"\s*:\s*"([^"]+)"/i); if(titleMatch) art.title = titleMatch[1];
+                            let metaMatch = aiText.match(/"meta"\s*:\s*"([^"]+)"/i); if(metaMatch) art.meta = metaMatch[1];
+                            let contentMatch = aiText.match(/"content"\s*:\s*"([\s\S]*)/i);
+                            if(contentMatch) { aiText = contentMatch[1].replace(/"}$/g, '').replace(/\\"/g, '"').replace(/\\n/g, '<br>'); } 
+                            else { aiText = aiText.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>'); if(!aiText.startsWith('<p>') && !aiText.startsWith('<h')) aiText = '<p>' + aiText + '</p>'; aiText = aiText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); }
+                        }
+                        aiText = cleanFinalHTML(aiText);
+                        art.body = aiText; art.wordCount = getWordCount(aiText); art.status = "Draft";
+                    } else {
+                        art.status = "API Error"; art.body = `Gemini Error: ${data.error ? data.error.message : JSON.stringify(data)}`;
+                    }
+                } catch (err) {
+                    if(err.name === 'AbortError') { art.status = "Stopped"; art.body = "Proses dihentikan."; } 
+                    else { art.status = "Network Error"; art.body = `Failed. Message: ${err.message}`; }
+                }
+            }
+            saveData(); renderArticleTable(); showToast("Article Regenerated!");
+        }
+    }
+
+    // ================= FUNGSI AUTO-GENERATE TITLE ONLY =================
+    window.generateTitleOnly = async function() {
+        if(!editId) return;
+        const art = appData.articles.find(a => a.id === editId);
+        if(!art) return;
+        
+        const keyword = document.getElementById('edit-keyword').value || (art.keyword ? art.keyword.split(':')[0].trim() : art.title);
+        if(!keyword) return alert("Please ensure the Keyword field is filled!");
+
+        const btn = document.querySelector('button[onclick="generateTitleOnly()"]');
+        const origIcon = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; btn.disabled = true;
+
+        const apiKey = appData.settings.apiKey.trim(); const provider = appData.settings.provider; const modelStr = appData.settings.model; const temp = appData.settings.temp; const isSimulation = !apiKey; 
+
+        if (isSimulation) {
+            await new Promise(r => setTimeout(r, 600));
+            document.getElementById('edit-judul').value = `Amazing Guide to ${keyword}`;
+            document.getElementById('edit-judul').dispatchEvent(new Event('input'));
+            btn.innerHTML = origIcon; btn.disabled = false; return;
+        }
+
+        const promptText = `Write a catchy, high-CTR SEO title for an article about "${keyword}". DO NOT include any year in the title. Respond ONLY with the raw title text. Do not use quotes.`;
+
+        try {
+            let resultTitle = ""; let apiUrl = ""; let apiModel = ""; let requestBody = {}; let headers = { 'Content-Type': 'application/json' };
+
+            if (provider === 'openai' || provider === 'sumopod') {
+                apiModel = "gpt-4o-mini"; apiUrl = "https://api.openai.com/v1/chat/completions"; headers['Authorization'] = `Bearer ${apiKey}`;
+                if (provider === 'sumopod') { apiUrl = "https://ai.sumopod.com/v1/chat/completions"; apiModel = modelStr; const customModelValue = document.getElementById('setting-custom-model').value.trim(); if(modelStr === 'custom' && customModelValue) apiModel = customModelValue; } else { apiModel = modelStr; }
+                
+                // Anti-Crash Mimo/Claude logic for titles
+                let maxT = 100;
+                let reqMessages = [ { role: "user", content: promptText } ];
+                requestBody = { model: apiModel, temperature: temp, max_tokens: maxT, messages: reqMessages };
+                
+            } else if (provider === 'gemini') {
+                apiModel = modelStr; apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${apiModel}:generateContent`; apiUrl = apiUrl.includes('?') ? `${apiUrl}&key=${apiKey}` : `${apiUrl}?key=${apiKey}`;
+                requestBody = { contents: [{ parts: [{ text: promptText }] }], generationConfig: { temperature: temp } };
+            }
+
+            const response = await fetch(apiUrl, { method: 'POST', headers: headers, body: JSON.stringify(requestBody) });
+            const rawText = await response.text();
+            if(!rawText || rawText.trim() === "") throw new Error(`Server API membalas kosong.`);
+            let data; try { data = JSON.parse(rawText); } catch(e) { throw new Error(`Format balasan salah.`); }
+            if(!response.ok) { throw new Error("API Error"); }
+
+            if (provider === 'openai' || provider === 'sumopod') { resultTitle = data.choices[0].message.content.trim(); } else if (provider === 'gemini') { resultTitle = data.candidates[0].content.parts[0].text.trim(); }
+
+            if(resultTitle) {
+                resultTitle = resultTitle.replace(/^"|"$/g, '').replace(/^\*\*|\*\*$/g, '');
+                document.getElementById('edit-judul').value = resultTitle;
+                document.getElementById('edit-judul').dispatchEvent(new Event('input'));
+                showToast("Title generated successfully!");
+            }
+        } catch(err) { alert("Failed to generate title:\n" + err.message); }
+        btn.innerHTML = origIcon; btn.disabled = false;
+    }
+
+    // ================= 10. ADVANCED EDITOR LOGIC =================
+    const tabVisual = document.getElementById('tab-visual'); const tabCode = document.getElementById('tab-code');
+    const editorVisual = document.getElementById('edit-body-visual'); const editorCode = document.getElementById('edit-body-code'); const editorToolbar = document.getElementById('editor-toolbar');
+
+    tabVisual.onclick = () => { tabVisual.classList.add('active'); tabCode.classList.remove('active'); editorCode.style.display = 'none'; editorVisual.style.display = 'block'; editorToolbar.style.display = 'flex'; editorVisual.innerHTML = editorCode.value; };
+    tabCode.onclick = () => { tabCode.classList.add('active'); tabVisual.classList.remove('active'); editorVisual.style.display = 'none'; editorCode.style.display = 'block'; editorToolbar.style.display = 'none'; editorCode.value = editorVisual.innerHTML; };
+
+    document.getElementById('edit-keyword').addEventListener('input', function() { 
+        if(!document.getElementById('edit-slug').dataset.manualEdit) {
+            document.getElementById('edit-slug').value = generateSlug(this.value.split(':')[0]); 
+        }
+    });
+    document.getElementById('edit-slug').addEventListener('input', function() { this.dataset.manualEdit = "true"; });
+    document.getElementById('edit-judul').addEventListener('input', function() {
+        if(!document.getElementById('edit-slug').dataset.manualEdit) {
+            document.getElementById('edit-slug').value = generateSlug(this.value); 
+        }
+    });
+
+    window.openEditArticle = function(id) {
+        editId = id; const art = appData.articles.find(a => a.id === id);
+        if(!art) return;
+        document.getElementById('edit-judul').value = art.title; 
+        document.getElementById('edit-keyword').value = art.keyword ? art.keyword.split(':')[0].trim() : ''; 
+        document.getElementById('edit-slug').value = art.slug || generateSlug(art.title);
+        document.getElementById('edit-kategori').value = art.category || ''; document.getElementById('edit-meta').value = art.meta || ''; document.getElementById('edit-used-prompt').innerText = art.usedPrompt || 'Default Template';
+        if(art.date && art.date !== '-') document.getElementById('edit-tanggal').value = art.date; else document.getElementById('edit-tanggal').value = '';
+        tabVisual.click(); document.getElementById('edit-body-visual').innerHTML = art.body; document.getElementById('edit-body-code').value = art.body; 
+        document.getElementById('edit-slug').dataset.manualEdit = "";
+        openModal('edit-modal');
+    };
+
+    window.regenerateFromModal = function() {
+        if(!editId) return;
+        closeModal('edit-modal');
+        regenerateArticle(editId);
+    };
+
+    document.getElementById('btn-save-edit').onclick = () => {
+        if(editId) {
+            const art = appData.articles.find(a => a.id === editId);
+            if(art) {
+                art.title = document.getElementById('edit-judul').value; 
+                art.keyword = document.getElementById('edit-keyword').value; 
+                art.slug = document.getElementById('edit-slug').value;
+                art.category = document.getElementById('edit-kategori').value || 'Uncategorized'; art.meta = document.getElementById('edit-meta').value;
+                const inputDate = document.getElementById('edit-tanggal').value; art.date = inputDate ? inputDate : '-';
+                
+                if(tabVisual.classList.contains('active')) art.body = document.getElementById('edit-body-visual').innerHTML; else art.body = document.getElementById('edit-body-code').value;
+                art.wordCount = getWordCount(art.body);
+                
+                saveData(); renderArticleTable(); closeModal('edit-modal'); showToast("Article updated.");
+            }
+        }
+    };
+
+    // ================= 11. REAL API LOGIC: POST TO WORDPRESS =================
+    document.getElementById('wp-status').addEventListener('change', function() { document.getElementById('schedule-config').style.display = this.value === 'schedule' ? 'flex' : 'none'; });
+
+    document.getElementById('btn-post-wp').onclick = () => {
+        const selected = appData.articles.filter(a => a.checked);
+        if(selected.length === 0) return alert("Select at least 1 article to post.");
+        openModal('wp-modal');
+    };
+
+    async function resolveCategory(catNameString, targetUrl, creds) {
+        if(!catNameString || catNameString.trim() === '') return [];
+        let names = catNameString.split(',').map(s => s.trim()).filter(s => s);
+        let ids = [];
+        for (let name of names) {
+            try {
+                let res = await fetch(`${targetUrl}/wp-json/wp/v2/categories?search=${encodeURIComponent(name)}`, {
+                    headers: { 'Authorization': `Basic ${creds}` }
+                });
+                let data = await res.json();
+                let match = data.find(c => c.name.toLowerCase() === name.toLowerCase());
+                if(match) {
+                    ids.push(match.id);
+                } else {
+                    let createRes = await fetch(`${targetUrl}/wp-json/wp/v2/categories`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Basic ${creds}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name: name })
+                    });
+                    let createData = await createRes.json();
+                    if(createData.id) ids.push(createData.id);
+                }
+            } catch(e) { console.error("Category Sync Error", e); }
+        }
+        return ids;
+    }
+    
+    document.getElementById('btn-submit-wp').onclick = async () => {
+        const selectedArticles = appData.articles.filter(a => a.checked);
+        const accountId = document.getElementById('wp-account').value;
+        const targetWp = appData.wpAccounts.find(w => w.id == accountId);
+        
+        if(!targetWp) return alert("WP Account not found.");
+
+        const statusOpt = document.getElementById('wp-status').value;
+        const credentials = btoa(`${targetWp.user}:${targetWp.pass}`);
+        const postsPerDay = parseInt(document.getElementById('wp-post-per-day').value) || 1;
+        let currentDate = document.getElementById('wp-start-date').value ? new Date(document.getElementById('wp-start-date').value) : new Date();
+        let postCounter = 0;
+
+        const btnSubmit = document.getElementById('btn-submit-wp');
+        btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Posting...';
+        btnSubmit.disabled = true;
+
+        closeModal('wp-modal'); 
+        showToast(`Mulai memposting ke ${targetWp.url}...`);
+
+        for (let i = 0; i < appData.articles.length; i++) {
+            let art = appData.articles[i];
+            if(art.checked) {
+                art.status = "Syncing Kategori...";
+                renderArticleTable();
+
+                let catIds = await resolveCategory(art.category, targetWp.url, credentials);
+
+                let postDateISO = null;
+                let displayDate = "-";
+                
+                if (statusOpt === 'schedule') {
+                    const yyyy = currentDate.getFullYear();
+                    const mm = String(currentDate.getMonth() + 1).padStart(2, '0');
+                    const dd = String(currentDate.getDate()).padStart(2, '0');
+                    displayDate = `${yyyy}-${mm}-${dd}`;
+                    postDateISO = currentDate.toISOString().split('.')[0]; 
+
+                    postCounter++;
+                    if (postCounter >= postsPerDay) {
+                        postCounter = 0;
+                        currentDate.setDate(currentDate.getDate() + 1);
+                    }
+                } else if (statusOpt === 'publish') {
+                    const d = new Date();
+                    displayDate = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+                }
+
+                let payload = {
+                    title: art.title,
+                    content: art.body,
+                    slug: art.slug,
+                    status: statusOpt === 'schedule' ? 'future' : statusOpt,
+                    meta: {
+                        rank_math_focus_keyword: art.keyword ? art.keyword.split(':')[0].trim() : art.title,
+                        rank_math_description: art.meta || "",
+                        rank_math_title: art.title
+                    }
+                };
+                if (catIds.length > 0) payload.categories = catIds;
+                if (postDateISO) payload.date = postDateISO;
+
+                art.status = "Mengirim...";
+                renderArticleTable();
+
+                try {
+                    const response = await fetch(`${targetWp.url}/wp-json/wp/v2/posts`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Basic ${credentials}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if(response.ok) {
+                        art.status = statusOpt === 'publish' ? 'Published' : (statusOpt === 'draft' ? 'Draft (WP)' : 'Scheduled');
+                        art.date = displayDate;
+                        art.checked = false;
+                    } else {
+                        const errData = await response.json();
+                        art.status = "WP Error";
+                        console.error(errData);
+                    }
+                } catch(e) {
+                    art.status = "Network Error";
+                    console.error(e);
+                }
+                saveData(); 
+                renderArticleTable();
+                
+                await new Promise(r => setTimeout(r, 50));
+            }
+        }
+
+        btnSubmit.innerHTML = 'Submit Post';
+        btnSubmit.disabled = false;
+        showToast("Proses posting selesai!");
+    };
+
+    // ================= 12. DANGER ZONE (RESET & CLEAR CACHE) =================
+    window.clearAllArticles = function() {
+        if(appData.articles.length === 0) return alert("Tabel artikel sudah kosong!");
+        
+        if(confirm("⚠ PERINGATAN!\n\nApakah Anda yakin ingin menghapus SELURUH artikel di memori?\nPastikan Anda sudah mem-backup atau mempostingnya ke WordPress.\n\nKlik OK untuk menghapus semuanya.")) {
+            appData.articles = [];
+            saveData();
+            renderArticleTable();
+            showToast("Semua artikel berhasil dibersihkan dari memori!");
+        }
+    };
+
+    window.factoryReset = function() {
+        if(confirm("☠ FACTORY RESET ☠\n\nTindakan ini akan MENGHAPUS SEMUA DATA secara permanen, termasuk:\n- Semua Artikel\n- Semua Prompt Template\n- API Keys & Global Settings\n- Akun WordPress\n\nApakah Anda benar-benar yakin ingin mengembalikan aplikasi ke pengaturan pabrik?")) {
+            
+            // Konfirmasi kedua untuk mencegah salah klik
+            if(prompt("Ketik 'RESET' (tanpa tanda kutip) untuk mengonfirmasi penghapusan permanen:") === "RESET") {
+                localforage.removeItem('sumoArticleGenerator').then(function() {
+                    alert("Data berhasil dihapus total. Aplikasi akan dimuat ulang.");
+                    window.location.reload();
+                }).catch(function(err) {
+                    alert("Terjadi kesalahan saat menghapus data: " + err);
+                });
+            } else {
+                alert("Factory reset dibatalkan.");
+            }
+        }
+    };
+
+</script>
+</body>
+</html>
