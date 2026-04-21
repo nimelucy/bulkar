@@ -239,17 +239,17 @@
             </div>
 
             <div class="card mb-3" style="flex: 1; min-height: 0; display: flex; flex-direction: column;">
-    <div class="card-header" style="padding: 12px 16px; font-size: 13px;">
-        <span style="display:flex; align-items:center; gap:8px;"><i class="fa-regular fa-pen-to-square text-muted"></i> Keyword Input <span class="text-muted" style="font-weight:normal">[KEYWORD]</span></span>
-    </div>
-    <div class="card-body" style="padding: 12px 16px; flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden;">
-        <textarea id="keyword-input" class="keyword-box" placeholder="Enter keywords (1 per line)..." style="flex: 1; margin-bottom: 8px; min-height: 0; overflow-y: auto;"></textarea>
-        <div class="flex-between text-muted" style="align-items: center; flex-shrink: 0;">
-            <span id="baris-count" style="font-weight: 500;">0 Lines</span>
-            <button class="btn-clear-text" id="btn-clear" style="margin: 0; padding: 4px 10px;">Clear</button>
-        </div>
-    </div>
-</div>
+                <div class="card-header" style="padding: 12px 16px; font-size: 13px;">
+                    <span style="display:flex; align-items:center; gap:8px;"><i class="fa-regular fa-pen-to-square text-muted"></i> Keyword Input <span class="text-muted" style="font-weight:normal">[KEYWORD]</span></span>
+                </div>
+                <div class="card-body" style="padding: 12px 16px; flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden;">
+                    <textarea id="keyword-input" class="keyword-box" placeholder="Enter keywords (1 per line)..." style="flex: 1; margin-bottom: 8px; min-height: 0; overflow-y: auto;"></textarea>
+                    <div class="flex-between text-muted" style="align-items: center; flex-shrink: 0;">
+                        <span id="baris-count" style="font-weight: 500;">0 Lines</span>
+                        <button class="btn-clear-text" id="btn-clear" style="margin: 0; padding: 4px 10px;">Clear</button>
+                    </div>
+                </div>
+            </div>
             
             <button class="btn btn-dark" id="btn-generate" style="padding: 14px; font-size: 14px; flex-shrink: 0;"><i class="fa-solid fa-wand-magic-sparkles"></i> Generate Articles</button>
         </aside>
@@ -289,9 +289,7 @@
                     <div class="flex-gap" style="font-size: 13px; font-weight: 500;"><span id="selected-count" class="text-muted" style="background: var(--bg); padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border);">0 Selected</span></div>
                     <div class="flex-gap">
                         <button class="btn btn-outline" id="btn-bulk-regenerate" style="padding: 8px 14px; font-size: 13px; color: var(--primary); border-color: var(--border);"><i class="fa-solid fa-rotate-right"></i> Regenerate</button>
-                        
                         <button class="btn btn-outline" style="padding: 8px 14px; font-size: 13px;" onclick="bulkEditCategory()"><i class="fa-solid fa-tags"></i> Edit Kategori</button>
-
                         <button class="btn btn-primary" id="btn-post-wp" style="padding: 8px 14px; font-size: 13px;"><i class="fa-brands fa-wordpress"></i> Post to WP</button>
                         <button class="btn btn-outline-danger" id="btn-delete" style="padding: 8px 14px; font-size: 13px;"><i class="fa-regular fa-trash-can"></i> Delete</button>
                     </div>
@@ -327,7 +325,6 @@
                     <div style="display: flex; gap: 4px;">
                         <button class="btn-icon" onclick="document.getElementById('file-import-prompt').click()" title="Import Prompt (.txt)" style="background: var(--bg);"><i class="fa-solid fa-file-import"></i></button>
                         <input type="file" id="file-import-prompt" accept=".txt" style="display:none" onchange="importPromptTxt(event)">
-                        
                         <button class="btn-icon" id="btn-new-prompt" title="Create New Prompt" style="color: var(--primary); background: #eff6ff;"><i class="fa-solid fa-plus"></i></button>
                     </div>
                 </div>
@@ -347,7 +344,7 @@
                     <div style="flex: 1; display: flex; flex-direction: column;">
                         <label class="text-main font-weight-600" style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;"><i class="fa-solid fa-list-check text-primary"></i> 2. Main Task & Structure</label>
                         <p class="text-muted" style="margin-bottom: 8px; font-size: 12px;">What should the AI write? (Tip: Ask AI to return JSON format to auto-fill Title and Meta!)</p>
-                        <textarea id="prompt-task" style="flex: 1; min-height: 150px; resize: vertical; font-family: monospace; font-size: 13px; line-height: 1.5;" placeholder="e.g., Write a [LENGTH] article about [TOPIC], specifically focusing on [KEYWORD]. Write in a [STYLE] tone tailored for [AUDIENCE] in [LANGUAGE]."></textarea>
+                        <textarea id="prompt-task" style="flex: 1; min-height: 150px; resize: vertical; font-family: monospace; font-size: 13px; line-height: 1.5;" placeholder="e.g., Write a [LANGUAGE] article about [KEYWORD]."></textarea>
                     </div>
 
                     <div>
@@ -367,7 +364,6 @@
 
     <div id="view-export" class="view-section view-single-col">
         <h1 class="page-title">Data Manager</h1>
-        
         <div style="display: flex; gap: 24px; flex-wrap: wrap;">
             <div class="card" style="flex: 1; min-width: 400px; margin-bottom: 24px;">
                 <div class="card-header" style="background: #f8fafc;"><span style="color: var(--text-main); font-size: 14px;"><i class="fa-solid fa-cloud-arrow-down text-muted" style="margin-right:8px;"></i> Export Data</span></div>
@@ -396,7 +392,6 @@
                         <div class="responsive-flex-16" style="align-items: center;">
                             <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 500;"><input type="radio" name="export_format" value="csv" checked onchange="toggleExportFormat()"> CSV (Excel)</label>
                             <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 500;"><input type="radio" name="export_format" value="json" onchange="toggleExportFormat()"> JSON</label>
-                            
                             <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 500; color: var(--primary);"><input type="radio" name="export_format" value="xml_wp" onchange="toggleExportFormat()"> XML (WP WXR)</label>
                         </div>
                         <div id="format-warning" class="text-muted" style="font-size: 11px; margin-top: 8px; display: none; color: var(--danger);">*Full Backup is only available in JSON format.</div>
@@ -423,10 +418,8 @@
                         <h3 style="margin-bottom: 8px; color: var(--text-main);">Restore Your Workspace</h3>
                         <p class="text-muted" style="line-height: 1.5; max-width: 300px;">Upload a <b>.json</b> backup file generated by this app to restore all your Projects, Articles, Prompts, and Settings instantly.</p>
                     </div>
-                    
                     <input type="file" id="file-import-backup" accept=".json" style="display:none" onchange="importBackupJson(event)">
                     <button class="btn btn-primary" style="padding: 14px 24px; font-size: 14px;" onclick="document.getElementById('file-import-backup').click()"><i class="fa-solid fa-upload"></i> Upload Backup File</button>
-                    
                     <div style="font-size: 11px; color: var(--danger); font-weight: 600; padding: 10px; background: #fef2f2; border-radius: 6px; width: 100%;">Warning: This will overwrite your current workspace!</div>
                 </div>
             </div>
@@ -436,12 +429,7 @@
     <div id="view-settings" class="view-section view-single-col">
         <h1 class="page-title">Global Settings</h1>
         
-        <div style="max-width: 900px; margin-bottom: 20px; padding: 12px 16px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; color: #b45309; font-size: 13px; line-height: 1.5;">
-            <i class="fa-solid fa-triangle-exclamation" style="margin-right: 6px;"></i> <b>Penting:</b> Untuk menghubungkan aplikasi HTML lokal ini dengan WordPress Anda secara aman, pastikan Anda telah memasang kode <i>CORS (Cross-Origin Resource Sharing)</i> dan <i>Basic Auth</i> di file <code>functions.php</code> tema WordPress Anda.
-        </div>
-
         <div style="display: flex; flex-direction: column; gap: 24px; max-width: 900px; width: 100%; margin-bottom: 40px;">
-            
             <div class="card">
                 <div class="card-header" style="background: #f8fafc;"><span style="color: var(--text-main); font-size: 14px;"><i class="fa-solid fa-plug text-muted" style="margin-right:8px;"></i> API & Model Connection</span></div>
                 <div class="card-body" style="gap: 16px;">
@@ -459,7 +447,6 @@
                             <select id="setting-model" style="cursor: pointer;" onchange="toggleCustomBoxes()"></select>
                         </div>
                     </div>
-                    
                     <div class="responsive-flex-16">
                         <div style="flex: 2;">
                             <label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">API Key</label>
@@ -474,7 +461,6 @@
                             <input type="number" id="setting-workers" min="1" max="10" value="1" title="How many articles to generate concurrently">
                         </div>
                     </div>
-
                     <div id="setting-custom-url-box" style="display: none; margin-top: 16px;">
                         <hr style="border: none; border-top: 1px dashed var(--border); margin-bottom: 16px;">
                         <div class="responsive-flex-16">
@@ -511,25 +497,15 @@
                 </div>
             </div>
             
-            <div class="card" style="border-color: var(--danger);">
-                <div class="card-header" style="background: #fef2f2; color: var(--danger);">
-                    <span style="font-size: 14px;"><i class="fa-solid fa-triangle-exclamation" style="margin-right:8px;"></i> Danger Zone (Data Cleanup)</span>
-                </div>
-                <div class="card-body" style="gap: 16px;">
-                    <div style="display: flex; gap: 16px; align-items: center; justify-content: space-between; padding-bottom: 16px; border-bottom: 1px dashed var(--border); flex-wrap: wrap;">
-                        <div>
-                            <div style="font-weight: 600; color: var(--text-main); margin-bottom: 4px;">Clear All Articles</div>
-                            <div class="text-muted" style="font-size: 12px;">Hapus seluruh artikel di tabel. Pengaturan API, Prompt, dan WP akan tetap aman.</div>
-                        </div>
-                        <button class="btn btn-outline-danger" onclick="clearAllArticles()"><i class="fa-solid fa-broom"></i> Clear Articles</button>
+            <div class="card" style="border-color: #fca5a5;">
+                <div class="card-body" style="flex-direction: row; justify-content: space-between; align-items: center; padding: 16px; flex-wrap: wrap; gap: 12px;">
+                    <div>
+                        <div style="font-weight: 600; color: var(--danger); margin-bottom: 4px;"><i class="fa-solid fa-triangle-exclamation" style="margin-right:4px;"></i> Danger Zone</div>
+                        <div class="text-muted" style="font-size: 12px;">Bersihkan tabel artikel atau reset aplikasi ke pengaturan awal pabrik.</div>
                     </div>
-                    
-                    <div style="display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-                        <div>
-                            <div style="font-weight: 600; color: var(--danger); margin-bottom: 4px;">Factory Reset</div>
-                            <div class="text-muted" style="font-size: 12px;">Hapus <b>SEMUA</b> data (Artikel, Prompt, API Key, WP). Aplikasi kembali seperti baru.</div>
-                        </div>
-                        <button class="btn btn-danger" onclick="factoryReset()"><i class="fa-solid fa-skull-crossbones"></i> Factory Reset</button>
+                    <div style="display: flex; gap: 12px;">
+                        <button class="btn btn-outline-danger" style="padding: 8px 16px; font-size: 13px;" onclick="clearAllArticles()"><i class="fa-solid fa-broom"></i> Clear Articles</button>
+                        <button class="btn btn-danger" style="padding: 8px 16px; font-size: 13px;" onclick="factoryReset()"><i class="fa-solid fa-skull-crossbones"></i> Factory Reset</button>
                     </div>
                 </div>
             </div>
@@ -537,10 +513,8 @@
             <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
                 <button class="btn btn-primary" onclick="saveSettingsUI()"><i class="fa-solid fa-floppy-disk"></i> Save All Settings</button>
             </div>
-
         </div>
     </div>
-
 </div>
 
 <div class="modal" id="project-modal">
@@ -607,7 +581,6 @@
             </div>
             <div class="responsive-flex-16">
                 <div style="flex: 1;"><label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Publish Date</label><input type="date" id="edit-tanggal" style="cursor: pointer;"></div>
-                
                 <div style="flex: 1;">
                     <label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Prompt Used</label>
                     <div style="display: flex; gap: 6px;">
@@ -686,7 +659,7 @@
     
     function generateId() { return Date.now().toString(36) + Math.random().toString(36).substring(2); }
 
-        let defaultAppData = {
+    let defaultAppData = {
         projects: [
             { id: 1, name: "Main Workspace", desc: "", icon: "fa-laptop-code", color: "blue" }
         ],
@@ -698,7 +671,6 @@
 
     let appData = defaultAppData;
 
-    // Konfigurasi Database LocalForage
     localforage.config({
         name: 'SumoPodApp',
         storeName: 'workspace_data',
@@ -710,7 +682,6 @@
     let isGenerating = false;
     let abortController = null;
     
-    // VARIABEL FILTER QUALITY CONTROL (QC)
     let searchTimeout = null; 
     let showOnlyBadTitles = false; 
     let showOnlyShortArticles = false;
@@ -721,28 +692,20 @@
         pink: { bg: "#fdf2f8", text: "#db2777" }, purple: { bg: "#faf5ff", text: "#8b5cf6" }, orange: { bg: "#fff7ed", text: "#f59e0b" }
     };
 
-    // FITUR PEMBERSIH ARTIFAK JSON
     function cleanFinalHTML(htmlStr) {
         if(!htmlStr) return "";
-        let cleaned = htmlStr.replace(/\\*"\s*}\s*$/, ''); // Hapus trailing "} atau \"}
-        cleaned = cleaned.replace(/\\*"\s*$/, ''); // Hapus trailing quote " atau \"
+        let cleaned = htmlStr.replace(/\\*"\s*}\s*$/, ''); 
+        cleaned = cleaned.replace(/\\*"\s*$/, ''); 
         return cleaned.trim();
     }
 
-    // Tarik data dari IndexedDB saat aplikasi dibuka
     localforage.getItem('sumoArticleGenerator').then(function(value) {
-        if (value) {
-            appData = value;
-        }
-        
+        if (value) appData = value;
         if(!appData.settings) appData.settings = defaultAppData.settings; 
         if(!appData.settings.workers) appData.settings.workers = 1;
 
         appData.articles.forEach(art => { if(!art.id) art.id = generateId(); });
-
-        // Jalankan UI setelah data berhasil ditarik
-        syncAllData(); 
-        renderArticleTable();
+        syncAllData(); renderArticleTable();
     }).catch(function(err) {
         console.error("Gagal menarik data dari IndexedDB:", err);
         syncAllData(); renderArticleTable();
@@ -836,28 +799,17 @@
         const xmlRadio = document.querySelector('input[name="export_format"][value="xml_wp"]');
         
         if(source === 'articles') { 
-            filterContainer.style.display = 'block'; 
-            formatWarning.style.display = 'none'; 
-            csvRadio.disabled = false; 
-            jsonRadio.disabled = false;
-            if(xmlRadio) xmlRadio.disabled = false;
+            filterContainer.style.display = 'block'; formatWarning.style.display = 'none'; 
+            csvRadio.disabled = false; jsonRadio.disabled = false; if(xmlRadio) xmlRadio.disabled = false;
         } 
         else if (source === 'prompts') { 
-            filterContainer.style.display = 'none'; 
-            formatWarning.style.display = 'none'; 
-            csvRadio.disabled = false; 
-            jsonRadio.disabled = false;
-            if(xmlRadio) { 
-                xmlRadio.disabled = true; 
-                if(xmlRadio.checked) csvRadio.checked = true; 
-            }
+            filterContainer.style.display = 'none'; formatWarning.style.display = 'none'; 
+            csvRadio.disabled = false; jsonRadio.disabled = false;
+            if(xmlRadio) { xmlRadio.disabled = true; if(xmlRadio.checked) csvRadio.checked = true; }
         } 
         else if (source === 'backup') { 
-            filterContainer.style.display = 'none'; 
-            formatWarning.style.display = 'block'; 
-            jsonRadio.checked = true; 
-            csvRadio.disabled = true; 
-            if(xmlRadio) xmlRadio.disabled = true;
+            filterContainer.style.display = 'none'; formatWarning.style.display = 'block'; 
+            jsonRadio.checked = true; csvRadio.disabled = true; if(xmlRadio) xmlRadio.disabled = true;
         }
         window.toggleExportFormat();
     }
@@ -893,7 +845,6 @@
         }
         else if (format === 'xml_wp') {
             if (source !== 'articles') return alert("XML WordPress format is only available for Articles export!");
-            
             const exportStatus = document.getElementById('export-xml-status').value;
             
             let xmlContent = `<?xml version="1.0" encoding="UTF-8" ?>
@@ -908,10 +859,7 @@
 
             dataToExport.forEach(art => {
                 let postDate = new Date().toISOString().replace('T', ' ').substring(0, 19);
-                if (art.date && art.date !== '-') {
-                    postDate = `${art.date} 10:00:00`; 
-                }
-                
+                if (art.date && art.date !== '-') { postDate = `${art.date} 10:00:00`; }
                 let categories = (art.category || 'Uncategorized').split(',').map(c => c.trim());
                 let catTags = categories.map(c => `<category domain="category" nicename="${generateSlug(c)}"><![CDATA[${c}]]></category>`).join('\n        ');
 
@@ -934,7 +882,6 @@
         <wp:menu_order>0</wp:menu_order>
         <wp:post_type><![CDATA[post]]></wp:post_type>
         <wp:is_sticky>0</wp:is_sticky>
-        
         <wp:postmeta>
             <wp:meta_key><![CDATA[rank_math_focus_keyword]]></wp:meta_key>
             <wp:meta_value><![CDATA[${art.keyword ? art.keyword.split(':')[0].trim() : art.title}]]></wp:meta_value>
@@ -949,11 +896,9 @@
         </wp:postmeta>
     </item>\n`;
             });
-
             xmlContent += `</channel>\n</rss>`;
             downloadFile(xmlContent, `${filename}-wordpress.xml`, 'application/xml');
         }
-
         showToast("Download started!");
     }
 
@@ -971,18 +916,10 @@
                 const data = JSON.parse(e.target.result);
                 if(data.projects && data.articles) {
                     if(confirm("DANGER! \n\nImporting this backup will OVERWRITE and REPLACE your entire current workspace.\n\nAre you sure you want to proceed?")) {
-                        appData = data;
-                        saveData();
-                        syncAllData();
-                        renderArticleTable();
-                        showToast("Workspace Backup Restored Successfully!");
+                        appData = data; saveData(); syncAllData(); renderArticleTable(); showToast("Workspace Backup Restored Successfully!");
                     }
-                } else {
-                    alert("Invalid JSON format. Please select a valid backup JSON file generated by this app.");
-                }
-            } catch(err) {
-                alert("Failed to read the JSON file. It might be corrupted.");
-            }
+                } else { alert("Invalid JSON format. Please select a valid backup JSON file generated by this app."); }
+            } catch(err) { alert("Failed to read the JSON file. It might be corrupted."); }
             event.target.value = '';
         };
         reader.readAsText(file);
@@ -992,7 +929,6 @@
     window.updateModelOptions = function() {
         const provider = document.getElementById('setting-provider').value;
         const modelSelect = document.getElementById('setting-model');
-        const customUrlBox = document.getElementById('setting-custom-url-box');
         let options = ""; 
         if (provider === 'openai') { 
             options = `<optgroup label="OpenAI"><option value="gpt-4o-mini" selected>GPT-4o Mini</option><option value="gpt-4o">GPT-4o</option></optgroup>`; 
@@ -1317,13 +1253,11 @@
         if(showOnlyShortArticles) {
             btn.style.background = '#fef2f2';
             btn.innerHTML = '<i class="fa-solid fa-xmark" style="color: var(--danger);"></i>';
-            inputLimit.disabled = true; 
-            inputLimit.style.background = '#f8fafc';
+            inputLimit.disabled = true; inputLimit.style.background = '#f8fafc';
         } else {
             btn.style.background = 'transparent';
             btn.innerHTML = '<i class="fa-solid fa-down-long" style="color: var(--danger);"></i>';
-            inputLimit.disabled = false; 
-            inputLimit.style.background = '#fff';
+            inputLimit.disabled = false; inputLimit.style.background = '#fff';
         }
         renderArticleTable();
     };
@@ -1391,9 +1325,7 @@
 
             visibleArticles++; if(art.checked) selectedCount++;
             
-            if(art.wordCount === undefined) {
-                art.wordCount = getWordCount(art.body);
-            }
+            if(art.wordCount === undefined) { art.wordCount = getWordCount(art.body); }
             let wc = art.wordCount;
             let wcBadge = wc < 100 ? 'background: #fef2f2; color: var(--danger); border: 1px solid #fecaca;' : 'background: #ecfdf5; color: var(--success); border: 1px solid #a7f3d0;';
 
@@ -1486,16 +1418,12 @@
         const newCategory = prompt(`Masukkan nama kategori WordPress baru untuk ${selectedArticles.length} artikel terpilih:`);
         
         if (newCategory !== null && newCategory.trim() !== "") {
-            selectedArticles.forEach(art => {
-                art.category = newCategory.trim();
-            });
-            
-            saveData();
-            renderArticleTable();
-            showToast(`Kategori untuk ${selectedArticles.length} artikel berhasil diubah!`);
+            selectedArticles.forEach(art => { art.category = newCategory.trim(); });
+            saveData(); renderArticleTable(); showToast(`Kategori untuk ${selectedArticles.length} artikel berhasil diubah!`);
         }
     };
 
+    // ================= FUNGSI BULK REGENERATE (MASAL) =================
     document.getElementById('btn-bulk-regenerate').onclick = async () => {
         const selectedArticles = appData.articles.filter(a => a.checked);
         if (selectedArticles.length === 0) return alert("Pilih minimal 1 artikel untuk di-regenerate!");
@@ -1505,14 +1433,12 @@
 
         const btnBulk = document.getElementById('btn-bulk-regenerate');
         const origHtml = btnBulk.innerHTML;
-        btnBulk.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
-        btnBulk.disabled = true;
+        btnBulk.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...'; btnBulk.disabled = true;
 
         const apiKey = appData.settings.apiKey.trim();
         const provider = appData.settings.provider;
         const modelStr = appData.settings.model; 
         const temp = appData.settings.temp;
-        const isSimulation = !apiKey; 
         const workerCount = parseInt(document.getElementById('setting-workers').value) || 1;
 
         const selectedProject = document.getElementById('gen-select-project').value;
@@ -1521,14 +1447,12 @@
         const valLanguage = document.getElementById('gen-input-language').value || 'English';
 
         const promptTemplate = appData.prompts.find(p => p.name === selectedPromptName);
-        if(!promptTemplate && !isSimulation) {
+        if(!promptTemplate && apiKey) {
             btnBulk.innerHTML = origHtml; btnBulk.disabled = false;
             return alert("Prompt Template is missing!");
         }
 
-        isGenerating = true;
-        abortController = new AbortController(); 
-        const signal = abortController.signal;
+        isGenerating = true; abortController = new AbortController(); const signal = abortController.signal;
 
         const btnGen = document.getElementById('btn-generate');
         btnGen.innerHTML = '<i class="fa-solid fa-stop"></i> Stop Generation';
@@ -1539,107 +1463,68 @@
             const chunk = selectedArticles.slice(i, i + workerCount);
             
             chunk.forEach(art => {
-                art.status = "Regenerating...";
-                art.project = selectedProject;
-                art.category = selectedCat;
-                art.usedPrompt = selectedPromptName;
+                art.status = "Regenerating..."; art.project = selectedProject;
+                art.category = selectedCat; art.usedPrompt = selectedPromptName;
             });
             renderArticleTable();
 
             const chunkPromises = chunk.map(async (art) => {
-                const replaceVars = (text) => {
-                    if(!text) return "";
-                    return text.replace(/\[KEYWORD\]/gi, art.keyword).replace(/\[LANGUAGE\]/gi, valLanguage);
-                };
-
-                let finalPersona = replaceVars(promptTemplate ? promptTemplate.persona : "");
-                let finalTask = replaceVars(promptTemplate ? promptTemplate.task : "Write about [KEYWORD]");
-                let finalRules = replaceVars(promptTemplate ? promptTemplate.rules : "");
+                const replaceVars = (text) => text ? text.replace(/\[KEYWORD\]/gi, art.keyword).replace(/\[LANGUAGE\]/gi, valLanguage) : "";
+                let finalPersona = replaceVars(promptTemplate?.persona || "");
+                let finalTask = replaceVars(promptTemplate?.task || "Write about [KEYWORD]");
+                let finalRules = replaceVars(promptTemplate?.rules || "");
                 let userMessageContent = `${finalTask}\n\nSTRICT RULES:\n${finalRules}`;
 
-                if (isSimulation) {
+                if (!apiKey) {
                     await new Promise(r => setTimeout(r, 600));
-                    art.status = "Draft (Sim)";
-                    art.body = `<h2>${art.keyword.split(':')[0].trim()}</h2><p><b>[REGENERATED SIMULATION]</b></p>`;
-                    art.wordCount = getWordCount(art.body);
+                    art.status = "Draft (Sim)"; art.body = `<h2>${art.keyword.split(':')[0].trim()}</h2><p><b>[REGENERATED SIMULATION]</b></p>`;
                 } else {
-                    if (provider === 'openai' || provider === 'sumopod') {
-                        try {
-                            let apiModel = modelStr;
+                    try {
+                        let aiText = "";
+                        if (provider === 'openai' || provider === 'sumopod') {
                             let apiUrl = provider === 'openai' ? "https://api.openai.com/v1/chat/completions" : "https://ai.sumopod.com/v1/chat/completions";
-                            
-                            const customModelValue = document.querySelector('#setting-custom-url-box input#setting-custom-model').value.trim();
-                            if(provider === 'sumopod' && modelStr === 'custom' && customModelValue) apiModel = customModelValue;
+                            let apiModel = modelStr;
+                            if(provider === 'sumopod' && modelStr === 'custom') apiModel = document.querySelector('#setting-custom-url-box input#setting-custom-model').value.trim();
 
                             let maxT = 8000;
                             let reqMessages = [ { role: "system", content: finalPersona || "You are a helpful assistant." }, { role: "user", content: userMessageContent } ];
                             if(apiModel.includes('mimo') || apiModel.includes('claude') || apiModel.includes('qwen')) {
-                                maxT = 4000;
-                                reqMessages = [ { role: "user", content: `SYSTEM INSTRUCTION:\n${finalPersona || "You are a helpful assistant."}\n\nUSER PROMPT:\n${userMessageContent}` } ];
+                                maxT = 4000; reqMessages = [ { role: "user", content: `SYSTEM INSTRUCTION:\n${finalPersona || "You are a helpful assistant."}\n\nUSER PROMPT:\n${userMessageContent}` } ];
                             }
 
-                            const response = await fetch(apiUrl, {
+                            const res = await fetch(apiUrl, {
                                 method: 'POST', signal: signal, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
                                 body: JSON.stringify({ model: apiModel, temperature: temp, max_tokens: maxT, messages: reqMessages })
                             });
-
-                            const rawText = await response.text();
-                            if(response.ok) {
-                                let data = JSON.parse(rawText);
-                                let aiText = data.choices[0].message.content.trim();
-                                try {
-                                    let cleanJson = aiText.replace(/```json|```/g, '').trim();
-                                    let parsed = JSON.parse(cleanJson);
-                                    if(parsed.title) art.title = parsed.title;
-                                    if(parsed.meta) art.meta = parsed.meta;
-                                    if(parsed.content) aiText = parsed.content;
-                                } catch(e) {}
-                                art.body = cleanFinalHTML(aiText); 
-                                art.wordCount = getWordCount(art.body); art.status = "Draft";
-                            } else { art.status = "API Error"; }
-                        } catch (err) { art.status = "Error"; }
-                    } else if (provider === 'gemini') {
+                            const data = await res.json(); aiText = data.choices[0].message.content.trim();
+                        } else if (provider === 'gemini') {
+                            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelStr}:generateContent?key=${apiKey}`, {
+                                method: 'POST', signal: signal, headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ contents: [{ parts: [{ text: userMessageContent }] }], systemInstruction: { parts: [{ text: finalPersona }] } })
+                            });
+                            const data = await res.json(); aiText = data.candidates[0].content.parts[0].text.trim();
+                        }
+                        
                         try {
-                            let apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelStr}:generateContent?key=${apiKey}`;
-                            let requestBody = { contents: [{ parts: [{ text: userMessageContent }] }], generationConfig: { temperature: temp } };
-                            if (finalPersona) requestBody.systemInstruction = { parts: [{ text: finalPersona }] };
-
-                            const response = await fetch(apiUrl, { method: 'POST', signal: signal, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(requestBody) });
-                            const rawText = await response.text();
-                            if(response.ok) {
-                                let data = JSON.parse(rawText);
-                                let aiText = data.candidates[0].content.parts[0].text.trim();
-                                try {
-                                    let cleanJson = aiText.replace(/```json|```/g, '').trim();
-                                    let parsed = JSON.parse(cleanJson);
-                                    if(parsed.title) art.title = parsed.title;
-                                    if(parsed.meta) art.meta = parsed.meta;
-                                    if(parsed.content) aiText = parsed.content;
-                                } catch(e) {}
-                                art.body = cleanFinalHTML(aiText);
-                                art.wordCount = getWordCount(art.body); art.status = "Draft";
-                            } else { art.status = "API Error"; }
-                        } catch (err) { art.status = "Error"; }
-                    }
+                            let parsed = JSON.parse(aiText.replace(/```json|```/g, '').trim());
+                            if(parsed.title) art.title = parsed.title; if(parsed.meta) art.meta = parsed.meta; if(parsed.content) aiText = parsed.content;
+                        } catch(e) {}
+                        art.body = cleanFinalHTML(aiText); art.status = "Draft";
+                    } catch(e) { art.status = "Error"; }
                 }
+                art.wordCount = getWordCount(art.body);
             });
 
-            await Promise.all(chunkPromises);
-            saveData(); renderArticleTable();
-            await new Promise(r => setTimeout(r, 100));
+            await Promise.all(chunkPromises); saveData(); renderArticleTable();
         }
         
-        isGenerating = false;
-        btnBulk.innerHTML = origHtml; btnBulk.disabled = false;
+        isGenerating = false; btnBulk.innerHTML = origHtml; btnBulk.disabled = false;
         btnGen.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Generate Articles';
         btnGen.classList.remove('btn-danger'); btnGen.classList.add('btn-dark');
         showToast(`Bulk Regeneration Completed!`);
     };
 
-    keywordInput.addEventListener('input', (e) => { document.getElementById('baris-count').innerText = `${e.target.value.split('\n').filter(l => l.trim() !== '').length} Lines`; });
-    document.getElementById('btn-clear').onclick = () => { keywordInput.value = ''; document.getElementById('baris-count').innerText = '0 Lines'; };
-    function generateSlug(text) { return text.toString().toLowerCase().trim().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '').replace(/\-\-+/g, '-'); }
-
+    // ================= 9. REAL API LOGIC: GENERATE MULTI-WORKERS =================
     document.getElementById('btn-generate').onclick = async () => {
         const btnGen = document.getElementById('btn-generate');
         if (isGenerating) {
@@ -1761,6 +1646,7 @@
         art.wordCount = getWordCount(art.body); saveData(); renderArticleTable();
     }
 
+    // ================= 10. ADVANCED EDITOR LOGIC =================
     window.generateTitleOnly = async function() {
         if(!editId) return;
         const art = appData.articles.find(a => a.id === editId);
@@ -1810,6 +1696,7 @@
         }
     };
 
+    // ================= 11. REAL API LOGIC: POST TO WORDPRESS =================
     document.getElementById('btn-submit-wp').onclick = async () => {
         const selected = appData.articles.filter(a => a.checked);
         const wp = appData.wpAccounts.find(w => w.id == document.getElementById('wp-account').value);
@@ -1829,6 +1716,7 @@
         showToast("Done");
     };
 
+    // ================= 12. DANGER ZONE (RESET & CLEAR CACHE) =================
     window.clearAllArticles = function() {
         if(confirm("Hapus SEMUA artikel?")) { appData.articles = []; saveData(); renderArticleTable(); }
     };
