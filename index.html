@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Article Generator</title>
+    <title>Bulk Article Generator</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
@@ -658,6 +658,7 @@
     // ================= 1. STATE MANAGEMENT & AUTOSAVE (INDEXEDDB) =================
     
     function generateId() { return Date.now().toString(36) + Math.random().toString(36).substring(2); }
+    function generateSlug(text) { return text.toString().toLowerCase().trim().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '').replace(/\-\-+/g, '-'); }
 
     let defaultAppData = {
         projects: [
@@ -1155,6 +1156,7 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a'); a.href = url; a.download = `Template_${generateSlug(p.name)}.txt`;
         document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+        showToast("Prompt downloaded!");
     };
 
     window.downloadArticlePrompt = function() {
@@ -1173,6 +1175,7 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a'); a.href = url; a.download = `Prompt_Used_${generateSlug(p.name)}.txt`;
         document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+        showToast("Prompt downloaded!");
     };
 
     window.importPromptTxt = function(event) {
@@ -1422,6 +1425,27 @@
             saveData(); renderArticleTable(); showToast(`Kategori untuk ${selectedArticles.length} artikel berhasil diubah!`);
         }
     };
+
+    // ================= FUNGSI WP CATEGORY RESOLVER =================
+    async function resolveCategory(catNameString, targetUrl, creds) {
+        if(!catNameString || catNameString.trim() === '') return [];
+        let names = catNameString.split(',').map(s => s.trim()).filter(s => s);
+        let ids = [];
+        for (let name of names) {
+            try {
+                let res = await fetch(`${targetUrl}/wp-json/wp/v2/categories?search=${encodeURIComponent(name)}`, { headers: { 'Authorization': `Basic ${creds}` } });
+                let data = await res.json();
+                let match = data.find(c => c.name.toLowerCase() === name.toLowerCase());
+                if(match) { ids.push(match.id); } else {
+                    let createRes = await fetch(`${targetUrl}/wp-json/wp/v2/categories`, {
+                        method: 'POST', headers: { 'Authorization': `Basic ${creds}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ name: name })
+                    });
+                    let createData = await createRes.json(); if(createData.id) ids.push(createData.id);
+                }
+            } catch(e) { console.error("Category Sync Error", e); }
+        }
+        return ids;
+    }
 
     // ================= FUNGSI BULK REGENERATE (MASAL) =================
     document.getElementById('btn-bulk-regenerate').onclick = async () => {
@@ -1700,29 +1724,59 @@
     document.getElementById('btn-submit-wp').onclick = async () => {
         const selected = appData.articles.filter(a => a.checked);
         const wp = appData.wpAccounts.find(w => w.id == document.getElementById('wp-account').value);
-        if(!wp) return;
+        const statusOpt = document.getElementById('wp-status').value;
+        
+        if(selected.length === 0) return alert("Pilih minimal 1 artikel.");
+        if(!wp) return alert("Akun WP tidak ditemukan.");
 
-        closeModal('wp-modal'); showToast("Posting...");
+        closeModal('wp-modal'); showToast("Mulai posting ke WP...");
+        
+        const credentials = btoa(`${wp.user}:${wp.pass}`);
+        let currentDate = document.getElementById('wp-start-date').value ? new Date(document.getElementById('wp-start-date').value) : new Date();
+        let postsPerDay = parseInt(document.getElementById('wp-post-per-day').value) || 1;
+        let postCounter = 0;
+
         for (let art of selected) {
+            art.status = "Sync Kategori..."; renderArticleTable();
+            let catIds = await resolveCategory(art.category, wp.url, credentials);
+
+            let postDateISO = null; let displayDate = "-";
+            if (statusOpt === 'schedule') {
+                const yyyy = currentDate.getFullYear(); const mm = String(currentDate.getMonth() + 1).padStart(2, '0'); const dd = String(currentDate.getDate()).padStart(2, '0');
+                displayDate = `${yyyy}-${mm}-${dd}`; postDateISO = currentDate.toISOString().split('.')[0]; 
+                postCounter++;
+                if (postCounter >= postsPerDay) { postCounter = 0; currentDate.setDate(currentDate.getDate() + 1); }
+            } else if (statusOpt === 'publish') {
+                const d = new Date(); displayDate = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+            }
+
+            let payload = {
+                title: art.title, content: art.body, slug: art.slug, status: statusOpt === 'schedule' ? 'future' : statusOpt,
+                meta: { rank_math_focus_keyword: art.keyword?.split(':')[0].trim() || art.title, rank_math_description: art.meta || "", rank_math_title: art.title }
+            };
+            if(catIds.length > 0) payload.categories = catIds;
+            if(postDateISO) payload.date = postDateISO;
+
+            art.status = "Mengirim..."; renderArticleTable();
+
             try {
                 const res = await fetch(`${wp.url}/wp-json/wp/v2/posts`, {
-                    method: 'POST', headers: { 'Authorization': `Basic ${btoa(wp.user+':'+wp.pass)}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ title: art.title, content: art.body, slug: art.slug, status: 'draft' })
+                    method: 'POST', headers: { 'Authorization': `Basic ${credentials}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
                 });
-                if(res.ok) { art.status = "Draft (WP)"; art.checked = false; } else { art.status = "WP Error"; }
+                if(res.ok) { art.status = statusOpt === 'publish' ? 'Published' : (statusOpt === 'draft' ? 'Draft (WP)' : 'Scheduled'); art.date = displayDate; art.checked = false; } else { art.status = "WP Error"; }
             } catch(e) { art.status = "Net Error"; }
             saveData(); renderArticleTable();
         }
-        showToast("Done");
+        showToast("Selesai posting!");
     };
 
     // ================= 12. DANGER ZONE (RESET & CLEAR CACHE) =================
     window.clearAllArticles = function() {
-        if(confirm("Hapus SEMUA artikel?")) { appData.articles = []; saveData(); renderArticleTable(); }
+        if(confirm("Hapus SEMUA artikel di memori?")) { appData.articles = []; saveData(); renderArticleTable(); }
     };
 
     window.factoryReset = function() {
-        if(prompt("Ketik 'RESET' untuk hapus semua data:") === "RESET") {
+        if(prompt("Ketik 'RESET' untuk hapus semua data permanen:") === "RESET") {
             localforage.removeItem('sumoArticleGenerator').then(() => window.location.reload());
         }
     };
