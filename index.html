@@ -227,53 +227,13 @@
                     </div>
                     
                     <div class="responsive-flex">
-                        <div style="flex: 1;"><label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Topic <span class="text-muted" style="font-weight:normal">[TOPIC]</span></label><input type="text" id="gen-input-topic" placeholder="e.g., Tech"></div>
-                        <div style="flex: 1;"><label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">WP Category</label><input type="text" id="gen-input-category" placeholder="e.g., News"></div>
-                    </div>
-
-                    <div class="responsive-flex">
+                        <div style="flex: 1;">
+                            <label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">WP Category</label>
+                            <input type="text" id="gen-input-category" placeholder="e.g., News">
+                        </div>
                         <div style="flex: 1;">
                             <label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Language <span class="text-muted" style="font-weight:normal">[LANGUAGE]</span></label>
-                            <input type="text" id="gen-input-language" list="dl-language" placeholder="Select or type..." value="English">
-                            <datalist id="dl-language">
-                                <option value="English">
-                                <option value="Indonesian">
-                                <option value="Spanish">
-                                <option value="French">
-                            </datalist>
-                        </div>
-                        <div style="flex: 1;">
-                            <label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Audience <span class="text-muted" style="font-weight:normal">[AUDIENCE]</span></label>
-                            <input type="text" id="gen-input-audience" list="dl-audience" placeholder="Select or type..." value="General Public">
-                            <datalist id="dl-audience">
-                                <option value="General Public">
-                                <option value="Beginners">
-                                <option value="Professionals">
-                                <option value="Students">
-                                <option value="Business Owners">
-                            </datalist>
-                        </div>
-                    </div>
-
-                    <div class="responsive-flex">
-                        <div style="flex: 1;">
-                            <label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Style <span class="text-muted" style="font-weight:normal">[STYLE]</span></label>
-                            <input type="text" id="gen-input-style" list="dl-style" placeholder="Select or type..." value="Informative">
-                            <datalist id="dl-style">
-                                <option value="Informative">
-                                <option value="Casual">
-                                <option value="Professional">
-                                <option value="Persuasive">
-                            </datalist>
-                        </div>
-                        <div style="flex: 1;">
-                            <label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Length <span class="text-muted" style="font-weight:normal">[LENGTH]</span></label>
-                            <input type="text" id="gen-input-length" list="dl-length" placeholder="Select or type..." value="Write detailed content, exactly around 1000 words. Provide thorough sections.">
-                            <datalist id="dl-length">
-                                <option value="Write concisely, exactly around 500 words.">
-                                <option value="Write detailed content, exactly around 1000 words. Provide thorough sections.">
-                                <option value="Write a massive, comprehensive guide over 1500 words. Expand heavily on every point.">
-                            </datalist>
+                            <input type="text" id="gen-input-language" placeholder="English" value="English">
                         </div>
                     </div>
                 </div>
@@ -333,7 +293,7 @@
                         
                         <button class="btn btn-outline" style="padding: 8px 14px; font-size: 13px;" onclick="bulkEditCategory()"><i class="fa-solid fa-tags"></i> Edit Kategori</button>
 
-                        <button class="btn btn-primary" id="btn-post-wp" style="padding: 8px 14px; font-size: 13px;"><i class="fa-brands fa-wordpress"></i> Post to WP</button>
+                        <button class="btn btn-primary" id="btn-post-wp" style="padding: 8px 14px; font-size: 13px;"><i class="brands fa-wordpress"></i> Post to WP</button>
                         <button class="btn btn-outline-danger" id="btn-delete" style="padding: 8px 14px; font-size: 13px;"><i class="fa-regular fa-trash-can"></i> Delete</button>
                     </div>
                 </div>
@@ -399,7 +359,7 @@
                 </div>
 
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border);">
-                    <div class="text-muted" style="font-size: 12px; line-height: 1.8;">Available Variables:<br> <span class="badge" style="background:#fff;">[TOPIC]</span> <span class="badge" style="background:#fff;">[KEYWORD]</span> <span class="badge" style="background:#fff;">[LANGUAGE]</span> <span class="badge" style="background:#fff;">[AUDIENCE]</span> <span class="badge" style="background:#fff;">[STYLE]</span> <span class="badge" style="background:#fff;">[LENGTH]</span></div>
+                    <div class="text-muted" style="font-size: 12px; line-height: 1.8;">Available Variables:<br> <span class="badge" style="background:#fff;">[KEYWORD]</span> <span class="badge" style="background:#fff;">[LANGUAGE]</span></div>
                     <button class="btn btn-primary" id="btn-save-prompt" style="padding: 12px 24px; font-size: 14px;"><i class="fa-solid fa-floppy-disk"></i> Save Modular Template</button>
                 </div>
             </div>
@@ -727,44 +687,11 @@
     
     function generateId() { return Date.now().toString(36) + Math.random().toString(36).substring(2); }
 
-    let defaultAppData = {
+        let defaultAppData = {
         projects: [
             { id: 1, name: "Main Workspace", desc: "", icon: "fa-laptop-code", color: "blue" }
         ],
-        prompts: [
-            {
-                id: 1,
-                name: "Human-Centric SEO Master",
-                persona: `You are a Human-Centric Content Expert, an objective Subject Matter Expert (SME), and a Semantic SEO Specialist. Your primary goal is to provide immense value to the human reader, prioritizing natural flow, empathy, and high E-E-A-T (Experience, Expertise, Authoritativeness, Trustworthiness). Your writing must strictly adhere to an 8th-grade reading level. You adapt your tone dynamically: professional and authoritative in the main body, but casual and lifelike in the conclusion. You MUST output ONLY a valid, minified JSON object. No markdown wrapping.`,
-                task: `Write an exhaustive, master-class article targeting the keyword: [KEYWORD]. (Language: [LANGUAGE]).
-
-VALUE, TRUST & ORGANIC LENGTH MANDATE:
-- HIGH INFORMATION GAIN: Every paragraph must reward the reader with a new actionable takeaway, unique insight, data point, or perspective.
-- ORGANIC LENGTH EXPANSION: To reach the massive length required, you MUST generate length organically. Add 12 to 15 highly relevant <h2> subtopics, deep-dive real-world examples, and data tables. 
-- NO JARGON (8TH-GRADE LEVEL): Keep sentences short, clear, and punchy. Explain complex technical terms in everyday language.
-
-6-STEP BLAZE FRAMEWORK & STRUCTURE:
-1. TITLE: A highly engaging, human-friendly title containing the exact [KEYWORD]. (Max 60 chars, NO years).
-2. OPENING (ENTITY SEEDING): Mentally identify 4 highly relevant core entities related to the topic. Start IMMEDIATELY with EXACTLY 2 to 3 introductory paragraphs using <p> tags. DO NOT place any heading before the intro. Weave all 4 entities naturally into the very first paragraph using Subject-Predicate-Object (SPO) or Entity-Attribute-Value (EAV) structures. Show empathy.
-3. DEEP DIVE BODY (12-15 H2s): Generate 12 to 15 highly detailed <h2> subtopics. Take the reader on a logical journey. Use SPO and EAV naturally ONLY when clarifying complex definitions or entities.
-4. FORMATTING FOR VALUE: Include at least THREE (3) HTML <table class="responsive-table"> to compare data or entities. Use structured bullet points <ul> to break down complex steps.
-5. FAQ SECTION (SNIPPET BAIT): Create an <h2> ("FAQ"). Include EXACTLY 7 strictly relevant questions. Write straight-forward, in-depth answers (50-70 words each) using strict SPO or EAV sentences to optimize for Google Featured Snippets.
-6. CONCLUSION (LIFELIKE TONE): End with an <h2> ("Conclusion" or "Final Thoughts"). Write a casual, lifelike closing paragraph. 
-
-EXPECTED JSON OUTPUT:
-{
-  "title": "A natural, high-CTR title containing the exact [KEYWORD]",
-  "meta": "A helpful, objective SEO meta description (max 150 chars)",
-  "content": "<p>First empathetic intro with 4 entities...</p><p>Second intro...</p><p>Third intro...</p><h2>Subtopic 1</h2><p>...</p><h2>Subtopic 12</h2><p>...</p><h2>FAQ</h2>..."
-}`,
-                rules: `- STRICTLY NO SENTENCE PADDING (ANTI-FLUFF): NEVER artificially lengthen a simple fact just to increase the word count (e.g., do not turn "He bought 1kg of rice" into a long, rambling paragraph about buying rice). If you need more length, you MUST introduce completely NEW subtopics, examples, or tables. DO NOT loop or repeat concepts.
-- INVISIBLE SEO: Place the exact phrase "[KEYWORD]" NATURALLY in the Title, the opening paragraph, and the conclusion. Max density 1-1.5%. Rely on LSI synonyms throughout the body.
-- STRICTLY NO JARGON: Absolutely no rigid academic language, dense corporate speak, or unexplained technical jargon.
-- PURE JSON ONLY: Output pure JSON. No markdown formatting blocks (like ${"```"}json), no conversational text.
-- HTML ESCAPING (CRITICAL): You MUST escape all double quotes inside HTML attributes (e.g., <table class="responsive-table">) OR use single quotes.
-- BANNED WORDS (AI CLICHES): Welcome, Additionally, Ultimately, Delve, Tapestry, Embark, Invaluable, Shifting landscape, Testament, Beacon, Unlock, Furthermore, Moreover, In conclusion, Demystify, Ultimate. DO NOT start sentences with "Welcome", "Additionally", or "Ultimately".`
-            }
-        ],
+        prompts: [], // <-- SUDAH DIKOSONGKAN
         wpAccounts: [], 
         articles: [],
         settings: { provider: 'sumopod', model: 'gpt-4o-mini', apiKey: '', temp: 0.7, customModel: '', workers: 1 }
@@ -812,8 +739,6 @@ EXPECTED JSON OUTPUT:
         if(!appData.settings) appData.settings = defaultAppData.settings; 
         if(!appData.settings.workers) appData.settings.workers = 1;
         
-        // FUNGSI AUTO-RESTORE SUDAH DIHAPUS DARI SINI
-
         appData.articles.forEach(art => { if(!art.id) art.id = generateId(); });
 
         // Jalankan UI setelah data berhasil ditarik
@@ -1069,23 +994,15 @@ EXPECTED JSON OUTPUT:
     window.downloadConfiguration = function() {
         const proj = document.getElementById('gen-select-project').value || '-';
         const prompt = document.getElementById('gen-select-prompt').value || '-';
-        const topic = document.getElementById('gen-input-topic').value || '-';
         const cat = document.getElementById('gen-input-category').value || '-';
         const lang = document.getElementById('gen-input-language').value || '-';
-        const aud = document.getElementById('gen-input-audience').value || '-';
-        const style = document.getElementById('gen-input-style').value || '-';
-        const length = document.getElementById('gen-input-length').value || '-';
 
         let content = `=== SUMOPOD GENERATOR CONFIGURATION ===\r\n`;
         content += `Date Exported: ${new Date().toLocaleString()}\r\n\r\n`;
         content += `Project     : ${proj}\r\n`;
         content += `Prompt      : ${prompt}\r\n`;
-        content += `Topic       : ${topic}\r\n`;
         content += `WP Category : ${cat}\r\n`;
         content += `Language    : ${lang}\r\n`;
-        content += `Audience    : ${aud}\r\n`;
-        content += `Style       : ${style}\r\n`;
-        content += `Length      : ${length}\r\n`;
 
         const blob = new Blob([content], { type: 'text/plain' });
         const url = URL.createObjectURL(blob);
@@ -1629,11 +1546,7 @@ EXPECTED JSON OUTPUT:
         const selectedProject = document.getElementById('gen-select-project').value;
         const selectedPromptName = document.getElementById('gen-select-prompt').value; 
         const selectedCat = document.getElementById('gen-input-category').value.trim() || 'Uncategorized';
-        const valTopic = document.getElementById('gen-input-topic').value.trim() || 'General';
         const valLanguage = document.getElementById('gen-input-language').value || 'English';
-        const valAudience = document.getElementById('gen-input-audience').value || 'General Audience';
-        const valStyle = document.getElementById('gen-input-style').value || 'Standard';
-        const valLength = document.getElementById('gen-input-length').value || 'Standard Length';
 
         const promptTemplate = appData.prompts.find(p => p.name === selectedPromptName);
         if(!promptTemplate && !isSimulation) {
@@ -1665,7 +1578,7 @@ EXPECTED JSON OUTPUT:
                 const cleanTitle = art.keyword ? art.keyword.split(':')[0].trim() : art.title;
                 const replaceVars = (text) => {
                     if(!text) return "";
-                    return text.replace(/\[KEYWORD\]/gi, art.keyword).replace(/\[TOPIC\]/gi, valTopic).replace(/\[LANGUAGE\]/gi, valLanguage).replace(/\[AUDIENCE\]/gi, valAudience).replace(/\[STYLE\]/gi, valStyle).replace(/\[LENGTH\]/gi, valLength);
+                    return text.replace(/\[KEYWORD\]/gi, art.keyword).replace(/\[LANGUAGE\]/gi, valLanguage);
                 };
 
                 let finalPersona = replaceVars(promptTemplate ? promptTemplate.persona : "");
@@ -1676,7 +1589,7 @@ EXPECTED JSON OUTPUT:
                 if (isSimulation) {
                     await new Promise(r => setTimeout(r, 600));
                     art.status = "Draft (Sim)";
-                    art.body = `<h2>${cleanTitle}</h2><p><b>[REGENERATED SIMULATION]</b></p><p>Language: ${valLanguage} | Length: ${valLength}</p>`;
+                    art.body = `<h2>${cleanTitle}</h2><p><b>[REGENERATED SIMULATION]</b></p><p>Language: ${valLanguage}</p>`;
                     art.wordCount = getWordCount(art.body);
                 } else {
                     if (provider === 'openai' || provider === 'sumopod') {
@@ -1824,12 +1737,7 @@ EXPECTED JSON OUTPUT:
         const selectedProject = document.getElementById('gen-select-project').value;
         const selectedPromptName = document.getElementById('gen-select-prompt').value; 
         const selectedCat = document.getElementById('gen-input-category').value.trim() || 'Uncategorized';
-        
-        const valTopic = document.getElementById('gen-input-topic').value.trim() || 'General';
         const valLanguage = document.getElementById('gen-input-language').value || 'English';
-        const valAudience = document.getElementById('gen-input-audience').value || 'General Audience';
-        const valStyle = document.getElementById('gen-input-style').value || 'Standard';
-        const valLength = document.getElementById('gen-input-length').value || 'Standard Length';
         
         const promptTemplate = appData.prompts.find(p => p.name === selectedPromptName);
         if(!promptTemplate && !isSimulation) return alert("Prompt Template is missing!");
@@ -1863,7 +1771,7 @@ EXPECTED JSON OUTPUT:
             const chunkPromises = pendingArticles.map(async (art) => {
                 const replaceVars = (text) => {
                     if(!text) return "";
-                    return text.replace(/\[KEYWORD\]/gi, art.keyword).replace(/\[TOPIC\]/gi, valTopic).replace(/\[LANGUAGE\]/gi, valLanguage).replace(/\[AUDIENCE\]/gi, valAudience).replace(/\[STYLE\]/gi, valStyle).replace(/\[LENGTH\]/gi, valLength);
+                    return text.replace(/\[KEYWORD\]/gi, art.keyword).replace(/\[LANGUAGE\]/gi, valLanguage);
                 };
 
                 let finalPersona = replaceVars(promptTemplate ? promptTemplate.persona : "");
@@ -1874,7 +1782,7 @@ EXPECTED JSON OUTPUT:
                 if (isSimulation) {
                     await new Promise(r => setTimeout(r, 600 + Math.random() * 500));
                     art.status = "Draft (Sim)";
-                    art.body = `<h2>${art.title}</h2><p><b>[SIMULATION MODE]</b> No API Key found.</p><p>Language: ${valLanguage} | Length: ${valLength}</p>`;
+                    art.body = `<h2>${art.title}</h2><p><b>[SIMULATION MODE]</b> No API Key found.</p><p>Language: ${valLanguage}</p>`;
                     art.wordCount = getWordCount(art.body);
                 } else {
                     if (provider === 'openai' || provider === 'sumopod') {
@@ -2018,11 +1926,7 @@ EXPECTED JSON OUTPUT:
         const selectedProject = document.getElementById('gen-select-project').value;
         const selectedPromptName = document.getElementById('gen-select-prompt').value; 
         const selectedCat = document.getElementById('gen-input-category').value.trim() || 'Uncategorized';
-        const valTopic = document.getElementById('gen-input-topic').value.trim() || 'General';
         const valLanguage = document.getElementById('gen-input-language').value || 'English';
-        const valAudience = document.getElementById('gen-input-audience').value || 'General Audience';
-        const valStyle = document.getElementById('gen-input-style').value || 'Standard';
-        const valLength = document.getElementById('gen-input-length').value || 'Standard Length';
         
         const promptTemplate = appData.prompts.find(p => p.name === selectedPromptName);
         if(!promptTemplate && !isSimulation) return alert("Prompt Template is missing!");
@@ -2033,7 +1937,7 @@ EXPECTED JSON OUTPUT:
         const cleanTitle = art.keyword;
         const replaceVars = (text) => {
             if(!text) return "";
-            return text.replace(/\[KEYWORD\]/gi, cleanTitle).replace(/\[TOPIC\]/gi, valTopic).replace(/\[LANGUAGE\]/gi, valLanguage).replace(/\[AUDIENCE\]/gi, valAudience).replace(/\[STYLE\]/gi, valStyle).replace(/\[LENGTH\]/gi, valLength);
+            return text.replace(/\[KEYWORD\]/gi, cleanTitle).replace(/\[LANGUAGE\]/gi, valLanguage);
         };
 
         let finalPersona = replaceVars(promptTemplate ? promptTemplate.persona : "");
@@ -2048,7 +1952,7 @@ EXPECTED JSON OUTPUT:
         if (isSimulation) {
             await new Promise(r => setTimeout(r, 600));
             art.status = "Draft (Sim)";
-            art.body = `<h2>${cleanTitle.split(':')[0].trim()}</h2><p><b>[REGENERATED SIMULATION]</b></p><p>Language: ${valLanguage} | Length: ${valLength}</p>`;
+            art.body = `<h2>${cleanTitle.split(':')[0].trim()}</h2><p><b>[REGENERATED SIMULATION]</b></p><p>Language: ${valLanguage}</p>`;
             art.wordCount = getWordCount(art.body);
             saveData(); renderArticleTable();
             showToast("Article Regenerated!");
