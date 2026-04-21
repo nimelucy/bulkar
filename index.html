@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -219,7 +218,6 @@
             <div class="card mb-3">
                 <div class="card-header" style="padding: 12px 16px; font-size: 13px;">
                     <span style="display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-bullseye text-muted"></i> Configuration</span>
-                    <button class="btn-icon" onclick="downloadConfiguration()" title="Download Config (.txt)" style="width: 28px; height: 28px; font-size: 13px; color: var(--primary);"><i class="fa-solid fa-download"></i></button>
                 </div>
                 <div class="card-body" style="gap: 12px; padding: 12px 16px;">
                     <div class="responsive-flex">
@@ -294,7 +292,7 @@
                         
                         <button class="btn btn-outline" style="padding: 8px 14px; font-size: 13px;" onclick="bulkEditCategory()"><i class="fa-solid fa-tags"></i> Edit Kategori</button>
 
-                        <button class="btn btn-primary" id="btn-post-wp" style="padding: 8px 14px; font-size: 13px;"><i class="brands fa-wordpress"></i> Post to WP</button>
+                        <button class="btn btn-primary" id="btn-post-wp" style="padding: 8px 14px; font-size: 13px;"><i class="fa-brands fa-wordpress"></i> Post to WP</button>
                         <button class="btn btn-outline-danger" id="btn-delete" style="padding: 8px 14px; font-size: 13px;"><i class="fa-regular fa-trash-can"></i> Delete</button>
                     </div>
                 </div>
@@ -692,7 +690,7 @@
         projects: [
             { id: 1, name: "Main Workspace", desc: "", icon: "fa-laptop-code", color: "blue" }
         ],
-        prompts: [], // <-- SUDAH DIKOSONGKAN
+        prompts: [],
         wpAccounts: [], 
         articles: [],
         settings: { provider: 'sumopod', model: 'gpt-4o-mini', apiKey: '', temp: 0.7, customModel: '', workers: 1 }
@@ -739,7 +737,7 @@
         
         if(!appData.settings) appData.settings = defaultAppData.settings; 
         if(!appData.settings.workers) appData.settings.workers = 1;
-        
+
         appData.articles.forEach(art => { if(!art.id) art.id = generateId(); });
 
         // Jalankan UI setelah data berhasil ditarik
@@ -894,7 +892,6 @@
             downloadFile(csvContent, `${filename}.csv`, 'text/csv');
         }
         else if (format === 'xml_wp') {
-            // === LOGIKA EXPORT KE WORDPRESS XML (WXR) ===
             if (source !== 'articles') return alert("XML WordPress format is only available for Articles export!");
             
             const exportStatus = document.getElementById('export-xml-status').value;
@@ -989,27 +986,6 @@
             event.target.value = '';
         };
         reader.readAsText(file);
-    };
-
-    // ================= FUNGSI DOWNLOAD CONFIGURATION (.txt) =================
-    window.downloadConfiguration = function() {
-        const proj = document.getElementById('gen-select-project').value || '-';
-        const prompt = document.getElementById('gen-select-prompt').value || '-';
-        const cat = document.getElementById('gen-input-category').value || '-';
-        const lang = document.getElementById('gen-input-language').value || '-';
-
-        let content = `=== SUMOPOD GENERATOR CONFIGURATION ===\r\n`;
-        content += `Date Exported: ${new Date().toLocaleString()}\r\n\r\n`;
-        content += `Project     : ${proj}\r\n`;
-        content += `Prompt      : ${prompt}\r\n`;
-        content += `WP Category : ${cat}\r\n`;
-        content += `Language    : ${lang}\r\n`;
-
-        const blob = new Blob([content], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a'); a.href = url; a.download = `Config_${generateSlug(proj)}.txt`;
-        document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-        showToast("Configuration downloaded!");
     };
 
     // ================= 4. REAL API LOGIC: SETTINGS =================
@@ -1320,7 +1296,6 @@
         renderArticleTable();
     }
 
-    // FUNGSI FILTER QC BARU DENGAN ICON SAJA
     window.toggleBadTitles = function() {
         showOnlyBadTitles = !showOnlyBadTitles;
         const btn = document.getElementById('btn-filter-bad-titles');
@@ -1397,11 +1372,9 @@
             if (filterProject !== "ALL" && art.project !== filterProject) return;
             if (searchTerm && !art.title.toLowerCase().includes(searchTerm)) return; 
             
-            // Logika untuk Bad Titles
             const primaryKey = art.keyword ? art.keyword.split(':')[0].trim().toLowerCase() : '';
             if (showOnlyBadTitles && art.title.trim().toLowerCase() !== primaryKey) return;
             
-            // Logika untuk Kata Dinamis
             if (showOnlyShortArticles) {
                 let words = art.wordCount;
                 if (!words && art.body) words = getWordCount(art.body);
@@ -1409,7 +1382,6 @@
                 if (words >= targetLimit) return; 
             }
 
-            // Logika untuk Show Errors
             if (showOnlyErrors) {
                 const statusText = (art.status || '').toLowerCase();
                 const titleText = (art.title || '').toLowerCase();
@@ -1511,7 +1483,7 @@
         const selectedArticles = appData.articles.filter(a => a.checked);
         if (selectedArticles.length === 0) return alert("Pilih minimal 1 artikel (centang kotaknya) untuk diubah kategorinya!");
         
-        const newCategory = prompt(`Masukkan nama kategori WordPress baru untuk ${selectedArticles.length} artikel terpilih:\n\n(Tips: Bisa multi-kategori, pisahkan dengan koma. Contoh: Tech, Gadget)`);
+        const newCategory = prompt(`Masukkan nama kategori WordPress baru untuk ${selectedArticles.length} artikel terpilih:`);
         
         if (newCategory !== null && newCategory.trim() !== "") {
             selectedArticles.forEach(art => {
@@ -1524,13 +1496,12 @@
         }
     };
 
-    // ================= FUNGSI BULK REGENERATE (MASAL) =================
     document.getElementById('btn-bulk-regenerate').onclick = async () => {
         const selectedArticles = appData.articles.filter(a => a.checked);
-        if (selectedArticles.length === 0) return alert("Pilih minimal 1 artikel (centang kotaknya) untuk di-regenerate!");
+        if (selectedArticles.length === 0) return alert("Pilih minimal 1 artikel untuk di-regenerate!");
         
-        if (isGenerating) return alert("Harap tunggu proses saat ini selesai atau klik Stop terlebih dahulu.");
-        if (!confirm(`Regenerate ${selectedArticles.length} artikel terpilih?\n\n(Ini akan menimpa artikel sebelumnya menggunakan pengaturan di sidebar kiri saat ini)`)) return;
+        if (isGenerating) return alert("Harap tunggu proses selesai atau klik Stop.");
+        if (!confirm(`Regenerate ${selectedArticles.length} artikel terpilih?`)) return;
 
         const btnBulk = document.getElementById('btn-bulk-regenerate');
         const origHtml = btnBulk.innerHTML;
@@ -1576,7 +1547,6 @@
             renderArticleTable();
 
             const chunkPromises = chunk.map(async (art) => {
-                const cleanTitle = art.keyword ? art.keyword.split(':')[0].trim() : art.title;
                 const replaceVars = (text) => {
                     if(!text) return "";
                     return text.replace(/\[KEYWORD\]/gi, art.keyword).replace(/\[LANGUAGE\]/gi, valLanguage);
@@ -1590,23 +1560,17 @@
                 if (isSimulation) {
                     await new Promise(r => setTimeout(r, 600));
                     art.status = "Draft (Sim)";
-                    art.body = `<h2>${cleanTitle}</h2><p><b>[REGENERATED SIMULATION]</b></p><p>Language: ${valLanguage}</p>`;
+                    art.body = `<h2>${art.keyword.split(':')[0].trim()}</h2><p><b>[REGENERATED SIMULATION]</b></p>`;
                     art.wordCount = getWordCount(art.body);
                 } else {
                     if (provider === 'openai' || provider === 'sumopod') {
                         try {
-                            let apiModel = "gpt-4o-mini";
-                            let apiUrl = ["https://", "api.openai.com", "/v1/chat/completions"].join("");
-                            if (provider === 'openai') {
-                                apiModel = modelStr;
-                            } else if (provider === 'sumopod') {
-                                apiUrl = ["https://", "ai.sumopod.com", "/v1/chat/completions"].join("");
-                                apiModel = modelStr; 
-                                const customModelValue = document.querySelector('#setting-custom-url-box input#setting-custom-model').value.trim();
-                                if(modelStr === 'custom' && customModelValue) apiModel = customModelValue;
-                            }
+                            let apiModel = modelStr;
+                            let apiUrl = provider === 'openai' ? "https://api.openai.com/v1/chat/completions" : "https://ai.sumopod.com/v1/chat/completions";
+                            
+                            const customModelValue = document.querySelector('#setting-custom-url-box input#setting-custom-model').value.trim();
+                            if(provider === 'sumopod' && modelStr === 'custom' && customModelValue) apiModel = customModelValue;
 
-                            // Anti-Crash untuk Mimo & Claude di OpenAI schema (Token Limit & System Role fix)
                             let maxT = 8000;
                             let reqMessages = [ { role: "system", content: finalPersona || "You are a helpful assistant." }, { role: "user", content: userMessageContent } ];
                             if(apiModel.includes('mimo') || apiModel.includes('claude') || apiModel.includes('qwen')) {
@@ -1620,725 +1584,258 @@
                             });
 
                             const rawText = await response.text();
-                            if(!rawText || rawText.trim() === "") throw new Error("Server API membalas kosong.");
-                            let data; try { data = JSON.parse(rawText); } catch(e) { throw new Error("Invalid JSON dari API."); }
-
                             if(response.ok) {
+                                let data = JSON.parse(rawText);
                                 let aiText = data.choices[0].message.content.trim();
                                 try {
-                                    let cleanJson = aiText;
-                                    if(cleanJson.startsWith('```json')) { cleanJson = cleanJson.substring(7); if(cleanJson.endsWith('```')) cleanJson = cleanJson.substring(0, cleanJson.length - 3); }
-                                    let parsed = JSON.parse(cleanJson.trim());
+                                    let cleanJson = aiText.replace(/```json|```/g, '').trim();
+                                    let parsed = JSON.parse(cleanJson);
                                     if(parsed.title) art.title = parsed.title;
-                                    if(parsed.meta || parsed.meta_description) art.meta = parsed.meta || parsed.meta_description;
-                                    if(parsed.content || parsed.content_html) aiText = parsed.content || parsed.content_html;
-                                } catch(e) {
-                                    let titleMatch = aiText.match(/"title"\s*:\s*"([^"]+)"/i); if(titleMatch) art.title = titleMatch[1];
-                                    let metaMatch = aiText.match(/"meta"\s*:\s*"([^"]+)"/i); if(metaMatch) art.meta = metaMatch[1];
-                                    let contentMatch = aiText.match(/"content"\s*:\s*"([\s\S]*)/i);
-                                    if(contentMatch) { aiText = contentMatch[1].replace(/"}$/g, '').replace(/\\"/g, '"').replace(/\\n/g, '<br>'); } 
-                                    else { aiText = aiText.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>'); if(!aiText.startsWith('<p>') && !aiText.startsWith('<h')) aiText = '<p>' + aiText + '</p>'; aiText = aiText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); }
-                                }
-                                aiText = cleanFinalHTML(aiText);
-                                art.body = aiText; art.wordCount = getWordCount(aiText); art.status = "Draft";
-                            } else {
-                                art.status = "API Error"; art.body = `API Error: ${data.error ? data.error.message : JSON.stringify(data)}`;
-                            }
-                        } catch (err) {
-                            if(err.name === 'AbortError') { art.status = "Stopped"; art.body = "Proses dihentikan."; } 
-                            else { art.status = "Network Error"; art.body = `Failed. Message: ${err.message}`; }
-                        }
+                                    if(parsed.meta) art.meta = parsed.meta;
+                                    if(parsed.content) aiText = parsed.content;
+                                } catch(e) {}
+                                art.body = cleanFinalHTML(aiText); 
+                                art.wordCount = getWordCount(art.body); art.status = "Draft";
+                            } else { art.status = "API Error"; }
+                        } catch (err) { art.status = "Error"; }
                     } else if (provider === 'gemini') {
                         try {
-                            let apiModel = modelStr;
-                            let defaultGeminiUrl = ["https://", "generativelanguage.googleapis.com", "/v1beta/models/", apiModel, ":generateContent"].join("");
-                            const finalUrl = defaultGeminiUrl.includes('?') ? `${defaultGeminiUrl}&key=${apiKey}` : `${defaultGeminiUrl}?key=${apiKey}`;
-
-                            let requestBody = { contents: [{ parts: [{ text: userMessageContent }] }], generationConfig: { temperature: temp, maxOutputTokens: 8192 } };
+                            let apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelStr}:generateContent?key=${apiKey}`;
+                            let requestBody = { contents: [{ parts: [{ text: userMessageContent }] }], generationConfig: { temperature: temp } };
                             if (finalPersona) requestBody.systemInstruction = { parts: [{ text: finalPersona }] };
 
-                            const response = await fetch(finalUrl, { method: 'POST', signal: signal, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(requestBody) });
-
+                            const response = await fetch(apiUrl, { method: 'POST', signal: signal, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(requestBody) });
                             const rawText = await response.text();
-                            if(!rawText || rawText.trim() === "") throw new Error("Server API membalas kosong.");
-                            let data; try { data = JSON.parse(rawText); } catch(e) { throw new Error("Invalid JSON dari API."); }
-
                             if(response.ok) {
+                                let data = JSON.parse(rawText);
                                 let aiText = data.candidates[0].content.parts[0].text.trim();
                                 try {
-                                    let cleanJson = aiText;
-                                    if(cleanJson.startsWith('```json')) { cleanJson = cleanJson.substring(7); if(cleanJson.endsWith('```')) cleanJson = cleanJson.substring(0, cleanJson.length - 3); }
-                                    let parsed = JSON.parse(cleanJson.trim());
+                                    let cleanJson = aiText.replace(/```json|```/g, '').trim();
+                                    let parsed = JSON.parse(cleanJson);
                                     if(parsed.title) art.title = parsed.title;
-                                    if(parsed.meta || parsed.meta_description) art.meta = parsed.meta || parsed.meta_description;
-                                    if(parsed.content || parsed.content_html) aiText = parsed.content || parsed.content_html;
-                                } catch(e) {
-                                    let titleMatch = aiText.match(/"title"\s*:\s*"([^"]+)"/i); if(titleMatch) art.title = titleMatch[1];
-                                    let metaMatch = aiText.match(/"meta"\s*:\s*"([^"]+)"/i); if(metaMatch) art.meta = metaMatch[1];
-                                    let contentMatch = aiText.match(/"content"\s*:\s*"([\s\S]*)/i);
-                                    if(contentMatch) { aiText = contentMatch[1].replace(/"}$/g, '').replace(/\\"/g, '"').replace(/\\n/g, '<br>'); } 
-                                    else { aiText = aiText.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>'); if(!aiText.startsWith('<p>') && !aiText.startsWith('<h')) aiText = '<p>' + aiText + '</p>'; aiText = aiText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); }
-                                }
-                                aiText = cleanFinalHTML(aiText);
-                                art.body = aiText; art.wordCount = getWordCount(aiText); art.status = "Draft";
-                            } else {
-                                art.status = "API Error"; art.body = `Gemini Error: ${data.error ? data.error.message : JSON.stringify(data)}`;
-                            }
-                        } catch (err) {
-                            if(err.name === 'AbortError') { art.status = "Stopped"; art.body = "Proses dihentikan."; } 
-                            else { art.status = "Network Error"; art.body = `Failed. Message: ${err.message}`; }
-                        }
+                                    if(parsed.meta) art.meta = parsed.meta;
+                                    if(parsed.content) aiText = parsed.content;
+                                } catch(e) {}
+                                art.body = cleanFinalHTML(aiText);
+                                art.wordCount = getWordCount(art.body); art.status = "Draft";
+                            } else { art.status = "API Error"; }
+                        } catch (err) { art.status = "Error"; }
                     }
                 }
             });
 
             await Promise.all(chunkPromises);
-            saveData();
-            renderArticleTable();
-            await new Promise(r => setTimeout(r, 100)); // Jeda UI
+            saveData(); renderArticleTable();
+            await new Promise(r => setTimeout(r, 100));
         }
         
         isGenerating = false;
-        btnBulk.innerHTML = origHtml;
-        btnBulk.disabled = false;
+        btnBulk.innerHTML = origHtml; btnBulk.disabled = false;
         btnGen.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Generate Articles';
         btnGen.classList.remove('btn-danger'); btnGen.classList.add('btn-dark');
-        
-        if(!isSimulation && (!abortController || !abortController.signal.aborted)) showToast(`Bulk Regeneration Completed!`);
+        showToast(`Bulk Regeneration Completed!`);
     };
 
     keywordInput.addEventListener('input', (e) => { document.getElementById('baris-count').innerText = `${e.target.value.split('\n').filter(l => l.trim() !== '').length} Lines`; });
     document.getElementById('btn-clear').onclick = () => { keywordInput.value = ''; document.getElementById('baris-count').innerText = '0 Lines'; };
     function generateSlug(text) { return text.toString().toLowerCase().trim().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '').replace(/\-\-+/g, '-'); }
 
-    // ================= 9. REAL API LOGIC: GENERATE MULTI-WORKERS =================
     document.getElementById('btn-generate').onclick = async () => {
         const btnGen = document.getElementById('btn-generate');
-        
         if (isGenerating) {
-            isGenerating = false;
-            if(abortController) abortController.abort(); 
+            isGenerating = false; if(abortController) abortController.abort(); 
             btnGen.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Generate Articles';
             btnGen.classList.remove('btn-danger'); btnGen.classList.add('btn-dark');
-            showToast("Generation stopped by user.");
-            return;
+            showToast("Generation stopped."); return;
         }
 
         const keywords = keywordInput.value.split('\n').filter(l => l.trim() !== '');
-        if(keywords.length === 0) return alert("Please enter keywords first!");
+        if(keywords.length === 0) return alert("Enter keywords first!");
         
-        const workerCount = parseInt(document.getElementById('setting-workers').value) || 1;
-
         const apiKey = appData.settings.apiKey.trim();
         const provider = appData.settings.provider;
         const modelStr = appData.settings.model; 
-        const temp = appData.settings.temp;
-        const isSimulation = !apiKey; 
-
-        const selectedProject = document.getElementById('gen-select-project').value;
-        const selectedPromptName = document.getElementById('gen-select-prompt').value; 
-        const selectedCat = document.getElementById('gen-input-category').value.trim() || 'Uncategorized';
+        const workerCount = parseInt(document.getElementById('setting-workers').value) || 1;
         const valLanguage = document.getElementById('gen-input-language').value || 'English';
-        
+        const selectedPromptName = document.getElementById('gen-select-prompt').value; 
         const promptTemplate = appData.prompts.find(p => p.name === selectedPromptName);
-        if(!promptTemplate && !isSimulation) return alert("Prompt Template is missing!");
 
-        isGenerating = true;
-        abortController = new AbortController(); 
-        const signal = abortController.signal;
-
+        isGenerating = true; abortController = new AbortController();
         btnGen.innerHTML = '<i class="fa-solid fa-stop"></i> Stop Generation';
         btnGen.classList.remove('btn-dark'); btnGen.classList.add('btn-danger');
 
         for (let i = 0; i < keywords.length; i += workerCount) {
             if (!isGenerating) break; 
-
             const chunk = keywords.slice(i, i + workerCount);
-            
             const pendingArticles = chunk.map(kw => {
-                const fullInput = kw.trim();
-                const primaryKeyword = fullInput.split(':')[0].trim(); 
-
+                const primaryKeyword = kw.split(':')[0].trim(); 
                 let newArticle = { 
-                    id: generateId(), checked: false, keyword: fullInput, title: primaryKeyword, slug: generateSlug(primaryKeyword), meta: `Article about ${primaryKeyword}`, 
-                    project: selectedProject, category: selectedCat, usedPrompt: selectedPromptName, 
+                    id: generateId(), checked: false, keyword: kw, title: primaryKeyword, slug: generateSlug(primaryKeyword), meta: `Article about ${primaryKeyword}`, 
+                    project: document.getElementById('gen-select-project').value, category: document.getElementById('gen-input-category').value.trim() || 'Uncategorized', usedPrompt: selectedPromptName, 
                     status: "Generating...", date: "-", body: "Waiting for AI...", wordCount: 0
                 };
-                appData.articles.unshift(newArticle);
-                return newArticle;
+                appData.articles.unshift(newArticle); return newArticle;
             });
             renderArticleTable(); 
 
             const chunkPromises = pendingArticles.map(async (art) => {
-                const replaceVars = (text) => {
-                    if(!text) return "";
-                    return text.replace(/\[KEYWORD\]/gi, art.keyword).replace(/\[LANGUAGE\]/gi, valLanguage);
-                };
-
-                let finalPersona = replaceVars(promptTemplate ? promptTemplate.persona : "");
-                let finalTask = replaceVars(promptTemplate ? promptTemplate.task : "Write about [KEYWORD]");
-                let finalRules = replaceVars(promptTemplate ? promptTemplate.rules : "");
+                const replaceVars = (text) => text ? text.replace(/\[KEYWORD\]/gi, art.keyword).replace(/\[LANGUAGE\]/gi, valLanguage) : "";
+                let finalPersona = replaceVars(promptTemplate?.persona || "");
+                let finalTask = replaceVars(promptTemplate?.task || "Write about [KEYWORD]");
+                let finalRules = replaceVars(promptTemplate?.rules || "");
                 let userMessageContent = `${finalTask}\n\nSTRICT RULES:\n${finalRules}`;
 
-                if (isSimulation) {
-                    await new Promise(r => setTimeout(r, 600 + Math.random() * 500));
-                    art.status = "Draft (Sim)";
-                    art.body = `<h2>${art.title}</h2><p><b>[SIMULATION MODE]</b> No API Key found.</p><p>Language: ${valLanguage}</p>`;
-                    art.wordCount = getWordCount(art.body);
+                if (!apiKey) {
+                    await new Promise(r => setTimeout(r, 800));
+                    art.status = "Draft (Sim)"; art.body = `<h2>${art.title}</h2><p>Simulation Mode</p>`;
                 } else {
-                    if (provider === 'openai' || provider === 'sumopod') {
-                        try {
-                            let apiModel = "gpt-4o-mini";
-                            let apiUrl = ["https://", "api.openai.com", "/v1/chat/completions"].join("");
-
-                            if (provider === 'openai') {
-                                apiModel = modelStr;
-                            } else if (provider === 'sumopod') {
-                                apiUrl = ["https://", "ai.sumopod.com", "/v1/chat/completions"].join("");
-                                apiModel = modelStr; 
-                                const customModelValue = document.querySelector('#setting-custom-url-box input#setting-custom-model').value.trim();
-                                if(modelStr === 'custom' && customModelValue) apiModel = customModelValue;
-                            }
-
-                            // Anti-Crash untuk Mimo & Claude di OpenAI schema (Token Limit & System Role fix)
-                            let maxT = 8000;
-                            let reqMessages = [ { role: "system", content: finalPersona || "You are a helpful assistant." }, { role: "user", content: userMessageContent } ];
-                            if(apiModel.includes('mimo') || apiModel.includes('claude') || apiModel.includes('qwen')) {
-                                maxT = 4000;
-                                reqMessages = [ { role: "user", content: `SYSTEM INSTRUCTION:\n${finalPersona || "You are a helpful assistant."}\n\nUSER PROMPT:\n${userMessageContent}` } ];
-                            }
-
-                            const response = await fetch(apiUrl, {
-                                method: 'POST',
-                                signal: signal, 
-                                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                                body: JSON.stringify({
-                                    model: apiModel, temperature: temp, max_tokens: maxT,
-                                    messages: reqMessages
-                                })
+                    try {
+                        let aiText = "";
+                        if(provider === 'openai' || provider === 'sumopod') {
+                            let apiUrl = provider === 'openai' ? "https://api.openai.com/v1/chat/completions" : "https://ai.sumopod.com/v1/chat/completions";
+                            const res = await fetch(apiUrl, {
+                                method: 'POST', signal: abortController.signal, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                                body: JSON.stringify({ model: modelStr, temperature: appData.settings.temp, messages: [{ role: "system", content: finalPersona }, { role: "user", content: userMessageContent }] })
                             });
-
-                            const rawText = await response.text();
-                            if(!rawText || rawText.trim() === "") throw new Error("Server API membalas kosong.");
-                            
-                            let data;
-                            try { data = JSON.parse(rawText); } catch(e) { throw new Error("Invalid JSON dari API."); }
-
-                            if(response.ok) {
-                                let aiText = data.choices[0].message.content.trim();
-                                try {
-                                    let cleanJson = aiText;
-                                    if(cleanJson.startsWith('```json')) { cleanJson = cleanJson.substring(7); if(cleanJson.endsWith('```')) cleanJson = cleanJson.substring(0, cleanJson.length - 3); }
-                                    let parsed = JSON.parse(cleanJson.trim());
-                                    if(parsed.title) art.title = parsed.title;
-                                    if(parsed.meta || parsed.meta_description) art.meta = parsed.meta || parsed.meta_description;
-                                    if(parsed.content || parsed.content_html) aiText = parsed.content || parsed.content_html;
-                                } catch(e) {
-                                    let titleMatch = aiText.match(/"title"\s*:\s*"([^"]+)"/i);
-                                    if(titleMatch) art.title = titleMatch[1];
-                                    let metaMatch = aiText.match(/"meta"\s*:\s*"([^"]+)"/i);
-                                    if(metaMatch) art.meta = metaMatch[1];
-                                    let contentMatch = aiText.match(/"content"\s*:\s*"([\s\S]*)/i);
-                                    if(contentMatch) { aiText = contentMatch[1].replace(/"}$/g, '').replace(/\\"/g, '"').replace(/\\n/g, '<br>'); } 
-                                    else { aiText = aiText.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>'); if(!aiText.startsWith('<p>') && !aiText.startsWith('<h')) aiText = '<p>' + aiText + '</p>'; aiText = aiText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); }
-                                }
-                                aiText = cleanFinalHTML(aiText);
-                                art.body = aiText; art.wordCount = getWordCount(aiText); art.status = "Draft";
-                            } else {
-                                art.status = "API Error"; art.body = `API Error: ${data.error ? data.error.message : JSON.stringify(data)}`;
-                            }
-                        } catch (err) {
-                            if(err.name === 'AbortError') { art.status = "Stopped"; art.body = "Proses dihentikan."; } 
-                            else { art.status = "Network Error"; art.body = `Failed. Message: ${err.message}`; }
+                            const data = await res.json(); aiText = data.choices[0].message.content;
+                        } else {
+                            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelStr}:generateContent?key=${apiKey}`, {
+                                method: 'POST', signal: abortController.signal, headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ contents: [{ parts: [{ text: userMessageContent }] }], systemInstruction: { parts: [{ text: finalPersona }] } })
+                            });
+                            const data = await res.json(); aiText = data.candidates[0].content.parts[0].text;
                         }
-
-                    } else if (provider === 'gemini') {
                         try {
-                            let apiModel = modelStr;
-                            let defaultGeminiUrl = ["https://", "generativelanguage.googleapis.com", "/v1beta/models/", apiModel, ":generateContent"].join("");
-                            const finalUrl = defaultGeminiUrl.includes('?') ? `${defaultGeminiUrl}&key=${apiKey}` : `${defaultGeminiUrl}?key=${apiKey}`;
-
-                            let requestBody = { contents: [{ parts: [{ text: userMessageContent }] }], generationConfig: { temperature: temp, maxOutputTokens: 8192 } };
-                            if (finalPersona) requestBody.systemInstruction = { parts: [{ text: finalPersona }] };
-
-                            const response = await fetch(finalUrl, { method: 'POST', signal: signal, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(requestBody) });
-
-                            const rawText = await response.text();
-                            if(!rawText || rawText.trim() === "") throw new Error("Server API membalas kosong.");
-                            let data; try { data = JSON.parse(rawText); } catch(e) { throw new Error("Invalid JSON dari API."); }
-
-                            if(response.ok) {
-                                let aiText = data.candidates[0].content.parts[0].text.trim();
-                                try {
-                                    let cleanJson = aiText;
-                                    if(cleanJson.startsWith('```json')) { cleanJson = cleanJson.substring(7); if(cleanJson.endsWith('```')) cleanJson = cleanJson.substring(0, cleanJson.length - 3); }
-                                    let parsed = JSON.parse(cleanJson.trim());
-                                    if(parsed.title) art.title = parsed.title;
-                                    if(parsed.meta || parsed.meta_description) art.meta = parsed.meta || parsed.meta_description;
-                                    if(parsed.content || parsed.content_html) aiText = parsed.content || parsed.content_html;
-                                } catch(e) {
-                                    let titleMatch = aiText.match(/"title"\s*:\s*"([^"]+)"/i);
-                                    if(titleMatch) art.title = titleMatch[1];
-                                    let metaMatch = aiText.match(/"meta"\s*:\s*"([^"]+)"/i);
-                                    if(metaMatch) art.meta = metaMatch[1];
-                                    let contentMatch = aiText.match(/"content"\s*:\s*"([\s\S]*)/i);
-                                    if(contentMatch) { aiText = contentMatch[1].replace(/"}$/g, '').replace(/\\"/g, '"').replace(/\\n/g, '<br>'); } 
-                                    else { aiText = aiText.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>'); if(!aiText.startsWith('<p>') && !aiText.startsWith('<h')) aiText = '<p>' + aiText + '</p>'; aiText = aiText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); }
-                                }
-                                aiText = cleanFinalHTML(aiText);
-                                art.body = aiText; art.wordCount = getWordCount(aiText); art.status = "Draft";
-                            } else {
-                                art.status = "API Error"; art.body = `Gemini Error: ${data.error ? data.error.message : JSON.stringify(data)}`;
-                            }
-                        } catch (err) {
-                            if(err.name === 'AbortError') { art.status = "Stopped"; art.body = "Proses dihentikan."; } 
-                            else { art.status = "Network Error"; art.body = `Failed. Message: ${err.message}`; }
-                        }
-                    }
+                            let cleanJson = aiText.replace(/```json|```/g, '').trim();
+                            let parsed = JSON.parse(cleanJson);
+                            if(parsed.title) art.title = parsed.title;
+                            if(parsed.meta) art.meta = parsed.meta;
+                            if(parsed.content) aiText = parsed.content;
+                        } catch(e) {}
+                        art.body = cleanFinalHTML(aiText); art.status = "Draft";
+                    } catch(e) { art.status = "Error"; }
                 }
+                art.wordCount = getWordCount(art.body);
             });
-
             await Promise.all(chunkPromises);
-            saveData();
-            renderArticleTable();
-            await new Promise(r => setTimeout(r, 100)); // Jeda UI
+            saveData(); renderArticleTable();
         }
-        
-        isGenerating = false;
-        btnGen.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Generate Articles';
+        isGenerating = false; btnGen.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Generate Articles';
         btnGen.classList.remove('btn-danger'); btnGen.classList.add('btn-dark');
-        
-        if(!isSimulation && (!abortController || !abortController.signal.aborted)) showToast(`Generation Completed!`);
     };
 
     window.regenerateArticle = async function(id) {
         const art = appData.articles.find(a => a.id === id);
-        if(!art) return;
-        
-        if (isGenerating) return alert("Harap tunggu proses generate saat ini selesai atau Stop terlebih dahulu.");
-        if(!confirm(`Regenerate artikel untuk keyword: "${art.keyword}"?\n\n(Ini akan menimpa artikel sebelumnya menggunakan pengaturan di sidebar kiri saat ini)`)) return;
+        if(!art || isGenerating) return;
+        if(!confirm(`Regenerate: "${art.keyword}"?`)) return;
 
+        art.status = "Regenerating..."; renderArticleTable();
         const apiKey = appData.settings.apiKey.trim();
-        const provider = appData.settings.provider;
-        const modelStr = appData.settings.model; 
-        const temp = appData.settings.temp;
-        const isSimulation = !apiKey; 
-
-        const selectedProject = document.getElementById('gen-select-project').value;
-        const selectedPromptName = document.getElementById('gen-select-prompt').value; 
-        const selectedCat = document.getElementById('gen-input-category').value.trim() || 'Uncategorized';
         const valLanguage = document.getElementById('gen-input-language').value || 'English';
-        
-        const promptTemplate = appData.prompts.find(p => p.name === selectedPromptName);
-        if(!promptTemplate && !isSimulation) return alert("Prompt Template is missing!");
+        const promptTemplate = appData.prompts.find(p => p.name === document.getElementById('gen-select-prompt').value);
 
-        art.status = "Regenerating...";
-        renderArticleTable();
+        const replaceVars = (text) => text ? text.replace(/\[KEYWORD\]/gi, art.keyword).replace(/\[LANGUAGE\]/gi, valLanguage) : "";
+        let finalPersona = replaceVars(promptTemplate?.persona || "");
+        let userMessageContent = replaceVars(promptTemplate?.task || "") + "\n\nRULES:\n" + replaceVars(promptTemplate?.rules || "");
 
-        const cleanTitle = art.keyword;
-        const replaceVars = (text) => {
-            if(!text) return "";
-            return text.replace(/\[KEYWORD\]/gi, cleanTitle).replace(/\[LANGUAGE\]/gi, valLanguage);
-        };
-
-        let finalPersona = replaceVars(promptTemplate ? promptTemplate.persona : "");
-        let finalTask = replaceVars(promptTemplate ? promptTemplate.task : "Write about [KEYWORD]");
-        let finalRules = replaceVars(promptTemplate ? promptTemplate.rules : "");
-        let userMessageContent = `${finalTask}\n\nSTRICT RULES:\n${finalRules}`;
-
-        art.project = selectedProject;
-        art.category = selectedCat;
-        art.usedPrompt = selectedPromptName;
-
-        if (isSimulation) {
+        if (!apiKey) {
             await new Promise(r => setTimeout(r, 600));
-            art.status = "Draft (Sim)";
-            art.body = `<h2>${cleanTitle.split(':')[0].trim()}</h2><p><b>[REGENERATED SIMULATION]</b></p><p>Language: ${valLanguage}</p>`;
-            art.wordCount = getWordCount(art.body);
-            saveData(); renderArticleTable();
-            showToast("Article Regenerated!");
+            art.status = "Draft (Sim)"; art.body = `<h2>${art.keyword}</h2><p>Simulation</p>`;
         } else {
-            let localAbort = new AbortController();
-            const signal = localAbort.signal;
-
-            if (provider === 'openai' || provider === 'sumopod') {
+            try {
+                let apiUrl = appData.settings.provider === 'gemini' ? `https://generativelanguage.googleapis.com/v1beta/models/${appData.settings.model}:generateContent?key=${apiKey}` : (appData.settings.provider === 'sumopod' ? "https://ai.sumopod.com/v1/chat/completions" : "https://api.openai.com/v1/chat/completions");
+                const res = await fetch(apiUrl, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                    body: JSON.stringify(appData.settings.provider === 'gemini' ? { contents: [{ parts: [{ text: userMessageContent }] }], systemInstruction: { parts: [{ text: finalPersona }] } } : { model: appData.settings.model, messages: [{role:"system",content:finalPersona},{role:"user",content:userMessageContent}] })
+                });
+                const data = await res.json();
+                let aiText = appData.settings.provider === 'gemini' ? data.candidates[0].content.parts[0].text : data.choices[0].message.content;
                 try {
-                    let apiModel = "gpt-4o-mini";
-                    let apiUrl = ["https://", "api.openai.com", "/v1/chat/completions"].join("");
-
-                    if (provider === 'openai') {
-                        apiModel = modelStr;
-                    } else if (provider === 'sumopod') {
-                        apiUrl = ["https://", "ai.sumopod.com", "/v1/chat/completions"].join("");
-                        apiModel = modelStr; 
-                        const customModelValue = document.querySelector('#setting-custom-url-box input#setting-custom-model').value.trim();
-                        if(modelStr === 'custom' && customModelValue) apiModel = customModelValue;
-                    }
-
-                    // Anti-Crash untuk Mimo & Claude di OpenAI schema (Token Limit & System Role fix)
-                    let maxT = 8000;
-                    let reqMessages = [ { role: "system", content: finalPersona || "You are a helpful assistant." }, { role: "user", content: userMessageContent } ];
-                    if(apiModel.includes('mimo') || apiModel.includes('claude') || apiModel.includes('qwen')) {
-                        maxT = 4000;
-                        reqMessages = [ { role: "user", content: `SYSTEM INSTRUCTION:\n${finalPersona || "You are a helpful assistant."}\n\nUSER PROMPT:\n${userMessageContent}` } ];
-                    }
-
-                    const response = await fetch(apiUrl, {
-                        method: 'POST', signal: signal, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                        body: JSON.stringify({ model: apiModel, temperature: temp, max_tokens: maxT, messages: reqMessages })
-                    });
-
-                    const rawText = await response.text();
-                    if(!rawText || rawText.trim() === "") throw new Error("Server API membalas kosong.");
-                    let data; try { data = JSON.parse(rawText); } catch(e) { throw new Error("Invalid JSON dari API."); }
-
-                    if(response.ok) {
-                        let aiText = data.choices[0].message.content.trim();
-                        try {
-                            let cleanJson = aiText;
-                            if(cleanJson.startsWith('```json')) { cleanJson = cleanJson.substring(7); if(cleanJson.endsWith('```')) cleanJson = cleanJson.substring(0, cleanJson.length - 3); }
-                            let parsed = JSON.parse(cleanJson.trim());
-                            if(parsed.title) art.title = parsed.title;
-                            if(parsed.meta || parsed.meta_description) art.meta = parsed.meta || parsed.meta_description;
-                            if(parsed.content || parsed.content_html) aiText = parsed.content || parsed.content_html;
-                        } catch(e) {
-                            let titleMatch = aiText.match(/"title"\s*:\s*"([^"]+)"/i); if(titleMatch) art.title = titleMatch[1];
-                            let metaMatch = aiText.match(/"meta"\s*:\s*"([^"]+)"/i); if(metaMatch) art.meta = metaMatch[1];
-                            let contentMatch = aiText.match(/"content"\s*:\s*"([\s\S]*)/i);
-                            if(contentMatch) { aiText = contentMatch[1].replace(/"}$/g, '').replace(/\\"/g, '"').replace(/\\n/g, '<br>'); } 
-                            else { aiText = aiText.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>'); if(!aiText.startsWith('<p>') && !aiText.startsWith('<h')) aiText = '<p>' + aiText + '</p>'; aiText = aiText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); }
-                        }
-                        aiText = cleanFinalHTML(aiText);
-                        art.body = aiText; art.wordCount = getWordCount(aiText); art.status = "Draft";
-                    } else {
-                        art.status = "API Error"; art.body = `API Error: ${data.error ? data.error.message : JSON.stringify(data)}`;
-                    }
-                } catch (err) {
-                    if(err.name === 'AbortError') { art.status = "Stopped"; art.body = "Proses dihentikan."; } 
-                    else { art.status = "Network Error"; art.body = `Failed. Message: ${err.message}`; }
-                }
-            } else if (provider === 'gemini') {
-                try {
-                    let apiModel = modelStr;
-                    let defaultGeminiUrl = ["https://", "generativelanguage.googleapis.com", "/v1beta/models/", apiModel, ":generateContent"].join("");
-                    const finalUrl = defaultGeminiUrl.includes('?') ? `${defaultGeminiUrl}&key=${apiKey}` : `${defaultGeminiUrl}?key=${apiKey}`;
-
-                    let requestBody = { contents: [{ parts: [{ text: userMessageContent }] }], generationConfig: { temperature: temp, maxOutputTokens: 8192 } };
-                    if (finalPersona) requestBody.systemInstruction = { parts: [{ text: finalPersona }] };
-
-                    const response = await fetch(finalUrl, { method: 'POST', signal: signal, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(requestBody) });
-
-                    const rawText = await response.text();
-                    if(!rawText || rawText.trim() === "") throw new Error("Server API membalas kosong.");
-                    let data; try { data = JSON.parse(rawText); } catch(e) { throw new Error("Invalid JSON dari API."); }
-
-                    if(response.ok) {
-                        let aiText = data.candidates[0].content.parts[0].text.trim();
-                        try {
-                            let cleanJson = aiText;
-                            if(cleanJson.startsWith('```json')) { cleanJson = cleanJson.substring(7); if(cleanJson.endsWith('```')) cleanJson = cleanJson.substring(0, cleanJson.length - 3); }
-                            let parsed = JSON.parse(cleanJson.trim());
-                            if(parsed.title) art.title = parsed.title;
-                            if(parsed.meta || parsed.meta_description) art.meta = parsed.meta || parsed.meta_description;
-                            if(parsed.content || parsed.content_html) aiText = parsed.content || parsed.content_html;
-                        } catch(e) {
-                            let titleMatch = aiText.match(/"title"\s*:\s*"([^"]+)"/i); if(titleMatch) art.title = titleMatch[1];
-                            let metaMatch = aiText.match(/"meta"\s*:\s*"([^"]+)"/i); if(metaMatch) art.meta = metaMatch[1];
-                            let contentMatch = aiText.match(/"content"\s*:\s*"([\s\S]*)/i);
-                            if(contentMatch) { aiText = contentMatch[1].replace(/"}$/g, '').replace(/\\"/g, '"').replace(/\\n/g, '<br>'); } 
-                            else { aiText = aiText.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>'); if(!aiText.startsWith('<p>') && !aiText.startsWith('<h')) aiText = '<p>' + aiText + '</p>'; aiText = aiText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); }
-                        }
-                        aiText = cleanFinalHTML(aiText);
-                        art.body = aiText; art.wordCount = getWordCount(aiText); art.status = "Draft";
-                    } else {
-                        art.status = "API Error"; art.body = `Gemini Error: ${data.error ? data.error.message : JSON.stringify(data)}`;
-                    }
-                } catch (err) {
-                    if(err.name === 'AbortError') { art.status = "Stopped"; art.body = "Proses dihentikan."; } 
-                    else { art.status = "Network Error"; art.body = `Failed. Message: ${err.message}`; }
-                }
-            }
-            saveData(); renderArticleTable(); showToast("Article Regenerated!");
+                    let parsed = JSON.parse(aiText.replace(/```json|```/g, '').trim());
+                    if(parsed.title) art.title = parsed.title;
+                    if(parsed.content) aiText = parsed.content;
+                } catch(e) {}
+                art.body = cleanFinalHTML(aiText); art.status = "Draft";
+            } catch(e) { art.status = "Error"; }
         }
+        art.wordCount = getWordCount(art.body); saveData(); renderArticleTable();
     }
 
-    // ================= FUNGSI AUTO-GENERATE TITLE ONLY =================
     window.generateTitleOnly = async function() {
         if(!editId) return;
         const art = appData.articles.find(a => a.id === editId);
-        if(!art) return;
-        
-        const keyword = document.getElementById('edit-keyword').value || (art.keyword ? art.keyword.split(':')[0].trim() : art.title);
-        if(!keyword) return alert("Please ensure the Keyword field is filled!");
-
-        const btn = document.querySelector('button[onclick="generateTitleOnly()"]');
-        const origIcon = btn.innerHTML;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; btn.disabled = true;
-
-        const apiKey = appData.settings.apiKey.trim(); const provider = appData.settings.provider; const modelStr = appData.settings.model; const temp = appData.settings.temp; const isSimulation = !apiKey; 
-
-        if (isSimulation) {
-            await new Promise(r => setTimeout(r, 600));
-            document.getElementById('edit-judul').value = `Amazing Guide to ${keyword}`;
-            document.getElementById('edit-judul').dispatchEvent(new Event('input'));
-            btn.innerHTML = origIcon; btn.disabled = false; return;
-        }
-
-        const promptText = `Write a catchy, high-CTR SEO title for an article about "${keyword}". DO NOT include any year in the title. Respond ONLY with the raw title text. Do not use quotes.`;
+        const keyword = document.getElementById('edit-keyword').value || art.title;
+        const apiKey = appData.settings.apiKey.trim();
+        if(!apiKey) { document.getElementById('edit-judul').value = "Amazing Guide to " + keyword; return; }
 
         try {
-            let resultTitle = ""; let apiUrl = ""; let apiModel = ""; let requestBody = {}; let headers = { 'Content-Type': 'application/json' };
-
-            if (provider === 'openai' || provider === 'sumopod') {
-                apiModel = "gpt-4o-mini"; apiUrl = "https://api.openai.com/v1/chat/completions"; headers['Authorization'] = `Bearer ${apiKey}`;
-                if (provider === 'sumopod') { apiUrl = "https://ai.sumopod.com/v1/chat/completions"; apiModel = modelStr; const customModelValue = document.getElementById('setting-custom-model').value.trim(); if(modelStr === 'custom' && customModelValue) apiModel = customModelValue; } else { apiModel = modelStr; }
-                
-                // Anti-Crash Mimo/Claude logic for titles
-                let maxT = 100;
-                let reqMessages = [ { role: "user", content: promptText } ];
-                requestBody = { model: apiModel, temperature: temp, max_tokens: maxT, messages: reqMessages };
-                
-            } else if (provider === 'gemini') {
-                apiModel = modelStr; apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${apiModel}:generateContent`; apiUrl = apiUrl.includes('?') ? `${apiUrl}&key=${apiKey}` : `${apiUrl}?key=${apiKey}`;
-                requestBody = { contents: [{ parts: [{ text: promptText }] }], generationConfig: { temperature: temp } };
-            }
-
-            const response = await fetch(apiUrl, { method: 'POST', headers: headers, body: JSON.stringify(requestBody) });
-            const rawText = await response.text();
-            if(!rawText || rawText.trim() === "") throw new Error(`Server API membalas kosong.`);
-            let data; try { data = JSON.parse(rawText); } catch(e) { throw new Error(`Format balasan salah.`); }
-            if(!response.ok) { throw new Error("API Error"); }
-
-            if (provider === 'openai' || provider === 'sumopod') { resultTitle = data.choices[0].message.content.trim(); } else if (provider === 'gemini') { resultTitle = data.candidates[0].content.parts[0].text.trim(); }
-
-            if(resultTitle) {
-                resultTitle = resultTitle.replace(/^"|"$/g, '').replace(/^\*\*|\*\*$/g, '');
-                document.getElementById('edit-judul').value = resultTitle;
-                document.getElementById('edit-judul').dispatchEvent(new Event('input'));
-                showToast("Title generated successfully!");
-            }
-        } catch(err) { alert("Failed to generate title:\n" + err.message); }
-        btn.innerHTML = origIcon; btn.disabled = false;
+            const promptText = `Write a high-CTR SEO title for "${keyword}". Raw text only.`;
+            const res = await fetch(appData.settings.provider === 'gemini' ? `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}` : "https://ai.sumopod.com/v1/chat/completions", {
+                method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                body: JSON.stringify(appData.settings.provider === 'gemini' ? { contents: [{ parts: [{ text: promptText }] }] } : { model: "gpt-4o-mini", messages: [{role:"user",content:promptText}] })
+            });
+            const data = await res.json();
+            let title = appData.settings.provider === 'gemini' ? data.candidates[0].content.parts[0].text : data.choices[0].message.content;
+            document.getElementById('edit-judul').value = title.replace(/"/g, '').trim();
+        } catch(e) { alert("Title error"); }
     }
 
-    // ================= 10. ADVANCED EDITOR LOGIC =================
     const tabVisual = document.getElementById('tab-visual'); const tabCode = document.getElementById('tab-code');
     const editorVisual = document.getElementById('edit-body-visual'); const editorCode = document.getElementById('edit-body-code'); const editorToolbar = document.getElementById('editor-toolbar');
 
     tabVisual.onclick = () => { tabVisual.classList.add('active'); tabCode.classList.remove('active'); editorCode.style.display = 'none'; editorVisual.style.display = 'block'; editorToolbar.style.display = 'flex'; editorVisual.innerHTML = editorCode.value; };
     tabCode.onclick = () => { tabCode.classList.add('active'); tabVisual.classList.remove('active'); editorVisual.style.display = 'none'; editorCode.style.display = 'block'; editorToolbar.style.display = 'none'; editorCode.value = editorVisual.innerHTML; };
 
-    document.getElementById('edit-keyword').addEventListener('input', function() { 
-        if(!document.getElementById('edit-slug').dataset.manualEdit) {
-            document.getElementById('edit-slug').value = generateSlug(this.value.split(':')[0]); 
-        }
-    });
-    document.getElementById('edit-slug').addEventListener('input', function() { this.dataset.manualEdit = "true"; });
-    document.getElementById('edit-judul').addEventListener('input', function() {
-        if(!document.getElementById('edit-slug').dataset.manualEdit) {
-            document.getElementById('edit-slug').value = generateSlug(this.value); 
-        }
-    });
-
     window.openEditArticle = function(id) {
         editId = id; const art = appData.articles.find(a => a.id === id);
         if(!art) return;
         document.getElementById('edit-judul').value = art.title; 
-        document.getElementById('edit-keyword').value = art.keyword ? art.keyword.split(':')[0].trim() : ''; 
+        document.getElementById('edit-keyword').value = art.keyword?.split(':')[0] || ""; 
         document.getElementById('edit-slug').value = art.slug || generateSlug(art.title);
-        document.getElementById('edit-kategori').value = art.category || ''; document.getElementById('edit-meta').value = art.meta || ''; document.getElementById('edit-used-prompt').innerText = art.usedPrompt || 'Default Template';
-        if(art.date && art.date !== '-') document.getElementById('edit-tanggal').value = art.date; else document.getElementById('edit-tanggal').value = '';
-        tabVisual.click(); document.getElementById('edit-body-visual').innerHTML = art.body; document.getElementById('edit-body-code').value = art.body; 
-        document.getElementById('edit-slug').dataset.manualEdit = "";
+        document.getElementById('edit-kategori').value = art.category || ""; document.getElementById('edit-meta').value = art.meta || "";
+        document.getElementById('edit-used-prompt').innerText = art.usedPrompt || "Default";
+        document.getElementById('edit-tanggal').value = art.date !== "-" ? art.date : "";
+        tabVisual.click(); editorVisual.innerHTML = art.body; editorCode.value = art.body;
         openModal('edit-modal');
     };
 
-    window.regenerateFromModal = function() {
-        if(!editId) return;
-        closeModal('edit-modal');
-        regenerateArticle(editId);
-    };
-
     document.getElementById('btn-save-edit').onclick = () => {
-        if(editId) {
-            const art = appData.articles.find(a => a.id === editId);
-            if(art) {
-                art.title = document.getElementById('edit-judul').value; 
-                art.keyword = document.getElementById('edit-keyword').value; 
-                art.slug = document.getElementById('edit-slug').value;
-                art.category = document.getElementById('edit-kategori').value || 'Uncategorized'; art.meta = document.getElementById('edit-meta').value;
-                const inputDate = document.getElementById('edit-tanggal').value; art.date = inputDate ? inputDate : '-';
-                
-                if(tabVisual.classList.contains('active')) art.body = document.getElementById('edit-body-visual').innerHTML; else art.body = document.getElementById('edit-body-code').value;
-                art.wordCount = getWordCount(art.body);
-                
-                saveData(); renderArticleTable(); closeModal('edit-modal'); showToast("Article updated.");
-            }
+        const art = appData.articles.find(a => a.id === editId);
+        if(art) {
+            art.title = document.getElementById('edit-judul').value; art.slug = document.getElementById('edit-slug').value;
+            art.category = document.getElementById('edit-kategori').value || "Uncategorized"; art.meta = document.getElementById('edit-meta').value;
+            art.date = document.getElementById('edit-tanggal').value || "-";
+            art.body = tabVisual.classList.contains('active') ? editorVisual.innerHTML : editorCode.value;
+            art.wordCount = getWordCount(art.body); saveData(); renderArticleTable(); closeModal('edit-modal');
         }
     };
 
-    // ================= 11. REAL API LOGIC: POST TO WORDPRESS =================
-    document.getElementById('wp-status').addEventListener('change', function() { document.getElementById('schedule-config').style.display = this.value === 'schedule' ? 'flex' : 'none'; });
-
-    document.getElementById('btn-post-wp').onclick = () => {
-        const selected = appData.articles.filter(a => a.checked);
-        if(selected.length === 0) return alert("Select at least 1 article to post.");
-        openModal('wp-modal');
-    };
-
-    async function resolveCategory(catNameString, targetUrl, creds) {
-        if(!catNameString || catNameString.trim() === '') return [];
-        let names = catNameString.split(',').map(s => s.trim()).filter(s => s);
-        let ids = [];
-        for (let name of names) {
-            try {
-                let res = await fetch(`${targetUrl}/wp-json/wp/v2/categories?search=${encodeURIComponent(name)}`, {
-                    headers: { 'Authorization': `Basic ${creds}` }
-                });
-                let data = await res.json();
-                let match = data.find(c => c.name.toLowerCase() === name.toLowerCase());
-                if(match) {
-                    ids.push(match.id);
-                } else {
-                    let createRes = await fetch(`${targetUrl}/wp-json/wp/v2/categories`, {
-                        method: 'POST',
-                        headers: { 'Authorization': `Basic ${creds}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ name: name })
-                    });
-                    let createData = await createRes.json();
-                    if(createData.id) ids.push(createData.id);
-                }
-            } catch(e) { console.error("Category Sync Error", e); }
-        }
-        return ids;
-    }
-    
     document.getElementById('btn-submit-wp').onclick = async () => {
-        const selectedArticles = appData.articles.filter(a => a.checked);
-        const accountId = document.getElementById('wp-account').value;
-        const targetWp = appData.wpAccounts.find(w => w.id == accountId);
-        
-        if(!targetWp) return alert("WP Account not found.");
+        const selected = appData.articles.filter(a => a.checked);
+        const wp = appData.wpAccounts.find(w => w.id == document.getElementById('wp-account').value);
+        if(!wp) return;
 
-        const statusOpt = document.getElementById('wp-status').value;
-        const credentials = btoa(`${targetWp.user}:${targetWp.pass}`);
-        const postsPerDay = parseInt(document.getElementById('wp-post-per-day').value) || 1;
-        let currentDate = document.getElementById('wp-start-date').value ? new Date(document.getElementById('wp-start-date').value) : new Date();
-        let postCounter = 0;
-
-        const btnSubmit = document.getElementById('btn-submit-wp');
-        btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Posting...';
-        btnSubmit.disabled = true;
-
-        closeModal('wp-modal'); 
-        showToast(`Mulai memposting ke ${targetWp.url}...`);
-
-        for (let i = 0; i < appData.articles.length; i++) {
-            let art = appData.articles[i];
-            if(art.checked) {
-                art.status = "Syncing Kategori...";
-                renderArticleTable();
-
-                let catIds = await resolveCategory(art.category, targetWp.url, credentials);
-
-                let postDateISO = null;
-                let displayDate = "-";
-                
-                if (statusOpt === 'schedule') {
-                    const yyyy = currentDate.getFullYear();
-                    const mm = String(currentDate.getMonth() + 1).padStart(2, '0');
-                    const dd = String(currentDate.getDate()).padStart(2, '0');
-                    displayDate = `${yyyy}-${mm}-${dd}`;
-                    postDateISO = currentDate.toISOString().split('.')[0]; 
-
-                    postCounter++;
-                    if (postCounter >= postsPerDay) {
-                        postCounter = 0;
-                        currentDate.setDate(currentDate.getDate() + 1);
-                    }
-                } else if (statusOpt === 'publish') {
-                    const d = new Date();
-                    displayDate = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-                }
-
-                let payload = {
-                    title: art.title,
-                    content: art.body,
-                    slug: art.slug,
-                    status: statusOpt === 'schedule' ? 'future' : statusOpt,
-                    meta: {
-                        rank_math_focus_keyword: art.keyword ? art.keyword.split(':')[0].trim() : art.title,
-                        rank_math_description: art.meta || "",
-                        rank_math_title: art.title
-                    }
-                };
-                if (catIds.length > 0) payload.categories = catIds;
-                if (postDateISO) payload.date = postDateISO;
-
-                art.status = "Mengirim...";
-                renderArticleTable();
-
-                try {
-                    const response = await fetch(`${targetWp.url}/wp-json/wp/v2/posts`, {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Basic ${credentials}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if(response.ok) {
-                        art.status = statusOpt === 'publish' ? 'Published' : (statusOpt === 'draft' ? 'Draft (WP)' : 'Scheduled');
-                        art.date = displayDate;
-                        art.checked = false;
-                    } else {
-                        const errData = await response.json();
-                        art.status = "WP Error";
-                        console.error(errData);
-                    }
-                } catch(e) {
-                    art.status = "Network Error";
-                    console.error(e);
-                }
-                saveData(); 
-                renderArticleTable();
-                
-                await new Promise(r => setTimeout(r, 50));
-            }
+        closeModal('wp-modal'); showToast("Posting...");
+        for (let art of selected) {
+            try {
+                const res = await fetch(`${wp.url}/wp-json/wp/v2/posts`, {
+                    method: 'POST', headers: { 'Authorization': `Basic ${btoa(wp.user+':'+wp.pass)}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title: art.title, content: art.body, slug: art.slug, status: 'draft' })
+                });
+                if(res.ok) { art.status = "Draft (WP)"; art.checked = false; } else { art.status = "WP Error"; }
+            } catch(e) { art.status = "Net Error"; }
+            saveData(); renderArticleTable();
         }
-
-        btnSubmit.innerHTML = 'Submit Post';
-        btnSubmit.disabled = false;
-        showToast("Proses posting selesai!");
+        showToast("Done");
     };
 
-    // ================= 12. DANGER ZONE (RESET & CLEAR CACHE) =================
     window.clearAllArticles = function() {
-        if(appData.articles.length === 0) return alert("Tabel artikel sudah kosong!");
-        
-        if(confirm("⚠ PERINGATAN!\n\nApakah Anda yakin ingin menghapus SELURUH artikel di memori?\nPastikan Anda sudah mem-backup atau mempostingnya ke WordPress.\n\nKlik OK untuk menghapus semuanya.")) {
-            appData.articles = [];
-            saveData();
-            renderArticleTable();
-            showToast("Semua artikel berhasil dibersihkan dari memori!");
-        }
+        if(confirm("Hapus SEMUA artikel?")) { appData.articles = []; saveData(); renderArticleTable(); }
     };
 
     window.factoryReset = function() {
-        if(confirm("☠ FACTORY RESET ☠\n\nTindakan ini akan MENGHAPUS SEMUA DATA secara permanen, termasuk:\n- Semua Artikel\n- Semua Prompt Template\n- API Keys & Global Settings\n- Akun WordPress\n\nApakah Anda benar-benar yakin ingin mengembalikan aplikasi ke pengaturan pabrik?")) {
-            
-            // Konfirmasi kedua untuk mencegah salah klik
-            if(prompt("Ketik 'RESET' (tanpa tanda kutip) untuk mengonfirmasi penghapusan permanen:") === "RESET") {
-                localforage.removeItem('sumoArticleGenerator').then(function() {
-                    alert("Data berhasil dihapus total. Aplikasi akan dimuat ulang.");
-                    window.location.reload();
-                }).catch(function(err) {
-                    alert("Terjadi kesalahan saat menghapus data: " + err);
-                });
-            } else {
-                alert("Factory reset dibatalkan.");
-            }
+        if(prompt("Ketik 'RESET' untuk hapus semua data:") === "RESET") {
+            localforage.removeItem('sumoArticleGenerator').then(() => window.location.reload());
         }
     };
 
