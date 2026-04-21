@@ -729,34 +729,9 @@
 
     let defaultAppData = {
         projects: [
-            { id: 1, name: "Tech Blog Network", desc: "Technology & gadget niche.", icon: "fa-laptop-code", color: "blue" }
+            { id: 1, name: "Project 1", desc: "Project 1.", icon: "fa-laptop-code", color: "blue" }
         ],
-        prompts: [
-            { 
-                id: 1, name: "Master SEO Copywriter (Strict JSON)", 
-                persona: "You are an expert SEO Copywriter. You MUST output ONLY a valid JSON object. No markdown wrapping (no ```json). STOP IMMEDIATELY after the closing brace `}`.", 
-                task: "Write about [KEYWORD] (Topic: [TOPIC]). Target audience: [AUDIENCE]. Language: [LANGUAGE] (American - US Government style). Tone: [STYLE]. Target length: [LENGTH].\n\n### HTML STRUCTURE\n1. Intro: Hook + [KEYWORD] mention.\n2. Direct Answer (H2): Immediate concise answer to the core question.\n3. Deep Dive (Body): H2/H3 headers + <ul> lists explaining details.\n4. Table: STRICT HTML `<table class=\"responsive-table\">`, <thead>, <tbody>. NO Markdown pipes (|).\n5. FAQ Section: You MUST use <h3> tags for each of the 7 questions. Each answer MUST be strictly between 40-50 words. Every answer MUST include 1 specific trivia or real-world statistic (e.g., from a recent study, government data, or historical fact) to build E-A-T (Expertise, Authoritativeness, Trustworthiness).\n6. Conclusion (H2): Max 2 short paragraphs. Appreciation + Tip + CTA.\n\nReturn EXACTLY these 3 keys:\n- \"title\": A creative, high-CTR SEO title. MUST contain \"[KEYWORD]\". DO NOT use generic phrases like 'A Comprehensive Guide', mention the audience directly, or include any year (e.g., 2024, 2025, 2026) in the title.\n- \"meta\": Summary with \"[KEYWORD]\" (max 160 chars).\n- \"content\": The full HTML body. Escape all quotes.", 
-                rules: "STRICTLY 8th-grade level. Simple words. No jargon. Smooth transitions. DO NOT write labels like 'Bridge Sentence'. Use <strong> for emphasis, <em> for titles. Banned words: Delve, Realm, Tapestry, Unlock, Game-changer. Output ONLY pure JSON. NO extra text." 
-            },
-            { 
-                id: 2, name: "Comprehensive Guide & FAQ (JSON)", 
-                persona: "You are an expert content writer and researcher. You write highly structured, factual, and easy-to-read content (8th-grade reading level). You MUST output ONLY a valid JSON object. No markdown wrapping.", 
-                task: "Write a comprehensive guide and FAQ about [KEYWORD] (Topic: [TOPIC]). Target audience: [AUDIENCE]. Language: [LANGUAGE]. Tone: [STYLE]. [LENGTH].\n\nStructure Requirements:\n1. Opening Paragraph: A direct answer/overview (Inverted Pyramid style).\n2. Main Body: Explain concepts using proper H2 and H3 tags.\n3. Comparison/Data: MUST include an HTML <table> to compare relevant data.\n4. Lists: MUST include structured bullet points <ul> or numbered lists <ol>.\n5. FAQ Section: Create a dedicated 'FAQs' section at the end with 4-5 common questions.\n6. Conclusion: A brief closing paragraph.\n\nReturn a JSON object with EXACTLY 3 keys:\n- \"title\": A catchy and factual title. YOU MUST INCLUDE THE EXACT PHRASE \"[KEYWORD]\" IN THE TITLE.\n- \"meta\": A concise meta description (max 150 chars).\n- \"content\": The full article in pure HTML format.", 
-                rules: "Output ONLY pure JSON. Do not include ```json tags. NEVER rephrase or change the exact [KEYWORD] in the title. No complex jargon. No fluff or filler sentences." 
-            },
-            { 
-                id: 3, name: "Advanced Entity-Based SEO (JSON)", 
-                persona: "You are an advanced SEO strategist and entity-based content writer. You MUST output ONLY a valid JSON object. No markdown wrapping.", 
-                task: "Write a highly optimized SEO article about [KEYWORD] focusing on [TOPIC]. Target audience: [AUDIENCE]. Language: [LANGUAGE]. Tone: [STYLE]. [LENGTH].\n\nStructure Requirements:\n- Use Subject-Predicate-Object (SPO) methodology for clear sentences.\n- Use proper HTML tags (<h2>, <h3>, <p>, <strong>).\n- MUST include at least one informative HTML <table> to compare data/attributes.\n- MUST include structured bullet points <ul>.\n- Place the keyword naturally in the first paragraph, one H2, and the closing paragraph. Highlight entities in bold.\n\nReturn a JSON object with EXACTLY 3 keys:\n- \"title\": A high-CTR SEO title. YOU MUST INCLUDE THE EXACT PHRASE \"[KEYWORD]\" IN THE TITLE.\n- \"meta\": The SEO meta description (max 150 chars).\n- \"content\": The full article in HTML format.", 
-                rules: "Output ONLY pure JSON. Do not include ```json tags. NEVER rephrase or change the exact [KEYWORD] in the title. No keyword stuffing. No robotic transition words (e.g., 'In conclusion', 'Moreover')." 
-            },
-            {
-                id: 4, name: "🔥 Ultimate Blaze Mode (6-Step)",
-                persona: "You are an elite SEO Content Strategist and Copywriter. You use the 6-Step Blaze Framework to craft high-converting, authoritative content. You MUST output ONLY a valid JSON object. No markdown wrapping.",
-                task: "Execute the following 6-Step Blaze Framework about [KEYWORD] (Topic: [TOPIC]). Target: [AUDIENCE]. Language: [LANGUAGE]. Tone: [STYLE]. Target length: [LENGTH].\n\n1. TITLE: Create a click-magnet, SEO-friendly title (max 60 chars) using honest clickbait techniques. Must contain \"[KEYWORD]\".\n2. OPENING (Hook): Write an emotional or provocative opening paragraph using the PAS (Problem, Agitation, Solution) method to hook the reader in 3 seconds.\n3. SECTION (Outline): Create a logical outline with H2 and H3 subheadings using the inverted pyramid structure.\n4. DETAIL (Body): Write deep, comprehensive explanations for each subheading. Use short sentences, bullet points for readability, and natural transitions. Insert relevant internal link placeholders like `<a href=\"#\">relevant text</a>` naturally.\n5. META: Write a 150-160 character Meta Description summarizing the content with a strong CTA. Must start with \"[KEYWORD]\".\n6. CLOSING: Summarize main points. End with a question to provoke comments or a strong Call to Action (CTA).\n\nReturn EXACTLY this JSON format:\n{\n  \"title\": \"(Step 1)\",\n  \"meta\": \"(Step 5)\",\n  \"content\": \"(HTML containing Step 2, Step 3, Step 4, and Step 6)\"\n}",
-                rules: "Output ONLY pure JSON. Do not include ```json tags. NEVER rephrase the exact [KEYWORD] in the title. Maintain strict 8th-grade reading level. Do not use generic filler words."
-            }
-        ],
+        prompts: [], // <-- SUDAH DIKOSONGKAN
         wpAccounts: [], 
         articles: [],
         settings: { provider: 'sumopod', model: 'gpt-4o-mini', apiKey: '', temp: 0.7, customModel: '', workers: 1 }
@@ -804,10 +779,7 @@
         if(!appData.settings) appData.settings = defaultAppData.settings; 
         if(!appData.settings.workers) appData.settings.workers = 1;
         
-        // Memastikan ke-4 prompt default ada jika library kosong atau baru di-update
-        if(appData.prompts.length < 4 && appData.prompts.filter(p => p.name.includes("Blaze Mode")).length === 0) {
-            appData.prompts = [...defaultAppData.prompts];
-        }
+        // FUNGSI AUTO-RESTORE SUDAH DIHAPUS DARI SINI
 
         appData.articles.forEach(art => { if(!art.id) art.id = generateId(); });
 
@@ -1130,7 +1102,7 @@
                     <option value="gemini/gemini-3.1-pro-preview">Gemini 3.1 Pro Preview</option>
                 </optgroup>
                 <optgroup label="Anthropic">
-                    <option value="claude-haiku-4-5">Claude Haiku 4.5</option>
+                    <option value="claude-haiku-4-5">Claude Haiku 4.5 (30% Off)</option>
                     <option value="claude-sonnet-4-6">Claude Sonnet 4.6</option>
                     <option value="claude-opus-4-6">Claude Opus 4.6</option>
                 </optgroup>
@@ -1157,8 +1129,8 @@
                 </optgroup>
                 <optgroup label="Mimo">
                     <option value="mimo-v2-flash">Mimo V2 Flash</option>
-                    <option value="mimo-v2-omni">Mimo V2 Omni (100% Off)</option>
-                    <option value="mimo-v2-pro">Mimo V2 Pro (100% Off)</option>
+                    <option value="mimo-v2-omni">Mimo V2 Omni (70% Off)</option>
+                    <option value="mimo-v2-pro">Mimo V2 Pro (70% Off)</option>
                 </optgroup>
                 <option value="custom">Custom Model ID</option>
             `; 
