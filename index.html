@@ -733,8 +733,14 @@
     }
 
     localforage.getItem('sumoArticleGenerator').then(function(value) {
-        if (value) appData = value;
-        if(!appData.settings) appData.settings = defaultAppData.settings; 
+        if (value) {
+            appData = value;
+            if(!appData.articles) appData.articles = [];
+            if(!appData.prompts || appData.prompts.length === 0) appData.prompts = defaultAppData.prompts;
+            if(!appData.projects || appData.projects.length === 0) appData.projects = defaultAppData.projects;
+            if(!appData.wpAccounts) appData.wpAccounts = [];
+            if(!appData.settings) appData.settings = defaultAppData.settings;
+        }
         if(!appData.settings.workers) appData.settings.workers = 1;
 
         appData.articles.forEach(art => { if(!art.id) art.id = generateId(); });
@@ -1520,7 +1526,7 @@
         const origHtml = btnBulk.innerHTML;
         btnBulk.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...'; btnBulk.disabled = true;
 
-        const apiKey = appData.settings.apiKey.trim();
+        const apiKey = (appData.settings.apiKey || "").trim();
         const provider = appData.settings.provider;
         const modelStr = appData.settings.model; 
         const temp = appData.settings.temp;
@@ -1532,7 +1538,7 @@
         const valLanguage = document.getElementById('gen-input-language').value || 'English';
 
         const promptTemplate = appData.prompts.find(p => p.name === selectedPromptName);
-        if(!promptTemplate && apiKey) {
+        if(!promptTemplate && apiKey !== "") {
             btnBulk.innerHTML = origHtml; btnBulk.disabled = false;
             return alert("Prompt Template is missing!");
         }
@@ -1572,7 +1578,10 @@
                             if(provider === 'sumopod' && modelStr === 'custom') apiModel = document.querySelector('#setting-custom-url-box input#setting-custom-model').value.trim();
 
                             let maxT = 8000;
-                            let reqMessages = [ { role: "system", content: finalPersona || "You are a helpful assistant." }, { role: "user", content: userMessageContent } ];
+                            let reqMessages = [];
+                            if (finalPersona.trim() !== "") reqMessages.push({ role: "system", content: finalPersona });
+                            reqMessages.push({ role: "user", content: userMessageContent });
+                            
                             if(apiModel.includes('mimo') || apiModel.includes('claude') || apiModel.includes('qwen')) {
                                 maxT = 4000; reqMessages = [ { role: "user", content: `SYSTEM INSTRUCTION:\n${finalPersona || "You are a helpful assistant."}\n\nUSER PROMPT:\n${userMessageContent}` } ];
                             }
@@ -1581,13 +1590,28 @@
                                 method: 'POST', signal: signal, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
                                 body: JSON.stringify({ model: apiModel, temperature: temp, max_tokens: maxT, messages: reqMessages })
                             });
-                            const data = await res.json(); aiText = data.choices[0].message.content.trim();
+                            const rawText = await res.text();
+                            if(res.ok) {
+                                const data = JSON.parse(rawText);
+                                aiText = data.choices[0].message.content.trim();
+                            } else {
+                                throw new Error(rawText);
+                            }
                         } else if (provider === 'gemini') {
+                            let requestBody = { contents: [{ parts: [{ text: userMessageContent }] }], generationConfig: { temperature: temp } };
+                            if (finalPersona.trim() !== "") { requestBody.systemInstruction = { parts: [{ text: finalPersona }] }; }
+                            
                             const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelStr}:generateContent?key=${apiKey}`, {
                                 method: 'POST', signal: signal, headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ contents: [{ parts: [{ text: userMessageContent }] }], systemInstruction: { parts: [{ text: finalPersona }] } })
+                                body: JSON.stringify(requestBody)
                             });
-                            const data = await res.json(); aiText = data.candidates[0].content.parts[0].text.trim();
+                            const rawText = await res.text();
+                            if (res.ok) {
+                                const data = JSON.parse(rawText);
+                                aiText = data.candidates[0].content.parts[0].text.trim();
+                            } else {
+                                throw new Error(rawText);
+                            }
                         }
                         
                         try {
@@ -1595,7 +1619,9 @@
                             if(parsed.title) art.title = parsed.title; if(parsed.meta) art.meta = parsed.meta; if(parsed.content) aiText = parsed.content;
                         } catch(e) {}
                         art.body = cleanFinalHTML(aiText); art.status = "Draft";
-                    } catch(e) { art.status = "Error"; }
+                    } catch(e) {
+                        if(e.name === 'AbortError') { art.status = "Stopped"; } else { art.status = "Error"; art.body = e.message; }
+                    }
                 }
                 art.wordCount = getWordCount(art.body);
             });
@@ -1611,101 +1637,122 @@
 
     // ================= 9. REAL API LOGIC: GENERATE MULTI-WORKERS =================
     document.getElementById('btn-generate').onclick = async () => {
-        const btnGen = document.getElementById('btn-generate');
-        if (isGenerating) {
-            isGenerating = false; if(abortController) abortController.abort(); 
+        try {
+            const btnGen = document.getElementById('btn-generate');
+            if (isGenerating) {
+                isGenerating = false; if(abortController) abortController.abort(); 
+                btnGen.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Generate Articles';
+                btnGen.classList.remove('btn-danger'); btnGen.classList.add('btn-dark');
+                showToast("Generation stopped."); return;
+            }
+
+            const keywords = keywordInput.value.split('\n').filter(l => l.trim() !== '');
+            if(keywords.length === 0) return alert("Enter keywords first!");
+            
+            const apiKey = (appData.settings.apiKey || "").trim();
+            const provider = appData.settings.provider;
+            const modelStr = appData.settings.model; 
+            const temp = appData.settings.temp;
+            const workerCount = parseInt(document.getElementById('setting-workers').value) || 1;
+            const valLanguage = document.getElementById('gen-input-language').value || 'English';
+            const selectedPromptName = document.getElementById('gen-select-prompt').value; 
+            const promptTemplate = appData.prompts.find(p => p.name === selectedPromptName);
+
+            if (!promptTemplate && apiKey !== "") return alert("Prompt Template is missing! Silakan buat/pilih prompt terlebih dahulu.");
+
+            isGenerating = true; abortController = new AbortController();
+            btnGen.innerHTML = '<i class="fa-solid fa-stop"></i> Stop Generation';
+            btnGen.classList.remove('btn-dark'); btnGen.classList.add('btn-danger');
+
+            for (let i = 0; i < keywords.length; i += workerCount) {
+                if (!isGenerating) break; 
+                const chunk = keywords.slice(i, i + workerCount);
+                const pendingArticles = chunk.map(kw => {
+                    const primaryKeyword = kw.split(':')[0].trim(); 
+                    let newArticle = { 
+                        id: generateId(), checked: false, keyword: kw, title: primaryKeyword, slug: generateSlug(primaryKeyword), meta: `Article about ${primaryKeyword}`, 
+                        project: document.getElementById('gen-select-project').value, category: document.getElementById('gen-input-category').value.trim() || 'Uncategorized', usedPrompt: selectedPromptName, 
+                        status: "Generating...", date: "-", body: "Waiting for AI...", wordCount: 0
+                    };
+                    appData.articles.unshift(newArticle); return newArticle;
+                });
+                renderArticleTable(); 
+
+                const chunkPromises = pendingArticles.map(async (art) => {
+                    const replaceVars = (text) => text ? text.replace(/\[KEYWORD\]/gi, art.keyword).replace(/\[LANGUAGE\]/gi, valLanguage) : "";
+                    let finalPersona = replaceVars(promptTemplate?.persona || "");
+                    let finalTask = replaceVars(promptTemplate?.task || "Write about [KEYWORD]");
+                    let finalRules = replaceVars(promptTemplate?.rules || "");
+                    let userMessageContent = `${finalTask}\n\nSTRICT RULES:\n${finalRules}`;
+
+                    if (!apiKey) {
+                        await new Promise(r => setTimeout(r, 800));
+                        art.status = "Draft (Sim)"; art.body = `<h2>${art.title}</h2><p>Simulation Mode - Masukkan API Key di menu Settings untuk generate beneran.</p>`;
+                    } else {
+                        try {
+                            let aiText = "";
+                            if(provider === 'openai' || provider === 'sumopod') {
+                                let apiUrl = provider === 'openai' ? "https://api.openai.com/v1/chat/completions" : "https://ai.sumopod.com/v1/chat/completions";
+                                let apiModel = modelStr;
+                                if(provider === 'sumopod' && modelStr === 'custom') apiModel = document.querySelector('#setting-custom-url-box input#setting-custom-model').value.trim();
+
+                                let maxT = 8000;
+                                let reqMessages = [];
+                                if (finalPersona.trim() !== "") reqMessages.push({ role: "system", content: finalPersona });
+                                reqMessages.push({ role: "user", content: userMessageContent });
+
+                                if(apiModel.includes('mimo') || apiModel.includes('claude') || apiModel.includes('qwen')) {
+                                    maxT = 4000; reqMessages = [ { role: "user", content: `SYSTEM INSTRUCTION:\n${finalPersona || "You are a helpful assistant."}\n\nUSER PROMPT:\n${userMessageContent}` } ];
+                                }
+
+                                const res = await fetch(apiUrl, {
+                                    method: 'POST', signal: abortController.signal, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                                    body: JSON.stringify({ model: apiModel, temperature: temp, max_tokens: maxT, messages: reqMessages })
+                                });
+                                const rawText = await res.text();
+                                if(res.ok) {
+                                    const data = JSON.parse(rawText); aiText = data.choices[0].message.content;
+                                } else { throw new Error(rawText); }
+                            } else {
+                                let requestBody = { contents: [{ parts: [{ text: userMessageContent }] }], generationConfig: { temperature: temp } };
+                                if (finalPersona.trim() !== "") { requestBody.systemInstruction = { parts: [{ text: finalPersona }] }; }
+
+                                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelStr}:generateContent?key=${apiKey}`, {
+                                    method: 'POST', signal: abortController.signal, headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify(requestBody)
+                                });
+                                const rawText = await res.text();
+                                if (res.ok) {
+                                    const data = JSON.parse(rawText); aiText = data.candidates[0].content.parts[0].text;
+                                } else { throw new Error(rawText); }
+                            }
+                            try {
+                                let cleanJson = aiText.replace(/```json|```/g, '').trim();
+                                let parsed = JSON.parse(cleanJson);
+                                if(parsed.title) art.title = parsed.title;
+                                if(parsed.meta) art.meta = parsed.meta;
+                                if(parsed.content) aiText = parsed.content;
+                            } catch(e) {}
+                            art.body = cleanFinalHTML(aiText); art.status = "Draft";
+                        } catch(e) { 
+                            if(e.name === 'AbortError') { art.status = "Stopped"; } else { art.status = "Error"; art.body = e.message; }
+                        }
+                    }
+                    art.wordCount = getWordCount(art.body);
+                });
+                await Promise.all(chunkPromises);
+                saveData(); renderArticleTable();
+            }
+            isGenerating = false; btnGen.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Generate Articles';
+            btnGen.classList.remove('btn-danger'); btnGen.classList.add('btn-dark');
+            showToast("Generation completed!");
+        } catch (globalErr) {
+            console.error(globalErr); alert("Sistem Error: " + globalErr.message);
+            isGenerating = false;
+            const btnGen = document.getElementById('btn-generate');
             btnGen.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Generate Articles';
             btnGen.classList.remove('btn-danger'); btnGen.classList.add('btn-dark');
-            showToast("Generation stopped."); return;
         }
-
-        const keywords = keywordInput.value.split('\n').filter(l => l.trim() !== '');
-        if(keywords.length === 0) return alert("Enter keywords first!");
-        
-        const apiKey = appData.settings.apiKey.trim();
-        const provider = appData.settings.provider;
-        const modelStr = appData.settings.model; 
-        const workerCount = parseInt(document.getElementById('setting-workers').value) || 1;
-        const valLanguage = document.getElementById('gen-input-language').value || 'English';
-        const selectedPromptName = document.getElementById('gen-select-prompt').value; 
-        const promptTemplate = appData.prompts.find(p => p.name === selectedPromptName);
-
-        if (!promptTemplate && apiKey) return alert("Prompt Template is missing! Silakan buat/pilih prompt terlebih dahulu.");
-
-        isGenerating = true; abortController = new AbortController();
-        btnGen.innerHTML = '<i class="fa-solid fa-stop"></i> Stop Generation';
-        btnGen.classList.remove('btn-dark'); btnGen.classList.add('btn-danger');
-
-        for (let i = 0; i < keywords.length; i += workerCount) {
-            if (!isGenerating) break; 
-            const chunk = keywords.slice(i, i + workerCount);
-            const pendingArticles = chunk.map(kw => {
-                const primaryKeyword = kw.split(':')[0].trim(); 
-                let newArticle = { 
-                    id: generateId(), checked: false, keyword: kw, title: primaryKeyword, slug: generateSlug(primaryKeyword), meta: `Article about ${primaryKeyword}`, 
-                    project: document.getElementById('gen-select-project').value, category: document.getElementById('gen-input-category').value.trim() || 'Uncategorized', usedPrompt: selectedPromptName, 
-                    status: "Generating...", date: "-", body: "Waiting for AI...", wordCount: 0
-                };
-                appData.articles.unshift(newArticle); return newArticle;
-            });
-            renderArticleTable(); 
-
-            const chunkPromises = pendingArticles.map(async (art) => {
-                const replaceVars = (text) => text ? text.replace(/\[KEYWORD\]/gi, art.keyword).replace(/\[LANGUAGE\]/gi, valLanguage) : "";
-                let finalPersona = replaceVars(promptTemplate?.persona || "");
-                let finalTask = replaceVars(promptTemplate?.task || "Write about [KEYWORD]");
-                let finalRules = replaceVars(promptTemplate?.rules || "");
-                let userMessageContent = `${finalTask}\n\nSTRICT RULES:\n${finalRules}`;
-
-                if (!apiKey) {
-                    await new Promise(r => setTimeout(r, 800));
-                    art.status = "Draft (Sim)"; art.body = `<h2>${art.title}</h2><p>Simulation Mode - Masukkan API Key di menu Settings untuk generate beneran.</p>`;
-                } else {
-                    try {
-                        let aiText = "";
-                        if(provider === 'openai' || provider === 'sumopod') {
-                            let apiUrl = provider === 'openai' ? "https://api.openai.com/v1/chat/completions" : "https://ai.sumopod.com/v1/chat/completions";
-                            let apiModel = modelStr;
-                            if(provider === 'sumopod' && modelStr === 'custom') apiModel = document.querySelector('#setting-custom-url-box input#setting-custom-model').value.trim();
-
-                            let maxT = 8000;
-                            let reqMessages = [ { role: "system", content: finalPersona || "You are a helpful assistant." }, { role: "user", content: userMessageContent } ];
-                            if(apiModel.includes('mimo') || apiModel.includes('claude') || apiModel.includes('qwen')) {
-                                maxT = 4000; reqMessages = [ { role: "user", content: `SYSTEM INSTRUCTION:\n${finalPersona || "You are a helpful assistant."}\n\nUSER PROMPT:\n${userMessageContent}` } ];
-                            }
-
-                            const res = await fetch(apiUrl, {
-                                method: 'POST', signal: abortController.signal, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                                body: JSON.stringify({ model: apiModel, temperature: appData.settings.temp, max_tokens: maxT, messages: reqMessages })
-                            });
-                            const data = await res.json(); aiText = data.choices[0].message.content;
-                        } else {
-                            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelStr}:generateContent?key=${apiKey}`, {
-                                method: 'POST', signal: abortController.signal, headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ contents: [{ parts: [{ text: userMessageContent }] }], systemInstruction: { parts: [{ text: finalPersona }] } })
-                            });
-                            const data = await res.json(); aiText = data.candidates[0].content.parts[0].text;
-                        }
-                        try {
-                            let cleanJson = aiText.replace(/```json|```/g, '').trim();
-                            let parsed = JSON.parse(cleanJson);
-                            if(parsed.title) art.title = parsed.title;
-                            if(parsed.meta) art.meta = parsed.meta;
-                            if(parsed.content) aiText = parsed.content;
-                        } catch(e) {}
-                        art.body = cleanFinalHTML(aiText); art.status = "Draft";
-                    } catch(e) { 
-                        if(e.name === 'AbortError') { art.status = "Stopped"; } else { art.status = "Error"; }
-                    }
-                }
-                art.wordCount = getWordCount(art.body);
-            });
-            await Promise.all(chunkPromises);
-            saveData(); renderArticleTable();
-        }
-        isGenerating = false; btnGen.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Generate Articles';
-        btnGen.classList.remove('btn-danger'); btnGen.classList.add('btn-dark');
-        showToast("Generation completed!");
     };
 
     window.regenerateArticle = async function(id) {
@@ -1714,11 +1761,11 @@
         if(!confirm(`Regenerate: "${art.keyword}"?`)) return;
 
         art.status = "Regenerating..."; renderArticleTable();
-        const apiKey = appData.settings.apiKey.trim();
+        const apiKey = (appData.settings.apiKey || "").trim();
         const valLanguage = document.getElementById('gen-input-language').value || 'English';
         const promptTemplate = appData.prompts.find(p => p.name === document.getElementById('gen-select-prompt').value);
 
-        if (!promptTemplate && apiKey) return alert("Prompt Template is missing!");
+        if (!promptTemplate && apiKey !== "") return alert("Prompt Template is missing!");
 
         const replaceVars = (text) => text ? text.replace(/\[KEYWORD\]/gi, art.keyword).replace(/\[LANGUAGE\]/gi, valLanguage) : "";
         let finalPersona = replaceVars(promptTemplate?.persona || "");
@@ -1738,12 +1785,16 @@
 
                 let reqBody;
                 if(appData.settings.provider === 'gemini') {
-                    reqBody = { contents: [{ parts: [{ text: userMessageContent }] }], systemInstruction: { parts: [{ text: finalPersona }] } };
+                    reqBody = { contents: [{ parts: [{ text: userMessageContent }] }], generationConfig: { temperature: appData.settings.temp } };
+                    if (finalPersona.trim() !== "") { reqBody.systemInstruction = { parts: [{ text: finalPersona }] }; }
                 } else {
                     let maxT = 8000;
-                    let reqMessages = [{role:"system",content:finalPersona || "You are a helpful assistant."},{role:"user",content:userMessageContent}];
+                    let reqMessages = [];
+                    if (finalPersona.trim() !== "") reqMessages.push({ role: "system", content: finalPersona });
+                    reqMessages.push({ role: "user", content: userMessageContent });
+                    
                     if(apiModel.includes('mimo') || apiModel.includes('claude') || apiModel.includes('qwen')) {
-                        maxT = 4000; reqMessages = [{ role: "user", content: `SYSTEM INSTRUCTION:\n${finalPersona || "You are a helpful assistant."}\n\nUSER PROMPT:\n${userMessageContent}` }];
+                        maxT = 4000; reqMessages = [{ role: "user", content: `SYSTEM INSTRUCTION:\n${finalPersona}\n\nUSER PROMPT:\n${userMessageContent}` }];
                     }
                     reqBody = { model: apiModel, temperature: appData.settings.temp, max_tokens: maxT, messages: reqMessages };
                 }
@@ -1752,16 +1803,18 @@
                     method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
                     body: JSON.stringify(reqBody)
                 });
-                const data = await res.json();
+                const rawText = await res.text();
+                if(!res.ok) throw new Error(rawText);
+
+                const data = JSON.parse(rawText);
                 let aiText = appData.settings.provider === 'gemini' ? data.candidates[0].content.parts[0].text : data.choices[0].message.content;
                 try {
                     let parsed = JSON.parse(aiText.replace(/```json|```/g, '').trim());
                     if(parsed.title) art.title = parsed.title;
-                    if(parsed.meta) art.meta = parsed.meta;
                     if(parsed.content) aiText = parsed.content;
                 } catch(e) {}
                 art.body = cleanFinalHTML(aiText); art.status = "Draft";
-            } catch(e) { art.status = "Error"; }
+            } catch(e) { art.status = "Error"; art.body = e.message; }
         }
         art.wordCount = getWordCount(art.body); saveData(); renderArticleTable(); showToast("Regenerated!");
     }
@@ -1771,17 +1824,23 @@
         if(!editId) return;
         const art = appData.articles.find(a => a.id === editId);
         const keyword = document.getElementById('edit-keyword').value || art.title;
-        const apiKey = appData.settings.apiKey.trim();
+        const apiKey = (appData.settings.apiKey || "").trim();
         if(!apiKey) { document.getElementById('edit-judul').value = "Amazing Guide to " + keyword; return; }
 
         try {
             const promptText = `Write a high-CTR SEO title for "${keyword}". Raw text only.`;
-            const res = await fetch(appData.settings.provider === 'gemini' ? `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}` : "https://ai.sumopod.com/v1/chat/completions", {
+            const provider = appData.settings.provider;
+            
+            let apiUrl = provider === 'gemini' ? `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}` : "https://ai.sumopod.com/v1/chat/completions";
+            let reqBody = provider === 'gemini' ? { contents: [{ parts: [{ text: promptText }] }] } : { model: "gpt-4o-mini", messages: [{role:"user",content:promptText}] };
+
+            const res = await fetch(apiUrl, {
                 method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                body: JSON.stringify(appData.settings.provider === 'gemini' ? { contents: [{ parts: [{ text: promptText }] }] } : { model: "gpt-4o-mini", messages: [{role:"user",content:promptText}] })
+                body: JSON.stringify(reqBody)
             });
+            if(!res.ok) throw new Error("API fail");
             const data = await res.json();
-            let title = appData.settings.provider === 'gemini' ? data.candidates[0].content.parts[0].text : data.choices[0].message.content;
+            let title = provider === 'gemini' ? data.candidates[0].content.parts[0].text : data.choices[0].message.content;
             document.getElementById('edit-judul').value = title.replace(/"/g, '').trim();
         } catch(e) { alert("Title error"); }
     }
