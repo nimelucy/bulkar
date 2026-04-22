@@ -692,34 +692,9 @@
                 name: "Human-Centric SEO Master",
                 persona: `You are a Human-Centric Content Expert, an objective Subject Matter Expert (SME), and a Semantic SEO Specialist. Your primary goal is to provide immense value to the human reader, prioritizing natural flow, empathy, and high E-E-A-T (Experience, Expertise, Authoritativeness, Trustworthiness). Your writing must strictly adhere to an 8th-grade reading level. You adapt your tone dynamically: professional and authoritative in the main body, but casual and lifelike in the conclusion. You MUST output ONLY a valid, minified JSON object. No markdown wrapping.`,
                 
-                task: `Write an exhaustive, master-class article targeting the keyword: [KEYWORD]. (Language: [LANGUAGE]).
+                task: `Write an exhaustive, master-class article targeting the keyword: [KEYWORD]. (Language: [LANGUAGE]).\n\nVALUE, TRUST & ORGANIC LENGTH MANDATE:\n- HIGH INFORMATION GAIN: Every paragraph must reward the reader with a new actionable takeaway, unique insight, data point, or perspective.\n- ORGANIC LENGTH EXPANSION: To reach the massive length required, you MUST generate length organically. Add 12 to 15 highly relevant <h2> subtopics, deep-dive real-world examples, and data tables. \n- NO JARGON (8TH-GRADE LEVEL): Keep sentences short, clear, and punchy. Explain complex technical terms in everyday language.\n\n6-STEP BLAZE FRAMEWORK & STRUCTURE:\n1. TITLE: A highly engaging, human-friendly title containing the exact [KEYWORD]. (Max 60 chars, NO years).\n2. OPENING (ENTITY SEEDING): Mentally identify 4 highly relevant core entities related to the topic. Start IMMEDIATELY with EXACTLY 2 to 3 introductory paragraphs using <p> tags. DO NOT place any heading before the intro. Weave all 4 entities naturally into the very first paragraph using Subject-Predicate-Object (SPO) or Entity-Attribute-Value (EAV) structures. Show empathy.\n3. DEEP DIVE BODY (12-15 H2s): Generate 12 to 15 highly detailed <h2> subtopics. Take the reader on a logical journey. Use SPO and EAV naturally ONLY when clarifying complex definitions or entities.\n4. FORMATTING FOR VALUE: Include at least THREE (3) HTML <table class="responsive-table"> to compare data or entities. Use structured bullet points <ul> to break down complex steps.\n5. FAQ SECTION (SNIPPET BAIT): Create an <h2> ("FAQ"). Include EXACTLY 7 strictly relevant questions. Write straight-forward, in-depth answers (50-70 words each) using strict SPO or EAV sentences to optimize for Google Featured Snippets.\n6. CONCLUSION (LIFELIKE TONE): End with an <h2> ("Conclusion" or "Final Thoughts"). Write a casual, lifelike closing paragraph. \n\nEXPECTED JSON OUTPUT:\n{\n  "title": "A natural, high-CTR title containing the exact [KEYWORD]",\n  "meta": "A helpful, objective SEO meta description (max 150 chars)",\n  "content": "<p>First empathetic intro with 4 entities...</p><p>Second intro...</p><p>Third intro...</p><h2>Subtopic 1</h2><p>...</p><h2>Subtopic 12</h2><p>...</p><h2>FAQ</h2>..."\n}`,
 
-VALUE, TRUST & ORGANIC LENGTH MANDATE:
-- HIGH INFORMATION GAIN: Every paragraph must reward the reader with a new actionable takeaway, unique insight, data point, or perspective.
-- ORGANIC LENGTH EXPANSION: To reach the massive length required, you MUST generate length organically. Add 12 to 15 highly relevant <h2> subtopics, deep-dive real-world examples, and data tables. 
-- NO JARGON (8TH-GRADE LEVEL): Keep sentences short, clear, and punchy. Explain complex technical terms in everyday language.
-
-6-STEP BLAZE FRAMEWORK & STRUCTURE:
-1. TITLE: A highly engaging, human-friendly title containing the exact [KEYWORD]. (Max 60 chars, NO years).
-2. OPENING (ENTITY SEEDING): Mentally identify 4 highly relevant core entities related to the topic. Start IMMEDIATELY with EXACTLY 2 to 3 introductory paragraphs using <p> tags. DO NOT place any heading before the intro. Weave all 4 entities naturally into the very first paragraph using Subject-Predicate-Object (SPO) or Entity-Attribute-Value (EAV) structures. Show empathy.
-3. DEEP DIVE BODY (12-15 H2s): Generate 12 to 15 highly detailed <h2> subtopics. Take the reader on a logical journey. Use SPO and EAV naturally ONLY when clarifying complex definitions or entities.
-4. FORMATTING FOR VALUE: Include at least THREE (3) HTML <table class="responsive-table"> to compare data or entities. Use structured bullet points <ul> to break down complex steps.
-5. FAQ SECTION (SNIPPET BAIT): Create an <h2> ("FAQ"). Include EXACTLY 7 strictly relevant questions. Write straight-forward, in-depth answers (50-70 words each) using strict SPO or EAV sentences to optimize for Google Featured Snippets.
-6. CONCLUSION (LIFELIKE TONE): End with an <h2> ("Conclusion" or "Final Thoughts"). Write a casual, lifelike closing paragraph. 
-
-EXPECTED JSON OUTPUT:
-{
-  "title": "A natural, high-CTR title containing the exact [KEYWORD]",
-  "meta": "A helpful, objective SEO meta description (max 150 chars)",
-  "content": "<p>First empathetic intro with 4 entities...</p><p>Second intro...</p><p>Third intro...</p><h2>Subtopic 1</h2><p>...</p><h2>Subtopic 12</h2><p>...</p><h2>FAQ</h2>..."
-}`,
-
-                rules: `- STRICTLY NO SENTENCE PADDING (ANTI-FLUFF): NEVER artificially lengthen a simple fact just to increase the word count (e.g., do not turn "He bought 1kg of rice" into a long, rambling paragraph about buying rice). If you need more length, you MUST introduce completely NEW subtopics, examples, or tables. DO NOT loop or repeat concepts.
-- INVISIBLE SEO: Place the exact phrase "[KEYWORD]" NATURALLY in the Title, the opening paragraph, and the conclusion. Max density 1-1.5%. Rely on LSI synonyms throughout the body.
-- STRICTLY NO JARGON: Absolutely no rigid academic language, dense corporate speak, or unexplained technical jargon.
-- PURE JSON ONLY: Output pure JSON. No markdown formatting blocks (like \`\`\`json), no conversational text.
-- HTML ESCAPING (CRITICAL): You MUST escape all double quotes inside HTML attributes (e.g., <table class="responsive-table">) OR use single quotes.
-- BANNED WORDS (AI CLICHES): Welcome, Additionally, Ultimately, Delve, Tapestry, Embark, Invaluable, Shifting landscape, Testament, Beacon, Unlock, Furthermore, Moreover, In conclusion, Demystify, Ultimate. DO NOT start sentences with "Welcome", "Additionally", or "Ultimately".`
+                rules: `- STRICTLY NO SENTENCE PADDING (ANTI-FLUFF): NEVER artificially lengthen a simple fact just to increase the word count (e.g., do not turn "He bought 1kg of rice" into a long, rambling paragraph about buying rice). If you need more length, you MUST introduce completely NEW subtopics, examples, or tables. DO NOT loop or repeat concepts.\n- INVISIBLE SEO: Place the exact phrase "[KEYWORD]" NATURALLY in the Title, the opening paragraph, and the conclusion. Max density 1-1.5%. Rely on LSI synonyms throughout the body.\n- STRICTLY NO JARGON: Absolutely no rigid academic language, dense corporate speak, or unexplained technical jargon.\n- PURE JSON ONLY: Output pure JSON. No markdown formatting blocks (like \`\`\`json), no conversational text.\n- HTML ESCAPING (CRITICAL): You MUST escape all double quotes inside HTML attributes (e.g., <table class="responsive-table">) OR use single quotes.\n- BANNED WORDS (AI CLICHES): Welcome, Additionally, Ultimately, Delve, Tapestry, Embark, Invaluable, Shifting landscape, Testament, Beacon, Unlock, Furthermore, Moreover, In conclusion, Demystify, Ultimate. DO NOT start sentences with "Welcome", "Additionally", or "Ultimately".`
             }
         ],
         wpAccounts: [], 
@@ -1244,7 +1219,6 @@ EXPECTED JSON OUTPUT:
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a'); a.href = url; a.download = `Template_${generateSlug(p.name)}.txt`;
         document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-        showToast("Prompt downloaded!");
     };
 
     window.downloadArticlePrompt = function() {
@@ -1263,7 +1237,6 @@ EXPECTED JSON OUTPUT:
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a'); a.href = url; a.download = `Prompt_Used_${generateSlug(p.name)}.txt`;
         document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-        showToast("Prompt downloaded!");
     };
 
     window.importPromptTxt = function(event) {
@@ -1657,6 +1630,8 @@ EXPECTED JSON OUTPUT:
         const selectedPromptName = document.getElementById('gen-select-prompt').value; 
         const promptTemplate = appData.prompts.find(p => p.name === selectedPromptName);
 
+        if (!promptTemplate && apiKey) return alert("Prompt Template is missing! Silakan buat/pilih prompt terlebih dahulu.");
+
         isGenerating = true; abortController = new AbortController();
         btnGen.innerHTML = '<i class="fa-solid fa-stop"></i> Stop Generation';
         btnGen.classList.remove('btn-dark'); btnGen.classList.add('btn-danger');
@@ -1684,7 +1659,7 @@ EXPECTED JSON OUTPUT:
 
                 if (!apiKey) {
                     await new Promise(r => setTimeout(r, 800));
-                    art.status = "Draft (Sim)"; art.body = `<h2>${art.title}</h2><p>Simulation Mode</p>`;
+                    art.status = "Draft (Sim)"; art.body = `<h2>${art.title}</h2><p>Simulation Mode - Masukkan API Key di menu Settings untuk generate beneran.</p>`;
                 } else {
                     try {
                         let aiText = "";
@@ -1719,7 +1694,9 @@ EXPECTED JSON OUTPUT:
                             if(parsed.content) aiText = parsed.content;
                         } catch(e) {}
                         art.body = cleanFinalHTML(aiText); art.status = "Draft";
-                    } catch(e) { art.status = "Error"; }
+                    } catch(e) { 
+                        if(e.name === 'AbortError') { art.status = "Stopped"; } else { art.status = "Error"; }
+                    }
                 }
                 art.wordCount = getWordCount(art.body);
             });
@@ -1728,6 +1705,7 @@ EXPECTED JSON OUTPUT:
         }
         isGenerating = false; btnGen.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Generate Articles';
         btnGen.classList.remove('btn-danger'); btnGen.classList.add('btn-dark');
+        showToast("Generation completed!");
     };
 
     window.regenerateArticle = async function(id) {
@@ -1740,13 +1718,17 @@ EXPECTED JSON OUTPUT:
         const valLanguage = document.getElementById('gen-input-language').value || 'English';
         const promptTemplate = appData.prompts.find(p => p.name === document.getElementById('gen-select-prompt').value);
 
+        if (!promptTemplate && apiKey) return alert("Prompt Template is missing!");
+
         const replaceVars = (text) => text ? text.replace(/\[KEYWORD\]/gi, art.keyword).replace(/\[LANGUAGE\]/gi, valLanguage) : "";
         let finalPersona = replaceVars(promptTemplate?.persona || "");
-        let userMessageContent = replaceVars(promptTemplate?.task || "") + "\n\nRULES:\n" + replaceVars(promptTemplate?.rules || "");
+        let finalTask = replaceVars(promptTemplate?.task || "Write about [KEYWORD]");
+        let finalRules = replaceVars(promptTemplate?.rules || "");
+        let userMessageContent = `${finalTask}\n\nSTRICT RULES:\n${finalRules}`;
 
         if (!apiKey) {
             await new Promise(r => setTimeout(r, 600));
-            art.status = "Draft (Sim)"; art.body = `<h2>${art.keyword}</h2><p>Simulation</p>`;
+            art.status = "Draft (Sim)"; art.body = `<h2>${art.keyword.split(':')[0].trim()}</h2><p>Simulation Mode</p>`;
         } else {
             try {
                 let apiUrl = appData.settings.provider === 'gemini' ? `https://generativelanguage.googleapis.com/v1beta/models/${appData.settings.model}:generateContent?key=${apiKey}` : (appData.settings.provider === 'sumopod' ? "https://ai.sumopod.com/v1/chat/completions" : "https://api.openai.com/v1/chat/completions");
@@ -1758,11 +1740,12 @@ EXPECTED JSON OUTPUT:
                 if(appData.settings.provider === 'gemini') {
                     reqBody = { contents: [{ parts: [{ text: userMessageContent }] }], systemInstruction: { parts: [{ text: finalPersona }] } };
                 } else {
-                    let reqMessages = [{role:"system",content:finalPersona},{role:"user",content:userMessageContent}];
+                    let maxT = 8000;
+                    let reqMessages = [{role:"system",content:finalPersona || "You are a helpful assistant."},{role:"user",content:userMessageContent}];
                     if(apiModel.includes('mimo') || apiModel.includes('claude') || apiModel.includes('qwen')) {
-                        reqMessages = [{ role: "user", content: `SYSTEM INSTRUCTION:\n${finalPersona}\n\nUSER PROMPT:\n${userMessageContent}` }];
+                        maxT = 4000; reqMessages = [{ role: "user", content: `SYSTEM INSTRUCTION:\n${finalPersona || "You are a helpful assistant."}\n\nUSER PROMPT:\n${userMessageContent}` }];
                     }
-                    reqBody = { model: apiModel, messages: reqMessages };
+                    reqBody = { model: apiModel, temperature: appData.settings.temp, max_tokens: maxT, messages: reqMessages };
                 }
 
                 const res = await fetch(apiUrl, {
@@ -1774,12 +1757,13 @@ EXPECTED JSON OUTPUT:
                 try {
                     let parsed = JSON.parse(aiText.replace(/```json|```/g, '').trim());
                     if(parsed.title) art.title = parsed.title;
+                    if(parsed.meta) art.meta = parsed.meta;
                     if(parsed.content) aiText = parsed.content;
                 } catch(e) {}
                 art.body = cleanFinalHTML(aiText); art.status = "Draft";
             } catch(e) { art.status = "Error"; }
         }
-        art.wordCount = getWordCount(art.body); saveData(); renderArticleTable();
+        art.wordCount = getWordCount(art.body); saveData(); renderArticleTable(); showToast("Regenerated!");
     }
 
     // ================= 10. ADVANCED EDITOR LOGIC =================
