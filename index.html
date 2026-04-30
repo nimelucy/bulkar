@@ -152,8 +152,6 @@
         /* ================= RESPONSIVE MEDIA QUERIES ================= */
         @media (max-width: 768px) {
             body { flex-direction: column; }
-            
-            /* Bottom Navigation for Mobile */
             .slim-sidebar { width: 100%; height: 60px; flex-direction: row; justify-content: space-around; padding: 0 10px; border-right: none; border-top: 1px solid var(--border); order: 2; }
             .brand-logo { display: none; }
             .nav-menu { flex-direction: row; justify-content: space-around; height: 100%; flex: 1; }
@@ -236,21 +234,21 @@
                             <label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Language <span class="text-muted" style="font-weight:normal">[LANGUAGE]</span></label>
                             <input type="text" id="gen-input-language" list="dl-language" placeholder="Select or type..." value="English">
                             <datalist id="dl-language">
-                                <option value="English">
-                                <option value="Indonesian">
-                                <option value="Spanish">
-                                <option value="French">
+                                <option value="English"></option>
+                                <option value="Indonesian"></option>
+                                <option value="Spanish"></option>
+                                <option value="French"></option>
                             </datalist>
                         </div>
                         <div style="flex: 1;">
                             <label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Audience <span class="text-muted" style="font-weight:normal">[AUDIENCE]</span></label>
                             <input type="text" id="gen-input-audience" list="dl-audience" placeholder="Select or type..." value="General Public">
                             <datalist id="dl-audience">
-                                <option value="General Public">
-                                <option value="Beginners">
-                                <option value="Professionals">
-                                <option value="Students">
-                                <option value="Business Owners">
+                                <option value="General Public"></option>
+                                <option value="Beginners"></option>
+                                <option value="Professionals"></option>
+                                <option value="Students"></option>
+                                <option value="Business Owners"></option>
                             </datalist>
                         </div>
                     </div>
@@ -260,19 +258,19 @@
                             <label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Style <span class="text-muted" style="font-weight:normal">[STYLE]</span></label>
                             <input type="text" id="gen-input-style" list="dl-style" placeholder="Select or type..." value="Informative">
                             <datalist id="dl-style">
-                                <option value="Informative">
-                                <option value="Casual">
-                                <option value="Professional">
-                                <option value="Persuasive">
+                                <option value="Informative"></option>
+                                <option value="Casual"></option>
+                                <option value="Professional"></option>
+                                <option value="Persuasive"></option>
                             </datalist>
                         </div>
                         <div style="flex: 1;">
                             <label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Length <span class="text-muted" style="font-weight:normal">[LENGTH]</span></label>
                             <input type="text" id="gen-input-length" list="dl-length" placeholder="Select or type..." value="Write detailed content, exactly around 1000 words. Provide thorough sections.">
                             <datalist id="dl-length">
-                                <option value="Write concisely, exactly around 500 words.">
-                                <option value="Write detailed content, exactly around 1000 words. Provide thorough sections.">
-                                <option value="Write a massive, comprehensive guide over 1500 words. Expand heavily on every point.">
+                                <option value="Write concisely, exactly around 500 words."></option>
+                                <option value="Write detailed content, exactly around 1000 words. Provide thorough sections."></option>
+                                <option value="Write a massive, comprehensive guide over 1500 words. Expand heavily on every point."></option>
                             </datalist>
                         </div>
                     </div>
@@ -280,17 +278,17 @@
             </div>
 
             <div class="card mb-3" style="flex: 1; min-height: 0; display: flex; flex-direction: column;">
-    <div class="card-header" style="padding: 12px 16px; font-size: 13px;">
-        <span style="display:flex; align-items:center; gap:8px;"><i class="fa-regular fa-pen-to-square text-muted"></i> Keyword Input <span class="text-muted" style="font-weight:normal">[KEYWORD]</span></span>
-    </div>
-    <div class="card-body" style="padding: 12px 16px; flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden;">
-        <textarea id="keyword-input" class="keyword-box" placeholder="Enter keywords (1 per line)..." style="flex: 1; margin-bottom: 8px; min-height: 0; overflow-y: auto;"></textarea>
-        <div class="flex-between text-muted" style="align-items: center; flex-shrink: 0;">
-            <span id="baris-count" style="font-weight: 500;">0 Lines</span>
-            <button class="btn-clear-text" id="btn-clear" style="margin: 0; padding: 4px 10px;">Clear</button>
-        </div>
-    </div>
-</div>
+                <div class="card-header" style="padding: 12px 16px; font-size: 13px;">
+                    <span style="display:flex; align-items:center; gap:8px;"><i class="fa-regular fa-pen-to-square text-muted"></i> Keyword Input <span class="text-muted" style="font-weight:normal">[KEYWORD]</span></span>
+                </div>
+                <div class="card-body" style="padding: 12px 16px; flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden;">
+                    <textarea id="keyword-input" class="keyword-box" placeholder="Enter keywords (1 per line)..." style="flex: 1; margin-bottom: 8px; min-height: 0; overflow-y: auto;"></textarea>
+                    <div class="flex-between text-muted" style="align-items: center; flex-shrink: 0;">
+                        <span id="baris-count" style="font-weight: 500;">0 Lines</span>
+                        <button class="btn-clear-text" id="btn-clear" style="margin: 0; padding: 4px 10px;">Clear</button>
+                    </div>
+                </div>
+            </div>
             
             <button class="btn btn-dark" id="btn-generate" style="padding: 14px; font-size: 14px; flex-shrink: 0;"><i class="fa-solid fa-wand-magic-sparkles"></i> Generate Articles</button>
         </aside>
@@ -330,9 +328,7 @@
                     <div class="flex-gap" style="font-size: 13px; font-weight: 500;"><span id="selected-count" class="text-muted" style="background: var(--bg); padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border);">0 Selected</span></div>
                     <div class="flex-gap">
                         <button class="btn btn-outline" id="btn-bulk-regenerate" style="padding: 8px 14px; font-size: 13px; color: var(--primary); border-color: var(--border);"><i class="fa-solid fa-rotate-right"></i> Regenerate</button>
-                        
                         <button class="btn btn-outline" style="padding: 8px 14px; font-size: 13px;" onclick="bulkEditCategory()"><i class="fa-solid fa-tags"></i> Edit Kategori</button>
-
                         <button class="btn btn-primary" id="btn-post-wp" style="padding: 8px 14px; font-size: 13px;"><i class="fa-brands fa-wordpress"></i> Post to WP</button>
                         <button class="btn btn-outline-danger" id="btn-delete" style="padding: 8px 14px; font-size: 13px;"><i class="fa-regular fa-trash-can"></i> Delete</button>
                     </div>
@@ -368,7 +364,6 @@
                     <div style="display: flex; gap: 4px;">
                         <button class="btn-icon" onclick="document.getElementById('file-import-prompt').click()" title="Import Prompt (.txt)" style="background: var(--bg);"><i class="fa-solid fa-file-import"></i></button>
                         <input type="file" id="file-import-prompt" accept=".txt" style="display:none" onchange="importPromptTxt(event)">
-                        
                         <button class="btn-icon" id="btn-new-prompt" title="Create New Prompt" style="color: var(--primary); background: #eff6ff;"><i class="fa-solid fa-plus"></i></button>
                     </div>
                 </div>
@@ -437,7 +432,6 @@
                         <div class="responsive-flex-16" style="align-items: center;">
                             <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 500;"><input type="radio" name="export_format" value="csv" checked onchange="toggleExportFormat()"> CSV (Excel)</label>
                             <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 500;"><input type="radio" name="export_format" value="json" onchange="toggleExportFormat()"> JSON</label>
-                            
                             <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 500; color: var(--primary);"><input type="radio" name="export_format" value="xml_wp" onchange="toggleExportFormat()"> XML (WP WXR)</label>
                         </div>
                         <div id="format-warning" class="text-muted" style="font-size: 11px; margin-top: 8px; display: none; color: var(--danger);">*Full Backup is only available in JSON format.</div>
@@ -606,6 +600,7 @@
 
 </div>
 
+<!-- Modals -->
 <div class="modal" id="project-modal">
     <div class="modal-content" style="width: 450px;">
         <div class="modal-header">
@@ -745,46 +740,18 @@
 <div id="toast"><i class="fa-solid fa-circle-info" style="margin-right: 8px;"></i> <span id="toast-msg">Notification</span></div>
 
 <script>
-    // ================= 1. STATE MANAGEMENT & AUTOSAVE (INDEXEDDB) =================
+    // ================= 1. STATE MANAGEMENT & DATA PATCHER =================
     
     function generateId() { return Date.now().toString(36) + Math.random().toString(36).substring(2); }
 
     let defaultAppData = {
-        projects: [
-            { id: 1, name: "Main Workspace", desc: "", icon: "fa-laptop-code", color: "blue" }
-        ],
+        projects: [ { id: 1, name: "Main Workspace", desc: "", icon: "fa-laptop-code", color: "blue" } ],
         prompts: [
             {
-                id: 1,
-                name: "Human-Centric SEO Master",
-                persona: `You are a Human-Centric Content Expert, an objective Subject Matter Expert (SME), and a Semantic SEO Specialist. Your primary goal is to provide immense value to the human reader, prioritizing natural flow, empathy, and high E-E-A-T (Experience, Expertise, Authoritativeness, Trustworthiness). Your writing must strictly adhere to an 8th-grade reading level. You adapt your tone dynamically: professional and authoritative in the main body, but casual and lifelike in the conclusion. You MUST output ONLY a valid, minified JSON object. No markdown wrapping.`,
-                task: `Write an exhaustive, master-class article targeting the keyword: [KEYWORD]. (Language: [LANGUAGE]).
-
-VALUE, TRUST & ORGANIC LENGTH MANDATE:
-- HIGH INFORMATION GAIN: Every paragraph must reward the reader with a new actionable takeaway, unique insight, data point, or perspective.
-- ORGANIC LENGTH EXPANSION: To reach the massive length required, you MUST generate length organically. Add 12 to 15 highly relevant <h2> subtopics, deep-dive real-world examples, and data tables. 
-- NO JARGON (8TH-GRADE LEVEL): Keep sentences short, clear, and punchy. Explain complex technical terms in everyday language.
-
-6-STEP BLAZE FRAMEWORK & STRUCTURE:
-1. TITLE: A highly engaging, human-friendly title containing the exact [KEYWORD]. (Max 60 chars, NO years).
-2. OPENING (ENTITY SEEDING): Mentally identify 4 highly relevant core entities related to the topic. Start IMMEDIATELY with EXACTLY 2 to 3 introductory paragraphs using <p> tags. DO NOT place any heading before the intro. Weave all 4 entities naturally into the very first paragraph using Subject-Predicate-Object (SPO) or Entity-Attribute-Value (EAV) structures. Show empathy.
-3. DEEP DIVE BODY (12-15 H2s): Generate 12 to 15 highly detailed <h2> subtopics. Take the reader on a logical journey. Use SPO and EAV naturally ONLY when clarifying complex definitions or entities.
-4. FORMATTING FOR VALUE: Include at least THREE (3) HTML <table class="responsive-table"> to compare data or entities. Use structured bullet points <ul> to break down complex steps.
-5. FAQ SECTION (SNIPPET BAIT): Create an <h2> ("FAQ"). Include EXACTLY 7 strictly relevant questions. Write straight-forward, in-depth answers (50-70 words each) using strict SPO or EAV sentences to optimize for Google Featured Snippets.
-6. CONCLUSION (LIFELIKE TONE): End with an <h2> ("Conclusion" or "Final Thoughts"). Write a casual, lifelike closing paragraph. 
-
-EXPECTED JSON OUTPUT:
-{
-  "title": "A natural, high-CTR title containing the exact [KEYWORD]",
-  "meta": "A helpful, objective SEO meta description (max 150 chars)",
-  "content": "<p>First empathetic intro with 4 entities...</p><p>Second intro...</p><p>Third intro...</p><h2>Subtopic 1</h2><p>...</p><h2>Subtopic 12</h2><p>...</p><h2>FAQ</h2>..."
-}`,
-                rules: `- STRICTLY NO SENTENCE PADDING (ANTI-FLUFF): NEVER artificially lengthen a simple fact just to increase the word count (e.g., do not turn "He bought 1kg of rice" into a long, rambling paragraph about buying rice). If you need more length, you MUST introduce completely NEW subtopics, examples, or tables. DO NOT loop or repeat concepts.
-- INVISIBLE SEO: Place the exact phrase "[KEYWORD]" NATURALLY in the Title, the opening paragraph, and the conclusion. Max density 1-1.5%. Rely on LSI synonyms throughout the body.
-- STRICTLY NO JARGON: Absolutely no rigid academic language, dense corporate speak, or unexplained technical jargon.
-- PURE JSON ONLY: Output pure JSON. No markdown formatting blocks (like ${"```"}json), no conversational text.
-- HTML ESCAPING (CRITICAL): You MUST escape all double quotes inside HTML attributes (e.g., <table class="responsive-table">) OR use single quotes.
-- BANNED WORDS (AI CLICHES): Welcome, Additionally, Ultimately, Delve, Tapestry, Embark, Invaluable, Shifting landscape, Testament, Beacon, Unlock, Furthermore, Moreover, In conclusion, Demystify, Ultimate. DO NOT start sentences with "Welcome", "Additionally", or "Ultimately".`
+                id: 1, name: "Human-Centric SEO Master",
+                persona: `You are a Human-Centric Content Expert, an objective Subject Matter Expert (SME), and a Semantic SEO Specialist. Your primary goal is to provide immense value to the human reader, prioritizing natural flow, empathy, and high E-E-A-T. Your writing must strictly adhere to an 8th-grade reading level. You adapt your tone dynamically: professional and authoritative in the main body, but casual and lifelike in the conclusion. You MUST output ONLY a valid, minified JSON object. No markdown wrapping.`,
+                task: `Write an exhaustive, master-class article targeting the keyword: [KEYWORD]. (Language: [LANGUAGE]).\n\nVALUE, TRUST & ORGANIC LENGTH MANDATE:\n- HIGH INFORMATION GAIN: Every paragraph must reward the reader with a new actionable takeaway, unique insight, data point, or perspective.\n- ORGANIC LENGTH EXPANSION: To reach the massive length required, you MUST generate length organically. Add 12 to 15 highly relevant <h2> subtopics, deep-dive real-world examples, and data tables. \n- NO JARGON (8TH-GRADE LEVEL): Keep sentences short, clear, and punchy. Explain complex technical terms in everyday language.\n\n6-STEP BLAZE FRAMEWORK & STRUCTURE:\n1. TITLE: A highly engaging, human-friendly title containing the exact [KEYWORD]. (Max 60 chars, NO years).\n2. OPENING (ENTITY SEEDING): Mentally identify 4 highly relevant core entities related to the topic. Start IMMEDIATELY with EXACTLY 2 to 3 introductory paragraphs using <p> tags. DO NOT place any heading before the intro. Weave all 4 entities naturally into the very first paragraph using Subject-Predicate-Object (SPO) or Entity-Attribute-Value (EAV) structures. Show empathy.\n3. DEEP DIVE BODY (12-15 H2s): Generate 12 to 15 highly detailed <h2> subtopics. Take the reader on a logical journey. Use SPO and EAV naturally ONLY when clarifying complex definitions or entities.\n4. FORMATTING FOR VALUE: Include at least THREE (3) HTML <table class="responsive-table"> to compare data or entities. Use structured bullet points <ul> to break down complex steps.\n5. FAQ SECTION (SNIPPET BAIT): Create an <h2> ("FAQ"). Include EXACTLY 7 strictly relevant questions. Write straight-forward, in-depth answers (50-70 words each) using strict SPO or EAV sentences to optimize for Google Featured Snippets.\n6. CONCLUSION (LIFELIKE TONE): End with an <h2> ("Conclusion" or "Final Thoughts"). Write a casual, lifelike closing paragraph. \n\nEXPECTED JSON OUTPUT:\n{\n  "title": "A natural, high-CTR title containing the exact [KEYWORD]",\n  "meta": "A helpful, objective SEO meta description (max 150 chars)",\n  "content": "<p>First empathetic intro with 4 entities...</p><p>Second intro...</p><p>Third intro...</p><h2>Subtopic 1</h2><p>...</p><h2>Subtopic 12</h2><p>...</p><h2>FAQ</h2>..."\n}`,
+                rules: `- STRICTLY NO SENTENCE PADDING (ANTI-FLUFF): NEVER artificially lengthen a simple fact just to increase the word count. If you need more length, you MUST introduce completely NEW subtopics, examples, or tables. DO NOT loop or repeat concepts.\n- INVISIBLE SEO: Place the exact phrase "[KEYWORD]" NATURALLY in the Title, the opening paragraph, and the conclusion. Max density 1-1.5%. Rely on LSI synonyms throughout the body.\n- STRICTLY NO JARGON: Absolutely no rigid academic language, dense corporate speak, or unexplained technical jargon.\n- PURE JSON ONLY: Output pure JSON. No markdown formatting blocks, no conversational text.\n- HTML ESCAPING (CRITICAL): You MUST escape all double quotes inside HTML attributes (e.g., <table class="responsive-table">) OR use single quotes.\n- BANNED WORDS (AI CLICHES): Welcome, Additionally, Ultimately, Delve, Tapestry, Embark, Invaluable, Shifting landscape, Testament, Beacon, Unlock, Furthermore, Moreover, In conclusion, Demystify, Ultimate. DO NOT start sentences with "Welcome", "Additionally", or "Ultimately".`
             }
         ],
         wpAccounts: [], 
@@ -794,19 +761,13 @@ EXPECTED JSON OUTPUT:
 
     let appData = defaultAppData;
 
-    // Konfigurasi Database LocalForage
-    localforage.config({
-        name: 'SumoPodApp',
-        storeName: 'workspace_data',
-        description: 'Penyimpanan monster untuk artikel SumoPod'
-    });
+    localforage.config({ name: 'SumoPodApp', storeName: 'workspace_data', description: 'Penyimpanan monster untuk artikel SumoPod' });
 
     let editId = null; 
     let currentSort = { col: null, asc: true }; 
     let isGenerating = false;
     let abortController = null;
     
-    // VARIABEL FILTER QUALITY CONTROL (QC)
     let searchTimeout = null; 
     let showOnlyBadTitles = false; 
     let showOnlyShortArticles = false;
@@ -817,26 +778,26 @@ EXPECTED JSON OUTPUT:
         pink: { bg: "#fdf2f8", text: "#db2777" }, purple: { bg: "#faf5ff", text: "#8b5cf6" }, orange: { bg: "#fff7ed", text: "#f59e0b" }
     };
 
-    // FITUR PEMBERSIH ARTIFAK JSON
     function cleanFinalHTML(htmlStr) {
         if(!htmlStr) return "";
-        let cleaned = htmlStr.replace(/\\*"\s*}\s*$/, ''); // Hapus trailing "} atau \"}
-        cleaned = cleaned.replace(/\\*"\s*$/, ''); // Hapus trailing quote " atau \"
+        let cleaned = htmlStr.replace(/\\*"\s*}\s*$/, ''); 
+        cleaned = cleaned.replace(/\\*"\s*$/, ''); 
         return cleaned.trim();
     }
 
-    // Tarik data dari IndexedDB saat aplikasi dibuka
     localforage.getItem('sumoArticleGenerator').then(function(value) {
-        if (value) {
-            appData = value;
-        }
+        if (value) { appData = value; }
         
+        // Anti-Error Patcher untuk data lama
         if(!appData.settings) appData.settings = defaultAppData.settings; 
         if(!appData.settings.workers) appData.settings.workers = 1;
-        
+        if(!appData.wpAccounts) appData.wpAccounts = [];
+        if(!appData.articles) appData.articles = [];
+        if(!appData.projects) appData.projects = defaultAppData.projects;
+        if(!appData.prompts) appData.prompts = defaultAppData.prompts;
+
         appData.articles.forEach(art => { if(!art.id) art.id = generateId(); });
 
-        // Jalankan UI setelah data berhasil ditarik
         syncAllData(); 
         renderArticleTable();
     }).catch(function(err) {
@@ -845,12 +806,34 @@ EXPECTED JSON OUTPUT:
     });
 
     function saveData() { 
-        localforage.setItem('sumoArticleGenerator', appData).catch(function(err) {
-            console.error("Gagal menyimpan data:", err);
-        }); 
+        localforage.setItem('sumoArticleGenerator', appData).catch(function(err) { console.error("Gagal menyimpan data:", err); }); 
     }
 
-    // ================= 2. UI SYNCING FUNCTIONS =================
+    // ================= 2. UI INITIALIZATION & SYNC =================
+    
+    // Inisialisasi Routing / Navigasi
+    function initUI() {
+        const navItems = document.querySelectorAll('.nav-menu .nav-item, .nav-bottom .nav-item'); const views = document.querySelectorAll('.view-section');
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                navItems.forEach(nav => nav.classList.remove('active')); item.classList.add('active');
+                views.forEach(view => { view.classList.remove('active'); view.style.display = 'none'; });
+                const targetView = document.getElementById(item.getAttribute('data-target'));
+                if (targetView) { targetView.style.display = 'flex'; setTimeout(() => targetView.classList.add('active'), 10); }
+            });
+        });
+
+        const tabVisual = document.getElementById('tab-visual'); const tabCode = document.getElementById('tab-code');
+        const editorVisual = document.getElementById('edit-body-visual'); const editorCode = document.getElementById('edit-body-code'); const editorToolbar = document.getElementById('editor-toolbar');
+        if(tabVisual && tabCode) {
+            tabVisual.onclick = () => { tabVisual.classList.add('active'); tabCode.classList.remove('active'); editorCode.style.display = 'none'; editorVisual.style.display = 'block'; editorToolbar.style.display = 'flex'; editorVisual.innerHTML = editorCode.value; };
+            tabCode.onclick = () => { tabCode.classList.add('active'); tabVisual.classList.remove('active'); editorVisual.style.display = 'none'; editorCode.style.display = 'block'; editorToolbar.style.display = 'none'; editorCode.value = editorVisual.innerHTML; };
+        }
+        
+        document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e => { if (e.target === m) m.classList.remove('active'); }));
+    }
+    initUI(); // Jalankan Routing
+
     function syncAllData() {
         renderProjectsGrid(); renderPromptsList(); renderGeneratorDropdowns(); renderWpAccounts(); renderExportDropdown();
         loadSettingsUI();
@@ -912,12 +895,14 @@ EXPECTED JSON OUTPUT:
 
     // ================= 3. DATA MANAGER (EXPORT & IMPORT) =================
     window.toggleXmlSchedule = function() {
-        const status = document.getElementById('export-xml-status').value;
+        const statusEl = document.getElementById('export-xml-status');
         const configBox = document.getElementById('export-xml-schedule-config');
-        if (status === 'future') {
-            configBox.style.display = 'flex';
-        } else {
-            configBox.style.display = 'none';
+        if (statusEl && configBox) {
+            if (statusEl.value === 'future') {
+                configBox.style.display = 'flex';
+            } else {
+                configBox.style.display = 'none';
+            }
         }
     };
 
@@ -925,8 +910,8 @@ EXPECTED JSON OUTPUT:
         const formatEle = document.querySelector('input[name="export_format"]:checked');
         const xmlOptions = document.getElementById('export-xml-options');
         if (formatEle && formatEle.value === 'xml_wp') {
-            xmlOptions.style.display = 'block';
-            toggleXmlSchedule(); // Pastikan toggle schedule dipanggil saat format XML dipilih
+            if(xmlOptions) xmlOptions.style.display = 'block';
+            toggleXmlSchedule(); 
         } else {
             if(xmlOptions) xmlOptions.style.display = 'none';
         }
@@ -999,26 +984,21 @@ EXPECTED JSON OUTPUT:
             downloadFile(csvContent, `${filename}.csv`, 'text/csv');
         }
         else if (format === 'xml_wp') {
-            // === LOGIKA EXPORT KE WORDPRESS XML (WXR) ===
             if (source !== 'articles') return alert("XML WordPress format is only available for Articles export!");
             
             const exportStatus = document.getElementById('export-xml-status').value;
-            const exportComments = document.getElementById('export-xml-comments') ? document.getElementById('export-xml-comments').value : 'closed';
+            const exportCommentsElement = document.getElementById('export-xml-comments');
+            const exportComments = exportCommentsElement ? exportCommentsElement.value : 'closed';
             const isSchedule = exportStatus === 'future';
             
-            let xmlCurrentDate = document.getElementById('export-xml-start-date') && document.getElementById('export-xml-start-date').value ? new Date(document.getElementById('export-xml-start-date').value) : new Date();
-            let xmlPostsPerDay = document.getElementById('export-xml-post-per-day') ? parseInt(document.getElementById('export-xml-post-per-day').value) || 1 : 1;
+            const startDateEl = document.getElementById('export-xml-start-date');
+            const postPerDayEl = document.getElementById('export-xml-post-per-day');
+            
+            let xmlCurrentDate = startDateEl && startDateEl.value ? new Date(startDateEl.value) : new Date();
+            let xmlPostsPerDay = postPerDayEl ? parseInt(postPerDayEl.value) || 1 : 1;
             let xmlPostCounter = 0;
             
-            let xmlContent = `<?xml version="1.0" encoding="UTF-8" ?>
-<rss version="2.0" xmlns:excerpt="[http://wordpress.org/export/1.2/excerpt/](http://wordpress.org/export/1.2/excerpt/)" xmlns:content="[http://purl.org/rss/1.0/modules/content/](http://purl.org/rss/1.0/modules/content/)" xmlns:wfw="[http://wellformedweb.org/CommentAPI/](http://wellformedweb.org/CommentAPI/)" xmlns:dc="[http://purl.org/dc/elements/1.1/](http://purl.org/dc/elements/1.1/)" xmlns:wp="[http://wordpress.org/export/1.2/](http://wordpress.org/export/1.2/)">
-<channel>
-    <title>SumoPod Articles Export</title>
-    <link>http://localhost</link>
-    <description>Bulk Exported from SumoPod App</description>
-    <pubDate>${new Date().toUTCString()}</pubDate>
-    <language>en-US</language>
-    <wp:wxr_version>1.2</wp:wxr_version>\n`;
+            let xmlContent = `<?xml version="1.0" encoding="UTF-8" ?>\n<rss version="2.0" xmlns:excerpt="http://wordpress.org/export/1.2/excerpt/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:wfw="http://wellformedweb.org/CommentAPI/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:wp="http://wordpress.org/export/1.2/">\n<channel>\n    <title>SumoPod Articles Export</title>\n    <link>http://localhost</link>\n    <description>Bulk Exported from SumoPod App</description>\n    <pubDate>${new Date().toUTCString()}</pubDate>\n    <language>en-US</language>\n    <wp:wxr_version>1.2</wp:wxr_version>\n`;
 
             dataToExport.forEach(art => {
                 let postDate = new Date().toISOString().replace('T', ' ').substring(0, 19);
@@ -1041,8 +1021,7 @@ EXPECTED JSON OUTPUT:
                 let categories = (art.category || 'Uncategorized').split(',').map(c => c.trim());
                 let catTags = categories.map(c => `<category domain="category" nicename="${generateSlug(c)}"><![CDATA[${c}]]></category>`).join('\n        ');
 
-                xmlContent += `
-    <item>
+                xmlContent += `    <item>
         <title><![CDATA[${art.title}]]></title>
         <link>http://localhost/${art.slug}</link>
         <pubDate>${new Date(postDate).toUTCString()}</pubDate>
@@ -1060,7 +1039,6 @@ EXPECTED JSON OUTPUT:
         <wp:menu_order>0</wp:menu_order>
         <wp:post_type><![CDATA[post]]></wp:post_type>
         <wp:is_sticky>0</wp:is_sticky>
-        
         <wp:postmeta>
             <wp:meta_key><![CDATA[rank_math_focus_keyword]]></wp:meta_key>
             <wp:meta_value><![CDATA[${art.keyword ? art.keyword.split(':')[0].trim() : art.title}]]></wp:meta_value>
@@ -1114,7 +1092,6 @@ EXPECTED JSON OUTPUT:
         reader.readAsText(file);
     };
 
-    // ================= FUNGSI DOWNLOAD CONFIGURATION (.txt) =================
     window.downloadConfiguration = function() {
         const proj = document.getElementById('gen-select-project').value || '-';
         const prompt = document.getElementById('gen-select-prompt').value || '-';
@@ -1233,7 +1210,7 @@ EXPECTED JSON OUTPUT:
                 <option value="custom">Custom Model ID</option>
             `; 
         }
-        modelSelect.innerHTML = options;
+        if(modelSelect) modelSelect.innerHTML = options;
         toggleCustomBoxes();
     }
     
@@ -1330,24 +1307,12 @@ EXPECTED JSON OUTPUT:
         renderArticleTable(); showToast(`Entered Workspace: ${projectName}`);
     };
 
-    // ================= 6. ROUTING & VIEW LOGIC =================
-    const navItems = document.querySelectorAll('.nav-menu .nav-item, .nav-bottom .nav-item'); const views = document.querySelectorAll('.view-section');
-    navItems.forEach(item => {
-        item.addEventListener('click', () => {
-            navItems.forEach(nav => nav.classList.remove('active')); item.classList.add('active');
-            views.forEach(view => { view.classList.remove('active'); view.style.display = 'none'; });
-            const targetView = document.getElementById(item.getAttribute('data-target'));
-            if (targetView) { targetView.style.display = 'flex'; setTimeout(() => targetView.classList.add('active'), 10); }
-        });
-    });
-
     function showToast(msg) {
         const toast = document.getElementById('toast'); toast.innerText = msg; toast.style.display = 'block'; toast.style.animation = 'slideUp 0.3s ease forwards';
         setTimeout(() => toast.style.display = 'none', 3000);
     }
     function openModal(id) { document.getElementById(id).classList.add('active'); }
     function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-    document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e => { if (e.target === m) m.classList.remove('active'); }));
 
     // ================= 7. MODULAR PROMPTS LOGIC =================
     document.getElementById('btn-new-prompt').onclick = () => { 
@@ -1450,13 +1415,7 @@ EXPECTED JSON OUTPUT:
     }
 
     window.sortTable = function(column) {
-        if(currentSort.col === column) {
-            currentSort.asc = !currentSort.asc;
-        } else {
-            currentSort.col = column;
-            currentSort.asc = true;
-        }
-
+        if(currentSort.col === column) { currentSort.asc = !currentSort.asc; } else { currentSort.col = column; currentSort.asc = true; }
         document.querySelectorAll('.sortable').forEach(th => th.classList.remove('active'));
         const activeTh = document.querySelector(`th[onclick="sortTable('${column}')"]`);
         if(activeTh) {
@@ -1467,17 +1426,11 @@ EXPECTED JSON OUTPUT:
         renderArticleTable();
     }
 
-    // FUNGSI FILTER QC BARU DENGAN ICON SAJA
     window.toggleBadTitles = function() {
         showOnlyBadTitles = !showOnlyBadTitles;
         const btn = document.getElementById('btn-filter-bad-titles');
-        if(showOnlyBadTitles) {
-            btn.style.background = '#fef2f2'; btn.style.borderColor = 'var(--danger)';
-            btn.innerHTML = '<i class="fa-solid fa-xmark" style="color: var(--danger);"></i>';
-        } else {
-            btn.style.background = '#fff'; btn.style.borderColor = 'var(--border)';
-            btn.innerHTML = '<i class="fa-solid fa-filter" style="color: var(--danger);"></i>';
-        }
+        if(showOnlyBadTitles) { btn.style.background = '#fef2f2'; btn.style.borderColor = 'var(--danger)'; btn.innerHTML = '<i class="fa-solid fa-xmark" style="color: var(--danger);"></i>'; } 
+        else { btn.style.background = '#fff'; btn.style.borderColor = 'var(--border)'; btn.innerHTML = '<i class="fa-solid fa-filter" style="color: var(--danger);"></i>'; }
         renderArticleTable();
     };
 
@@ -1485,31 +1438,16 @@ EXPECTED JSON OUTPUT:
         showOnlyShortArticles = !showOnlyShortArticles;
         const btn = document.getElementById('btn-filter-words');
         const inputLimit = document.getElementById('input-word-limit');
-        
-        if(showOnlyShortArticles) {
-            btn.style.background = '#fef2f2';
-            btn.innerHTML = '<i class="fa-solid fa-xmark" style="color: var(--danger);"></i>';
-            inputLimit.disabled = true; 
-            inputLimit.style.background = '#f8fafc';
-        } else {
-            btn.style.background = 'transparent';
-            btn.innerHTML = '<i class="fa-solid fa-down-long" style="color: var(--danger);"></i>';
-            inputLimit.disabled = false; 
-            inputLimit.style.background = '#fff';
-        }
+        if(showOnlyShortArticles) { btn.style.background = '#fef2f2'; btn.innerHTML = '<i class="fa-solid fa-xmark" style="color: var(--danger);"></i>'; inputLimit.disabled = true; inputLimit.style.background = '#f8fafc'; } 
+        else { btn.style.background = 'transparent'; btn.innerHTML = '<i class="fa-solid fa-down-long" style="color: var(--danger);"></i>'; inputLimit.disabled = false; inputLimit.style.background = '#fff'; }
         renderArticleTable();
     };
 
     window.toggleErrorArticles = function() {
         showOnlyErrors = !showOnlyErrors;
         const btn = document.getElementById('btn-filter-errors');
-        if(showOnlyErrors) {
-            btn.style.background = '#fef08a'; btn.style.borderColor = '#ca8a04';
-            btn.innerHTML = '<i class="fa-solid fa-xmark" style="color: #854d0e;"></i>';
-        } else {
-            btn.style.background = '#fff'; btn.style.borderColor = 'var(--border)';
-            btn.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color: #eab308;"></i>';
-        }
+        if(showOnlyErrors) { btn.style.background = '#fef08a'; btn.style.borderColor = '#ca8a04'; btn.innerHTML = '<i class="fa-solid fa-xmark" style="color: #854d0e;"></i>'; } 
+        else { btn.style.background = '#fff'; btn.style.borderColor = 'var(--border)'; btn.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color: #eab308;"></i>'; }
         renderArticleTable();
     };
 
@@ -1525,13 +1463,9 @@ EXPECTED JSON OUTPUT:
         if(currentSort.col) {
             appData.articles.sort((a, b) => {
                 let valA, valB;
-                if(currentSort.col === 'words') {
-                    valA = a.wordCount || 0; valB = b.wordCount || 0;
-                } else if(currentSort.col === 'date') {
-                    valA = a.date === '-' ? '0000-00-00' : a.date; valB = b.date === '-' ? '0000-00-00' : b.date;
-                } else {
-                    valA = (a[currentSort.col] || '').toLowerCase(); valB = (b[currentSort.col] || '').toLowerCase();
-                }
+                if(currentSort.col === 'words') { valA = a.wordCount || 0; valB = b.wordCount || 0; } 
+                else if(currentSort.col === 'date') { valA = a.date === '-' ? '0000-00-00' : a.date; valB = b.date === '-' ? '0000-00-00' : b.date; } 
+                else { valA = (a[currentSort.col] || '').toLowerCase(); valB = (b[currentSort.col] || '').toLowerCase(); }
                 if (valA < valB) return currentSort.asc ? -1 : 1;
                 if (valA > valB) return currentSort.asc ? 1 : -1;
                 return 0;
@@ -1544,11 +1478,9 @@ EXPECTED JSON OUTPUT:
             if (filterProject !== "ALL" && art.project !== filterProject) return;
             if (searchTerm && !art.title.toLowerCase().includes(searchTerm)) return; 
             
-            // Logika untuk Bad Titles
             const primaryKey = art.keyword ? art.keyword.split(':')[0].trim().toLowerCase() : '';
             if (showOnlyBadTitles && art.title.trim().toLowerCase() !== primaryKey) return;
             
-            // Logika untuk Kata Dinamis
             if (showOnlyShortArticles) {
                 let words = art.wordCount;
                 if (!words && art.body) words = getWordCount(art.body);
@@ -1556,19 +1488,14 @@ EXPECTED JSON OUTPUT:
                 if (words >= targetLimit) return; 
             }
 
-            // Logika untuk Show Errors
             if (showOnlyErrors) {
-                const statusText = (art.status || '').toLowerCase();
-                const titleText = (art.title || '').toLowerCase();
+                const statusText = (art.status || '').toLowerCase(); const titleText = (art.title || '').toLowerCase();
                 const isError = statusText.includes('error') || statusText.includes('failed') || titleText.includes('error');
                 if (!isError) return; 
             }
 
             visibleArticles++; if(art.checked) selectedCount++;
-            
-            if(art.wordCount === undefined) {
-                art.wordCount = getWordCount(art.body);
-            }
+            if(art.wordCount === undefined) art.wordCount = getWordCount(art.body);
             let wc = art.wordCount;
             let wcBadge = wc < 100 ? 'background: #fef2f2; color: var(--danger); border: 1px solid #fecaca;' : 'background: #ecfdf5; color: var(--success); border: 1px solid #a7f3d0;';
 
@@ -1594,10 +1521,7 @@ EXPECTED JSON OUTPUT:
             `;
         });
 
-        if (visibleArticles === 0) {
-            htmlContent = `<tr><td colspan="6" style="text-align:center; padding: 40px; color: #94a3b8;">${appData.articles.length === 0 ? 'No articles in pipeline.' : 'No articles match the current filter.'}</td></tr>`;
-        }
-        
+        if (visibleArticles === 0) { htmlContent = `<tr><td colspan="6" style="text-align:center; padding: 40px; color: #94a3b8;">${appData.articles.length === 0 ? 'No articles in pipeline.' : 'No articles match the current filter.'}</td></tr>`; }
         tableBody.innerHTML = htmlContent;
         document.getElementById('total-article').innerText = `${visibleArticles} Articles`; 
         document.getElementById('selected-count').innerText = `${selectedCount} Selected`;
@@ -1657,17 +1581,10 @@ EXPECTED JSON OUTPUT:
     window.bulkEditCategory = function() {
         const selectedArticles = appData.articles.filter(a => a.checked);
         if (selectedArticles.length === 0) return alert("Pilih minimal 1 artikel (centang kotaknya) untuk diubah kategorinya!");
-        
         const newCategory = prompt(`Masukkan nama kategori WordPress baru untuk ${selectedArticles.length} artikel terpilih:\n\n(Tips: Bisa multi-kategori, pisahkan dengan koma. Contoh: Tech, Gadget)`);
-        
         if (newCategory !== null && newCategory.trim() !== "") {
-            selectedArticles.forEach(art => {
-                art.category = newCategory.trim();
-            });
-            
-            saveData();
-            renderArticleTable();
-            showToast(`Kategori untuk ${selectedArticles.length} artikel berhasil diubah!`);
+            selectedArticles.forEach(art => { art.category = newCategory.trim(); });
+            saveData(); renderArticleTable(); showToast(`Kategori untuk ${selectedArticles.length} artikel berhasil diubah!`);
         }
     };
 
@@ -2025,8 +1942,7 @@ EXPECTED JSON OUTPUT:
                                 let aiText = data.candidates[0].content.parts[0].text.trim();
                                 try {
                                     let cleanJson = aiText;
-                                    if(cleanJson.startsWith('
-```json')) { cleanJson = cleanJson.substring(7); if(cleanJson.endsWith('```')) cleanJson = cleanJson.substring(0, cleanJson.length - 3); }
+                                    if(cleanJson.startsWith('```json')) { cleanJson = cleanJson.substring(7); if(cleanJson.endsWith('```')) cleanJson = cleanJson.substring(0, cleanJson.length - 3); }
                                     let parsed = JSON.parse(cleanJson.trim());
                                     if(parsed.title) art.title = parsed.title;
                                     if(parsed.meta || parsed.meta_description) art.meta = parsed.meta || parsed.meta_description;
@@ -2248,15 +2164,15 @@ EXPECTED JSON OUTPUT:
             let resultTitle = ""; let apiUrl = ""; let apiModel = ""; let requestBody = {}; let headers = { 'Content-Type': 'application/json' };
 
             if (provider === 'openai' || provider === 'sumopod') {
-                apiModel = "gpt-4o-mini"; apiUrl = "[https://api.openai.com/v1/chat/completions](https://api.openai.com/v1/chat/completions)"; headers['Authorization'] = `Bearer ${apiKey}`;
-                if (provider === 'sumopod') { apiUrl = "[https://ai.sumopod.com/v1/chat/completions](https://ai.sumopod.com/v1/chat/completions)"; apiModel = modelStr; const customModelValue = document.getElementById('setting-custom-model').value.trim(); if(modelStr === 'custom' && customModelValue) apiModel = customModelValue; } else { apiModel = modelStr; }
+                apiModel = "gpt-4o-mini"; apiUrl = "https://api.openai.com/v1/chat/completions"; headers['Authorization'] = `Bearer ${apiKey}`;
+                if (provider === 'sumopod') { apiUrl = "https://ai.sumopod.com/v1/chat/completions"; apiModel = modelStr; const customModelValue = document.getElementById('setting-custom-model').value.trim(); if(modelStr === 'custom' && customModelValue) apiModel = customModelValue; } else { apiModel = modelStr; }
                 
                 let maxT = 100;
                 let reqMessages = [ { role: "user", content: promptText } ];
                 requestBody = { model: apiModel, temperature: temp, max_tokens: maxT, messages: reqMessages };
                 
             } else if (provider === 'gemini') {
-                apiModel = modelStr; apiUrl = `[https://generativelanguage.googleapis.com/v1beta/models/$](https://generativelanguage.googleapis.com/v1beta/models/$){apiModel}:generateContent`; apiUrl = apiUrl.includes('?') ? `${apiUrl}&key=${apiKey}` : `${apiUrl}?key=${apiKey}`;
+                apiModel = modelStr; apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${apiModel}:generateContent`; apiUrl = apiUrl.includes('?') ? `${apiUrl}&key=${apiKey}` : `${apiUrl}?key=${apiKey}`;
                 requestBody = { contents: [{ parts: [{ text: promptText }] }], generationConfig: { temperature: temp } };
             }
 
@@ -2279,12 +2195,6 @@ EXPECTED JSON OUTPUT:
     }
 
     // ================= 10. ADVANCED EDITOR LOGIC =================
-    const tabVisual = document.getElementById('tab-visual'); const tabCode = document.getElementById('tab-code');
-    const editorVisual = document.getElementById('edit-body-visual'); const editorCode = document.getElementById('edit-body-code'); const editorToolbar = document.getElementById('editor-toolbar');
-
-    tabVisual.onclick = () => { tabVisual.classList.add('active'); tabCode.classList.remove('active'); editorCode.style.display = 'none'; editorVisual.style.display = 'block'; editorToolbar.style.display = 'flex'; editorVisual.innerHTML = editorCode.value; };
-    tabCode.onclick = () => { tabCode.classList.add('active'); tabVisual.classList.remove('active'); editorVisual.style.display = 'none'; editorCode.style.display = 'block'; editorToolbar.style.display = 'none'; editorCode.value = editorVisual.innerHTML; };
-
     document.getElementById('edit-keyword').addEventListener('input', function() { 
         if(!document.getElementById('edit-slug').dataset.manualEdit) {
             document.getElementById('edit-slug').value = generateSlug(this.value.split(':')[0]); 
@@ -2305,6 +2215,8 @@ EXPECTED JSON OUTPUT:
         document.getElementById('edit-slug').value = art.slug || generateSlug(art.title);
         document.getElementById('edit-kategori').value = art.category || ''; document.getElementById('edit-meta').value = art.meta || ''; document.getElementById('edit-used-prompt').innerText = art.usedPrompt || 'Default Template';
         if(art.date && art.date !== '-') document.getElementById('edit-tanggal').value = art.date; else document.getElementById('edit-tanggal').value = '';
+        
+        const tabVisual = document.getElementById('tab-visual');
         tabVisual.click(); document.getElementById('edit-body-visual').innerHTML = art.body; document.getElementById('edit-body-code').value = art.body; 
         document.getElementById('edit-slug').dataset.manualEdit = "";
         openModal('edit-modal');
@@ -2326,6 +2238,7 @@ EXPECTED JSON OUTPUT:
                 art.category = document.getElementById('edit-kategori').value || 'Uncategorized'; art.meta = document.getElementById('edit-meta').value;
                 const inputDate = document.getElementById('edit-tanggal').value; art.date = inputDate ? inputDate : '-';
                 
+                const tabVisual = document.getElementById('tab-visual');
                 if(tabVisual.classList.contains('active')) art.body = document.getElementById('edit-body-visual').innerHTML; else art.body = document.getElementById('edit-body-code').value;
                 art.wordCount = getWordCount(art.body);
                 
