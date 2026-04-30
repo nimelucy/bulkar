@@ -218,6 +218,7 @@
             <div class="card mb-3">
                 <div class="card-header" style="padding: 12px 16px; font-size: 13px;">
                     <span style="display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-bullseye text-muted"></i> Configuration</span>
+                    <button class="btn-icon" onclick="downloadConfiguration()" title="Download Config (.txt)" style="width: 28px; height: 28px; font-size: 13px; color: var(--primary);"><i class="fa-solid fa-download"></i></button>
                 </div>
                 <div class="card-body" style="gap: 12px; padding: 12px 16px;">
                     <div class="responsive-flex">
@@ -226,30 +227,70 @@
                     </div>
                     
                     <div class="responsive-flex">
-                        <div style="flex: 1;">
-                            <label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">WP Category</label>
-                            <input type="text" id="gen-input-category" placeholder="e.g., News">
-                        </div>
+                        <div style="flex: 1;"><label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Topic <span class="text-muted" style="font-weight:normal">[TOPIC]</span></label><input type="text" id="gen-input-topic" placeholder="e.g., Tech"></div>
+                        <div style="flex: 1;"><label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">WP Category</label><input type="text" id="gen-input-category" placeholder="e.g., News"></div>
+                    </div>
+
+                    <div class="responsive-flex">
                         <div style="flex: 1;">
                             <label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Language <span class="text-muted" style="font-weight:normal">[LANGUAGE]</span></label>
-                            <input type="text" id="gen-input-language" placeholder="English" value="English">
+                            <input type="text" id="gen-input-language" list="dl-language" placeholder="Select or type..." value="English">
+                            <datalist id="dl-language">
+                                <option value="English">
+                                <option value="Indonesian">
+                                <option value="Spanish">
+                                <option value="French">
+                            </datalist>
+                        </div>
+                        <div style="flex: 1;">
+                            <label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Audience <span class="text-muted" style="font-weight:normal">[AUDIENCE]</span></label>
+                            <input type="text" id="gen-input-audience" list="dl-audience" placeholder="Select or type..." value="General Public">
+                            <datalist id="dl-audience">
+                                <option value="General Public">
+                                <option value="Beginners">
+                                <option value="Professionals">
+                                <option value="Students">
+                                <option value="Business Owners">
+                            </datalist>
+                        </div>
+                    </div>
+
+                    <div class="responsive-flex">
+                        <div style="flex: 1;">
+                            <label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Style <span class="text-muted" style="font-weight:normal">[STYLE]</span></label>
+                            <input type="text" id="gen-input-style" list="dl-style" placeholder="Select or type..." value="Informative">
+                            <datalist id="dl-style">
+                                <option value="Informative">
+                                <option value="Casual">
+                                <option value="Professional">
+                                <option value="Persuasive">
+                            </datalist>
+                        </div>
+                        <div style="flex: 1;">
+                            <label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Length <span class="text-muted" style="font-weight:normal">[LENGTH]</span></label>
+                            <input type="text" id="gen-input-length" list="dl-length" placeholder="Select or type..." value="Write detailed content, exactly around 1000 words. Provide thorough sections.">
+                            <datalist id="dl-length">
+                                <option value="Write concisely, exactly around 500 words.">
+                                <option value="Write detailed content, exactly around 1000 words. Provide thorough sections.">
+                                <option value="Write a massive, comprehensive guide over 1500 words. Expand heavily on every point.">
+                            </datalist>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="card mb-3" style="flex: 1; min-height: 0; display: flex; flex-direction: column;">
-                <div class="card-header" style="padding: 12px 16px; font-size: 13px;">
-                    <span style="display:flex; align-items:center; gap:8px;"><i class="fa-regular fa-pen-to-square text-muted"></i> Keyword Input <span class="text-muted" style="font-weight:normal">[KEYWORD]</span></span>
-                </div>
-                <div class="card-body" style="padding: 12px 16px; flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden;">
-                    <textarea id="keyword-input" class="keyword-box" placeholder="Enter keywords (1 per line)..." style="flex: 1; margin-bottom: 8px; min-height: 0; overflow-y: auto;"></textarea>
-                    <div class="flex-between text-muted" style="align-items: center; flex-shrink: 0;">
-                        <span id="baris-count" style="font-weight: 500;">0 Lines</span>
-                        <button class="btn-clear-text" id="btn-clear" style="margin: 0; padding: 4px 10px;">Clear</button>
-                    </div>
-                </div>
-            </div>
+    <div class="card-header" style="padding: 12px 16px; font-size: 13px;">
+        <span style="display:flex; align-items:center; gap:8px;"><i class="fa-regular fa-pen-to-square text-muted"></i> Keyword Input <span class="text-muted" style="font-weight:normal">[KEYWORD]</span></span>
+    </div>
+    <div class="card-body" style="padding: 12px 16px; flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden;">
+        <textarea id="keyword-input" class="keyword-box" placeholder="Enter keywords (1 per line)..." style="flex: 1; margin-bottom: 8px; min-height: 0; overflow-y: auto;"></textarea>
+        <div class="flex-between text-muted" style="align-items: center; flex-shrink: 0;">
+            <span id="baris-count" style="font-weight: 500;">0 Lines</span>
+            <button class="btn-clear-text" id="btn-clear" style="margin: 0; padding: 4px 10px;">Clear</button>
+        </div>
+    </div>
+</div>
             
             <button class="btn btn-dark" id="btn-generate" style="padding: 14px; font-size: 14px; flex-shrink: 0;"><i class="fa-solid fa-wand-magic-sparkles"></i> Generate Articles</button>
         </aside>
@@ -289,7 +330,9 @@
                     <div class="flex-gap" style="font-size: 13px; font-weight: 500;"><span id="selected-count" class="text-muted" style="background: var(--bg); padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border);">0 Selected</span></div>
                     <div class="flex-gap">
                         <button class="btn btn-outline" id="btn-bulk-regenerate" style="padding: 8px 14px; font-size: 13px; color: var(--primary); border-color: var(--border);"><i class="fa-solid fa-rotate-right"></i> Regenerate</button>
+                        
                         <button class="btn btn-outline" style="padding: 8px 14px; font-size: 13px;" onclick="bulkEditCategory()"><i class="fa-solid fa-tags"></i> Edit Kategori</button>
+
                         <button class="btn btn-primary" id="btn-post-wp" style="padding: 8px 14px; font-size: 13px;"><i class="fa-brands fa-wordpress"></i> Post to WP</button>
                         <button class="btn btn-outline-danger" id="btn-delete" style="padding: 8px 14px; font-size: 13px;"><i class="fa-regular fa-trash-can"></i> Delete</button>
                     </div>
@@ -325,6 +368,7 @@
                     <div style="display: flex; gap: 4px;">
                         <button class="btn-icon" onclick="document.getElementById('file-import-prompt').click()" title="Import Prompt (.txt)" style="background: var(--bg);"><i class="fa-solid fa-file-import"></i></button>
                         <input type="file" id="file-import-prompt" accept=".txt" style="display:none" onchange="importPromptTxt(event)">
+                        
                         <button class="btn-icon" id="btn-new-prompt" title="Create New Prompt" style="color: var(--primary); background: #eff6ff;"><i class="fa-solid fa-plus"></i></button>
                     </div>
                 </div>
@@ -344,7 +388,7 @@
                     <div style="flex: 1; display: flex; flex-direction: column;">
                         <label class="text-main font-weight-600" style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;"><i class="fa-solid fa-list-check text-primary"></i> 2. Main Task & Structure</label>
                         <p class="text-muted" style="margin-bottom: 8px; font-size: 12px;">What should the AI write? (Tip: Ask AI to return JSON format to auto-fill Title and Meta!)</p>
-                        <textarea id="prompt-task" style="flex: 1; min-height: 150px; resize: vertical; font-family: monospace; font-size: 13px; line-height: 1.5;" placeholder="e.g., Write a [LANGUAGE] article about [KEYWORD]."></textarea>
+                        <textarea id="prompt-task" style="flex: 1; min-height: 150px; resize: vertical; font-family: monospace; font-size: 13px; line-height: 1.5;" placeholder="e.g., Write a [LENGTH] article about [TOPIC], specifically focusing on [KEYWORD]. Write in a [STYLE] tone tailored for [AUDIENCE] in [LANGUAGE]."></textarea>
                     </div>
 
                     <div>
@@ -355,7 +399,7 @@
                 </div>
 
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border);">
-                    <div class="text-muted" style="font-size: 12px; line-height: 1.8;">Available Variables:<br> <span class="badge" style="background:#fff;">[KEYWORD]</span> <span class="badge" style="background:#fff;">[LANGUAGE]</span></div>
+                    <div class="text-muted" style="font-size: 12px; line-height: 1.8;">Available Variables:<br> <span class="badge" style="background:#fff;">[TOPIC]</span> <span class="badge" style="background:#fff;">[KEYWORD]</span> <span class="badge" style="background:#fff;">[LANGUAGE]</span> <span class="badge" style="background:#fff;">[AUDIENCE]</span> <span class="badge" style="background:#fff;">[STYLE]</span> <span class="badge" style="background:#fff;">[LENGTH]</span></div>
                     <button class="btn btn-primary" id="btn-save-prompt" style="padding: 12px 24px; font-size: 14px;"><i class="fa-solid fa-floppy-disk"></i> Save Modular Template</button>
                 </div>
             </div>
@@ -364,6 +408,7 @@
 
     <div id="view-export" class="view-section view-single-col">
         <h1 class="page-title">Data Manager</h1>
+        
         <div style="display: flex; gap: 24px; flex-wrap: wrap;">
             <div class="card" style="flex: 1; min-width: 400px; margin-bottom: 24px;">
                 <div class="card-header" style="background: #f8fafc;"><span style="color: var(--text-main); font-size: 14px;"><i class="fa-solid fa-cloud-arrow-down text-muted" style="margin-right:8px;"></i> Export Data</span></div>
@@ -392,6 +437,7 @@
                         <div class="responsive-flex-16" style="align-items: center;">
                             <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 500;"><input type="radio" name="export_format" value="csv" checked onchange="toggleExportFormat()"> CSV (Excel)</label>
                             <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 500;"><input type="radio" name="export_format" value="json" onchange="toggleExportFormat()"> JSON</label>
+                            
                             <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 500; color: var(--primary);"><input type="radio" name="export_format" value="xml_wp" onchange="toggleExportFormat()"> XML (WP WXR)</label>
                         </div>
                         <div id="format-warning" class="text-muted" style="font-size: 11px; margin-top: 8px; display: none; color: var(--danger);">*Full Backup is only available in JSON format.</div>
@@ -401,7 +447,7 @@
                         <div class="responsive-flex-16">
                             <div style="flex: 1;">
                                 <label class="text-muted font-weight-600" style="display: block; margin-bottom: 8px;">3. WordPress Post Status</label>
-                                <select id="export-xml-status" style="width: 100%; cursor: pointer;" onchange="toggleXmlSchedule()">
+                                <select id="export-xml-status" style="width: 100%; cursor: pointer; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border); background: #fff;" onchange="toggleXmlSchedule()">
                                     <option value="draft" selected>Draft (Disarankan untuk Timbun)</option>
                                     <option value="publish">Publish (Langsung Tayang)</option>
                                     <option value="future">Schedule (Terjadwal)</option>
@@ -409,7 +455,7 @@
                             </div>
                             <div style="flex: 1;">
                                 <label class="text-muted font-weight-600" style="display: block; margin-bottom: 8px;">4. Kolom Komentar</label>
-                                <select id="export-xml-comments" style="width: 100%; cursor: pointer;">
+                                <select id="export-xml-comments" style="width: 100%; cursor: pointer; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border); background: #fff;">
                                     <option value="open">Buka (Allow)</option>
                                     <option value="closed" selected>Tutup (Do not allow)</option>
                                 </select>
@@ -419,11 +465,11 @@
                         <div id="export-xml-schedule-config" class="responsive-flex-16" style="display: none; margin-top: 16px; background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid var(--border);">
                             <div style="flex: 1;">
                                 <label class="text-muted font-weight-600" style="margin-bottom: 6px; display: block; font-size: 12px;">Mulai Tanggal</label>
-                                <input type="date" id="export-xml-start-date">
+                                <input type="date" id="export-xml-start-date" style="padding: 10px;">
                             </div>
                             <div style="flex: 1;">
                                 <label class="text-muted font-weight-600" style="margin-bottom: 6px; display: block; font-size: 12px;">Posting / Hari</label>
-                                <input type="number" id="export-xml-post-per-day" value="3" min="1">
+                                <input type="number" id="export-xml-post-per-day" value="3" min="1" style="padding: 10px;">
                             </div>
                         </div>
                     </div>
@@ -440,8 +486,10 @@
                         <h3 style="margin-bottom: 8px; color: var(--text-main);">Restore Your Workspace</h3>
                         <p class="text-muted" style="line-height: 1.5; max-width: 300px;">Upload a <b>.json</b> backup file generated by this app to restore all your Projects, Articles, Prompts, and Settings instantly.</p>
                     </div>
+                    
                     <input type="file" id="file-import-backup" accept=".json" style="display:none" onchange="importBackupJson(event)">
                     <button class="btn btn-primary" style="padding: 14px 24px; font-size: 14px;" onclick="document.getElementById('file-import-backup').click()"><i class="fa-solid fa-upload"></i> Upload Backup File</button>
+                    
                     <div style="font-size: 11px; color: var(--danger); font-weight: 600; padding: 10px; background: #fef2f2; border-radius: 6px; width: 100%;">Warning: This will overwrite your current workspace!</div>
                 </div>
             </div>
@@ -451,7 +499,12 @@
     <div id="view-settings" class="view-section view-single-col">
         <h1 class="page-title">Global Settings</h1>
         
+        <div style="max-width: 900px; margin-bottom: 20px; padding: 12px 16px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; color: #b45309; font-size: 13px; line-height: 1.5;">
+            <i class="fa-solid fa-triangle-exclamation" style="margin-right: 6px;"></i> <b>Penting:</b> Untuk menghubungkan aplikasi HTML lokal ini dengan WordPress Anda secara aman, pastikan Anda telah memasang kode <i>CORS (Cross-Origin Resource Sharing)</i> dan <i>Basic Auth</i> di file <code>functions.php</code> tema WordPress Anda.
+        </div>
+
         <div style="display: flex; flex-direction: column; gap: 24px; max-width: 900px; width: 100%; margin-bottom: 40px;">
+            
             <div class="card">
                 <div class="card-header" style="background: #f8fafc;"><span style="color: var(--text-main); font-size: 14px;"><i class="fa-solid fa-plug text-muted" style="margin-right:8px;"></i> API & Model Connection</span></div>
                 <div class="card-body" style="gap: 16px;">
@@ -469,6 +522,7 @@
                             <select id="setting-model" style="cursor: pointer;" onchange="toggleCustomBoxes()"></select>
                         </div>
                     </div>
+                    
                     <div class="responsive-flex-16">
                         <div style="flex: 2;">
                             <label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">API Key</label>
@@ -483,6 +537,7 @@
                             <input type="number" id="setting-workers" min="1" max="10" value="1" title="How many articles to generate concurrently">
                         </div>
                     </div>
+
                     <div id="setting-custom-url-box" style="display: none; margin-top: 16px;">
                         <hr style="border: none; border-top: 1px dashed var(--border); margin-bottom: 16px;">
                         <div class="responsive-flex-16">
@@ -519,15 +574,25 @@
                 </div>
             </div>
             
-            <div class="card" style="border-color: #fca5a5;">
-                <div class="card-body" style="flex-direction: row; justify-content: space-between; align-items: center; padding: 16px; flex-wrap: wrap; gap: 12px;">
-                    <div>
-                        <div style="font-weight: 600; color: var(--danger); margin-bottom: 4px;"><i class="fa-solid fa-triangle-exclamation" style="margin-right:4px;"></i> Danger Zone</div>
-                        <div class="text-muted" style="font-size: 12px;">Bersihkan tabel artikel atau reset aplikasi ke pengaturan awal pabrik.</div>
+            <div class="card" style="border-color: var(--danger);">
+                <div class="card-header" style="background: #fef2f2; color: var(--danger);">
+                    <span style="font-size: 14px;"><i class="fa-solid fa-triangle-exclamation" style="margin-right:8px;"></i> Danger Zone (Data Cleanup)</span>
+                </div>
+                <div class="card-body" style="gap: 16px;">
+                    <div style="display: flex; gap: 16px; align-items: center; justify-content: space-between; padding-bottom: 16px; border-bottom: 1px dashed var(--border); flex-wrap: wrap;">
+                        <div>
+                            <div style="font-weight: 600; color: var(--text-main); margin-bottom: 4px;">Clear All Articles</div>
+                            <div class="text-muted" style="font-size: 12px;">Hapus seluruh artikel di tabel. Pengaturan API, Prompt, dan WP akan tetap aman.</div>
+                        </div>
+                        <button class="btn btn-outline-danger" onclick="clearAllArticles()"><i class="fa-solid fa-broom"></i> Clear Articles</button>
                     </div>
-                    <div style="display: flex; gap: 12px;">
-                        <button class="btn btn-outline-danger" style="padding: 8px 16px; font-size: 13px;" onclick="clearAllArticles()"><i class="fa-solid fa-broom"></i> Clear Articles</button>
-                        <button class="btn btn-danger" style="padding: 8px 16px; font-size: 13px;" onclick="factoryReset()"><i class="fa-solid fa-skull-crossbones"></i> Factory Reset</button>
+                    
+                    <div style="display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+                        <div>
+                            <div style="font-weight: 600; color: var(--danger); margin-bottom: 4px;">Factory Reset</div>
+                            <div class="text-muted" style="font-size: 12px;">Hapus <b>SEMUA</b> data (Artikel, Prompt, API Key, WP). Aplikasi kembali seperti baru.</div>
+                        </div>
+                        <button class="btn btn-danger" onclick="factoryReset()"><i class="fa-solid fa-skull-crossbones"></i> Factory Reset</button>
                     </div>
                 </div>
             </div>
@@ -535,8 +600,10 @@
             <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
                 <button class="btn btn-primary" onclick="saveSettingsUI()"><i class="fa-solid fa-floppy-disk"></i> Save All Settings</button>
             </div>
+
         </div>
     </div>
+
 </div>
 
 <div class="modal" id="project-modal">
@@ -603,6 +670,7 @@
             </div>
             <div class="responsive-flex-16">
                 <div style="flex: 1;"><label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Publish Date</label><input type="date" id="edit-tanggal" style="cursor: pointer;"></div>
+                
                 <div style="flex: 1;">
                     <label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Prompt Used</label>
                     <div style="display: flex; gap: 6px;">
@@ -680,7 +748,6 @@
     // ================= 1. STATE MANAGEMENT & AUTOSAVE (INDEXEDDB) =================
     
     function generateId() { return Date.now().toString(36) + Math.random().toString(36).substring(2); }
-    function generateSlug(text) { return text.toString().toLowerCase().trim().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '').replace(/\-\-+/g, '-'); }
 
     let defaultAppData = {
         projects: [
@@ -691,10 +758,33 @@
                 id: 1,
                 name: "Human-Centric SEO Master",
                 persona: `You are a Human-Centric Content Expert, an objective Subject Matter Expert (SME), and a Semantic SEO Specialist. Your primary goal is to provide immense value to the human reader, prioritizing natural flow, empathy, and high E-E-A-T (Experience, Expertise, Authoritativeness, Trustworthiness). Your writing must strictly adhere to an 8th-grade reading level. You adapt your tone dynamically: professional and authoritative in the main body, but casual and lifelike in the conclusion. You MUST output ONLY a valid, minified JSON object. No markdown wrapping.`,
-                
-                task: `Write an exhaustive, master-class article targeting the keyword: [KEYWORD]. (Language: [LANGUAGE]).\n\nVALUE, TRUST & ORGANIC LENGTH MANDATE:\n- HIGH INFORMATION GAIN: Every paragraph must reward the reader with a new actionable takeaway, unique insight, data point, or perspective.\n- ORGANIC LENGTH EXPANSION: To reach the massive length required, you MUST generate length organically. Add 12 to 15 highly relevant <h2> subtopics, deep-dive real-world examples, and data tables. \n- NO JARGON (8TH-GRADE LEVEL): Keep sentences short, clear, and punchy. Explain complex technical terms in everyday language.\n\n6-STEP BLAZE FRAMEWORK & STRUCTURE:\n1. TITLE: A highly engaging, human-friendly title containing the exact [KEYWORD]. (Max 60 chars, NO years).\n2. OPENING (ENTITY SEEDING): Mentally identify 4 highly relevant core entities related to the topic. Start IMMEDIATELY with EXACTLY 2 to 3 introductory paragraphs using <p> tags. DO NOT place any heading before the intro. Weave all 4 entities naturally into the very first paragraph using Subject-Predicate-Object (SPO) or Entity-Attribute-Value (EAV) structures. Show empathy.\n3. DEEP DIVE BODY (12-15 H2s): Generate 12 to 15 highly detailed <h2> subtopics. Take the reader on a logical journey. Use SPO and EAV naturally ONLY when clarifying complex definitions or entities.\n4. FORMATTING FOR VALUE: Include at least THREE (3) HTML <table class="responsive-table"> to compare data or entities. Use structured bullet points <ul> to break down complex steps.\n5. FAQ SECTION (SNIPPET BAIT): Create an <h2> ("FAQ"). Include EXACTLY 7 strictly relevant questions. Write straight-forward, in-depth answers (50-70 words each) using strict SPO or EAV sentences to optimize for Google Featured Snippets.\n6. CONCLUSION (LIFELIKE TONE): End with an <h2> ("Conclusion" or "Final Thoughts"). Write a casual, lifelike closing paragraph. \n\nEXPECTED JSON OUTPUT:\n{\n  "title": "A natural, high-CTR title containing the exact [KEYWORD]",\n  "meta": "A helpful, objective SEO meta description (max 150 chars)",\n  "content": "<p>First empathetic intro with 4 entities...</p><p>Second intro...</p><p>Third intro...</p><h2>Subtopic 1</h2><p>...</p><h2>Subtopic 12</h2><p>...</p><h2>FAQ</h2>..."\n}`,
+                task: `Write an exhaustive, master-class article targeting the keyword: [KEYWORD]. (Language: [LANGUAGE]).
 
-                rules: `- DO NOT use raw line breaks (\\n) inside JSON strings.\n- STRICTLY NO SENTENCE PADDING (ANTI-FLUFF): NEVER artificially lengthen a simple fact just to increase the word count (e.g., do not turn "He bought 1kg of rice" into a long, rambling paragraph about buying rice). If you need more length, you MUST introduce completely NEW subtopics, examples, or tables. DO NOT loop or repeat concepts.\n- INVISIBLE SEO: Place the exact phrase "[KEYWORD]" NATURALLY in the Title, the opening paragraph, and the conclusion. Max density 1-1.5%. Rely on LSI synonyms throughout the body.\n- STRICTLY NO JARGON: Absolutely no rigid academic language, dense corporate speak, or unexplained technical jargon.\n- PURE JSON ONLY: Output pure JSON. No markdown formatting blocks (like \`\`\`json), no conversational text.\n- HTML ESCAPING (CRITICAL): You MUST escape all double quotes inside HTML attributes (e.g., <table class="responsive-table">) OR use single quotes.\n- BANNED WORDS (AI CLICHES): Welcome, Additionally, Ultimately, Delve, Tapestry, Embark, Invaluable, Shifting landscape, Testament, Beacon, Unlock, Furthermore, Moreover, In conclusion, Demystify, Ultimate. DO NOT start sentences with "Welcome", "Additionally", or "Ultimately".`
+VALUE, TRUST & ORGANIC LENGTH MANDATE:
+- HIGH INFORMATION GAIN: Every paragraph must reward the reader with a new actionable takeaway, unique insight, data point, or perspective.
+- ORGANIC LENGTH EXPANSION: To reach the massive length required, you MUST generate length organically. Add 12 to 15 highly relevant <h2> subtopics, deep-dive real-world examples, and data tables. 
+- NO JARGON (8TH-GRADE LEVEL): Keep sentences short, clear, and punchy. Explain complex technical terms in everyday language.
+
+6-STEP BLAZE FRAMEWORK & STRUCTURE:
+1. TITLE: A highly engaging, human-friendly title containing the exact [KEYWORD]. (Max 60 chars, NO years).
+2. OPENING (ENTITY SEEDING): Mentally identify 4 highly relevant core entities related to the topic. Start IMMEDIATELY with EXACTLY 2 to 3 introductory paragraphs using <p> tags. DO NOT place any heading before the intro. Weave all 4 entities naturally into the very first paragraph using Subject-Predicate-Object (SPO) or Entity-Attribute-Value (EAV) structures. Show empathy.
+3. DEEP DIVE BODY (12-15 H2s): Generate 12 to 15 highly detailed <h2> subtopics. Take the reader on a logical journey. Use SPO and EAV naturally ONLY when clarifying complex definitions or entities.
+4. FORMATTING FOR VALUE: Include at least THREE (3) HTML <table class="responsive-table"> to compare data or entities. Use structured bullet points <ul> to break down complex steps.
+5. FAQ SECTION (SNIPPET BAIT): Create an <h2> ("FAQ"). Include EXACTLY 7 strictly relevant questions. Write straight-forward, in-depth answers (50-70 words each) using strict SPO or EAV sentences to optimize for Google Featured Snippets.
+6. CONCLUSION (LIFELIKE TONE): End with an <h2> ("Conclusion" or "Final Thoughts"). Write a casual, lifelike closing paragraph. 
+
+EXPECTED JSON OUTPUT:
+{
+  "title": "A natural, high-CTR title containing the exact [KEYWORD]",
+  "meta": "A helpful, objective SEO meta description (max 150 chars)",
+  "content": "<p>First empathetic intro with 4 entities...</p><p>Second intro...</p><p>Third intro...</p><h2>Subtopic 1</h2><p>...</p><h2>Subtopic 12</h2><p>...</p><h2>FAQ</h2>..."
+}`,
+                rules: `- STRICTLY NO SENTENCE PADDING (ANTI-FLUFF): NEVER artificially lengthen a simple fact just to increase the word count (e.g., do not turn "He bought 1kg of rice" into a long, rambling paragraph about buying rice). If you need more length, you MUST introduce completely NEW subtopics, examples, or tables. DO NOT loop or repeat concepts.
+- INVISIBLE SEO: Place the exact phrase "[KEYWORD]" NATURALLY in the Title, the opening paragraph, and the conclusion. Max density 1-1.5%. Rely on LSI synonyms throughout the body.
+- STRICTLY NO JARGON: Absolutely no rigid academic language, dense corporate speak, or unexplained technical jargon.
+- PURE JSON ONLY: Output pure JSON. No markdown formatting blocks (like ${"```"}json), no conversational text.
+- HTML ESCAPING (CRITICAL): You MUST escape all double quotes inside HTML attributes (e.g., <table class="responsive-table">) OR use single quotes.
+- BANNED WORDS (AI CLICHES): Welcome, Additionally, Ultimately, Delve, Tapestry, Embark, Invaluable, Shifting landscape, Testament, Beacon, Unlock, Furthermore, Moreover, In conclusion, Demystify, Ultimate. DO NOT start sentences with "Welcome", "Additionally", or "Ultimately".`
             }
         ],
         wpAccounts: [], 
@@ -704,6 +794,7 @@
 
     let appData = defaultAppData;
 
+    // Konfigurasi Database LocalForage
     localforage.config({
         name: 'SumoPodApp',
         storeName: 'workspace_data',
@@ -715,6 +806,7 @@
     let isGenerating = false;
     let abortController = null;
     
+    // VARIABEL FILTER QUALITY CONTROL (QC)
     let searchTimeout = null; 
     let showOnlyBadTitles = false; 
     let showOnlyShortArticles = false;
@@ -725,57 +817,28 @@
         pink: { bg: "#fdf2f8", text: "#db2777" }, purple: { bg: "#faf5ff", text: "#8b5cf6" }, orange: { bg: "#fff7ed", text: "#f59e0b" }
     };
 
+    // FITUR PEMBERSIH ARTIFAK JSON
     function cleanFinalHTML(htmlStr) {
         if(!htmlStr) return "";
-        let cleaned = htmlStr.replace(/\\*"\s*}\s*$/, ''); 
-        cleaned = cleaned.replace(/\\*"\s*$/, ''); 
+        let cleaned = htmlStr.replace(/\\*"\s*}\s*$/, ''); // Hapus trailing "} atau \"}
+        cleaned = cleaned.replace(/\\*"\s*$/, ''); // Hapus trailing quote " atau \"
         return cleaned.trim();
     }
 
-    // Fungsi Pengekstrak JSON Anti-Peluru
-    function parseAIResponse(aiText, defaultTitle) {
-        let result = { title: defaultTitle, meta: "", content: aiText };
-        let cleanJson = aiText.replace(/^```(json|html)?\s*/i, '').replace(/```$/i, '').trim();
-        
-        try {
-            let parsed = JSON.parse(cleanJson);
-            result.title = parsed.title || defaultTitle;
-            result.meta = parsed.meta || parsed.meta_description || "";
-            result.content = parsed.content || parsed.content_html || cleanJson;
-        } catch(e) {
-            let titleMatch = cleanJson.match(/"title"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"/i);
-            if(titleMatch) result.title = titleMatch[1];
-            
-            let metaMatch = cleanJson.match(/"meta"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"/i);
-            if(metaMatch) result.meta = metaMatch[1];
-            
-            let contentMatch = cleanJson.match(/"content"\s*:\s*"([\s\S]*?)"\s*}/i);
-            if(contentMatch) {
-                result.content = contentMatch[1];
-            } else {
-                let altMatch = cleanJson.match(/"content"\s*:\s*"([\s\S]*)/i);
-                if(altMatch) result.content = altMatch[1].replace(/"\s*}\s*$/, '');
-            }
-            result.content = result.content.replace(/\\"/g, '"').replace(/\\n/g, '<br>');
-        }
-        
-        result.content = cleanFinalHTML(result.content);
-        return result;
-    }
-
+    // Tarik data dari IndexedDB saat aplikasi dibuka
     localforage.getItem('sumoArticleGenerator').then(function(value) {
         if (value) {
             appData = value;
-            if(!appData.articles) appData.articles = [];
-            if(!appData.prompts || appData.prompts.length === 0) appData.prompts = defaultAppData.prompts;
-            if(!appData.projects || appData.projects.length === 0) appData.projects = defaultAppData.projects;
-            if(!appData.wpAccounts) appData.wpAccounts = [];
-            if(!appData.settings) appData.settings = defaultAppData.settings;
         }
+        
+        if(!appData.settings) appData.settings = defaultAppData.settings; 
         if(!appData.settings.workers) appData.settings.workers = 1;
-
+        
         appData.articles.forEach(art => { if(!art.id) art.id = generateId(); });
-        syncAllData(); renderArticleTable();
+
+        // Jalankan UI setelah data berhasil ditarik
+        syncAllData(); 
+        renderArticleTable();
     }).catch(function(err) {
         console.error("Gagal menarik data dari IndexedDB:", err);
         syncAllData(); renderArticleTable();
@@ -848,11 +911,22 @@
     }
 
     // ================= 3. DATA MANAGER (EXPORT & IMPORT) =================
+    window.toggleXmlSchedule = function() {
+        const status = document.getElementById('export-xml-status').value;
+        const configBox = document.getElementById('export-xml-schedule-config');
+        if (status === 'future') {
+            configBox.style.display = 'flex';
+        } else {
+            configBox.style.display = 'none';
+        }
+    };
+
     window.toggleExportFormat = function() {
         const formatEle = document.querySelector('input[name="export_format"]:checked');
         const xmlOptions = document.getElementById('export-xml-options');
         if (formatEle && formatEle.value === 'xml_wp') {
             xmlOptions.style.display = 'block';
+            toggleXmlSchedule(); // Pastikan toggle schedule dipanggil saat format XML dipilih
         } else {
             if(xmlOptions) xmlOptions.style.display = 'none';
         }
@@ -869,25 +943,31 @@
         const xmlRadio = document.querySelector('input[name="export_format"][value="xml_wp"]');
         
         if(source === 'articles') { 
-            filterContainer.style.display = 'block'; formatWarning.style.display = 'none'; 
-            csvRadio.disabled = false; jsonRadio.disabled = false; if(xmlRadio) xmlRadio.disabled = false;
+            filterContainer.style.display = 'block'; 
+            formatWarning.style.display = 'none'; 
+            csvRadio.disabled = false; 
+            jsonRadio.disabled = false;
+            if(xmlRadio) xmlRadio.disabled = false;
         } 
         else if (source === 'prompts') { 
-            filterContainer.style.display = 'none'; formatWarning.style.display = 'none'; 
-            csvRadio.disabled = false; jsonRadio.disabled = false;
-            if(xmlRadio) { xmlRadio.disabled = true; if(xmlRadio.checked) csvRadio.checked = true; }
+            filterContainer.style.display = 'none'; 
+            formatWarning.style.display = 'none'; 
+            csvRadio.disabled = false; 
+            jsonRadio.disabled = false;
+            if(xmlRadio) { 
+                xmlRadio.disabled = true; 
+                if(xmlRadio.checked) csvRadio.checked = true; 
+            }
         } 
         else if (source === 'backup') { 
-            filterContainer.style.display = 'none'; formatWarning.style.display = 'block'; 
-            jsonRadio.checked = true; csvRadio.disabled = true; if(xmlRadio) xmlRadio.disabled = true;
+            filterContainer.style.display = 'none'; 
+            formatWarning.style.display = 'block'; 
+            jsonRadio.checked = true; 
+            csvRadio.disabled = true; 
+            if(xmlRadio) xmlRadio.disabled = true;
         }
         window.toggleExportFormat();
     }
-
-    window.toggleXmlSchedule = function() {
-        const status = document.getElementById('export-xml-status').value;
-        document.getElementById('export-xml-schedule-config').style.display = status === 'future' ? 'flex' : 'none';
-    };
 
     window.executeExport = function() {
         const source = document.querySelector('input[name="export_source"]:checked').value; 
@@ -919,17 +999,19 @@
             downloadFile(csvContent, `${filename}.csv`, 'text/csv');
         }
         else if (format === 'xml_wp') {
+            // === LOGIKA EXPORT KE WORDPRESS XML (WXR) ===
             if (source !== 'articles') return alert("XML WordPress format is only available for Articles export!");
             
             const exportStatus = document.getElementById('export-xml-status').value;
-            const commentStatus = document.getElementById('export-xml-comments').value;
+            const exportComments = document.getElementById('export-xml-comments') ? document.getElementById('export-xml-comments').value : 'closed';
+            const isSchedule = exportStatus === 'future';
             
-            let currentDate = document.getElementById('export-xml-start-date').value ? new Date(document.getElementById('export-xml-start-date').value) : new Date();
-            let postsPerDay = parseInt(document.getElementById('export-xml-post-per-day').value) || 1;
-            let postCounter = 0;
+            let xmlCurrentDate = document.getElementById('export-xml-start-date') && document.getElementById('export-xml-start-date').value ? new Date(document.getElementById('export-xml-start-date').value) : new Date();
+            let xmlPostsPerDay = document.getElementById('export-xml-post-per-day') ? parseInt(document.getElementById('export-xml-post-per-day').value) || 1 : 1;
+            let xmlPostCounter = 0;
             
             let xmlContent = `<?xml version="1.0" encoding="UTF-8" ?>
-<rss version="2.0" xmlns:excerpt="http://wordpress.org/export/1.2/excerpt/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:wfw="http://wellformedweb.org/CommentAPI/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:wp="http://wordpress.org/export/1.2/">
+<rss version="2.0" xmlns:excerpt="[http://wordpress.org/export/1.2/excerpt/](http://wordpress.org/export/1.2/excerpt/)" xmlns:content="[http://purl.org/rss/1.0/modules/content/](http://purl.org/rss/1.0/modules/content/)" xmlns:wfw="[http://wellformedweb.org/CommentAPI/](http://wellformedweb.org/CommentAPI/)" xmlns:dc="[http://purl.org/dc/elements/1.1/](http://purl.org/dc/elements/1.1/)" xmlns:wp="[http://wordpress.org/export/1.2/](http://wordpress.org/export/1.2/)">
 <channel>
     <title>SumoPod Articles Export</title>
     <link>http://localhost</link>
@@ -941,25 +1023,21 @@
             dataToExport.forEach(art => {
                 let postDate = new Date().toISOString().replace('T', ' ').substring(0, 19);
                 
-                if (exportStatus === 'future') {
-                    const yyyy = currentDate.getFullYear();
-                    const mm = String(currentDate.getMonth() + 1).padStart(2, '0');
-                    const dd = String(currentDate.getDate()).padStart(2, '0');
-                    
-                    let hour = String(Math.floor(Math.random() * (18 - 8 + 1) + 8)).padStart(2, '0');
-                    let min = String(Math.floor(Math.random() * 60)).padStart(2, '0');
-                    
-                    postDate = `${yyyy}-${mm}-${dd} ${hour}:${min}:00`;
+                if (isSchedule) {
+                    const yyyy = xmlCurrentDate.getFullYear();
+                    const mm = String(xmlCurrentDate.getMonth() + 1).padStart(2, '0');
+                    const dd = String(xmlCurrentDate.getDate()).padStart(2, '0');
+                    postDate = `${yyyy}-${mm}-${dd} 10:00:00`;
 
-                    postCounter++;
-                    if (postCounter >= postsPerDay) {
-                        postCounter = 0;
-                        currentDate.setDate(currentDate.getDate() + 1);
+                    xmlPostCounter++;
+                    if (xmlPostCounter >= xmlPostsPerDay) {
+                        xmlPostCounter = 0;
+                        xmlCurrentDate.setDate(xmlCurrentDate.getDate() + 1);
                     }
-                } else if (art.date && art.date !== '-') { 
+                } else if (art.date && art.date !== '-') {
                     postDate = `${art.date} 10:00:00`; 
                 }
-
+                
                 let categories = (art.category || 'Uncategorized').split(',').map(c => c.trim());
                 let catTags = categories.map(c => `<category domain="category" nicename="${generateSlug(c)}"><![CDATA[${c}]]></category>`).join('\n        ');
 
@@ -967,15 +1045,14 @@
     <item>
         <title><![CDATA[${art.title}]]></title>
         <link>http://localhost/${art.slug}</link>
-        <pubDate>${new Date(postDate.replace(' ', 'T')).toUTCString()}</pubDate>
+        <pubDate>${new Date(postDate).toUTCString()}</pubDate>
         <dc:creator><![CDATA[admin]]></dc:creator>
         ${catTags}
         <description></description>
         <content:encoded><![CDATA[${art.body}]]></content:encoded>
         <excerpt:encoded><![CDATA[]]></excerpt:encoded>
         <wp:post_date><![CDATA[${postDate}]]></wp:post_date>
-        <wp:post_date_gmt><![CDATA[${postDate}]]></wp:post_date_gmt>
-        <wp:comment_status><![CDATA[${commentStatus}]]></wp:comment_status>
+        <wp:comment_status><![CDATA[${exportComments}]]></wp:comment_status>
         <wp:ping_status><![CDATA[open]]></wp:ping_status>
         <wp:post_name><![CDATA[${art.slug}]]></wp:post_name>
         <wp:status><![CDATA[${exportStatus}]]></wp:status>
@@ -983,6 +1060,7 @@
         <wp:menu_order>0</wp:menu_order>
         <wp:post_type><![CDATA[post]]></wp:post_type>
         <wp:is_sticky>0</wp:is_sticky>
+        
         <wp:postmeta>
             <wp:meta_key><![CDATA[rank_math_focus_keyword]]></wp:meta_key>
             <wp:meta_value><![CDATA[${art.keyword ? art.keyword.split(':')[0].trim() : art.title}]]></wp:meta_value>
@@ -997,9 +1075,11 @@
         </wp:postmeta>
     </item>\n`;
             });
+
             xmlContent += `</channel>\n</rss>`;
             downloadFile(xmlContent, `${filename}-wordpress.xml`, 'application/xml');
         }
+
         showToast("Download started!");
     }
 
@@ -1017,19 +1097,57 @@
                 const data = JSON.parse(e.target.result);
                 if(data.projects && data.articles) {
                     if(confirm("DANGER! \n\nImporting this backup will OVERWRITE and REPLACE your entire current workspace.\n\nAre you sure you want to proceed?")) {
-                        appData = data; saveData(); syncAllData(); renderArticleTable(); showToast("Workspace Backup Restored Successfully!");
+                        appData = data;
+                        saveData();
+                        syncAllData();
+                        renderArticleTable();
+                        showToast("Workspace Backup Restored Successfully!");
                     }
-                } else { alert("Invalid JSON format. Please select a valid backup JSON file generated by this app."); }
-            } catch(err) { alert("Failed to read the JSON file. It might be corrupted."); }
+                } else {
+                    alert("Invalid JSON format. Please select a valid backup JSON file generated by this app.");
+                }
+            } catch(err) {
+                alert("Failed to read the JSON file. It might be corrupted.");
+            }
             event.target.value = '';
         };
         reader.readAsText(file);
+    };
+
+    // ================= FUNGSI DOWNLOAD CONFIGURATION (.txt) =================
+    window.downloadConfiguration = function() {
+        const proj = document.getElementById('gen-select-project').value || '-';
+        const prompt = document.getElementById('gen-select-prompt').value || '-';
+        const topic = document.getElementById('gen-input-topic').value || '-';
+        const cat = document.getElementById('gen-input-category').value || '-';
+        const lang = document.getElementById('gen-input-language').value || '-';
+        const aud = document.getElementById('gen-input-audience').value || '-';
+        const style = document.getElementById('gen-input-style').value || '-';
+        const length = document.getElementById('gen-input-length').value || '-';
+
+        let content = `=== SUMOPOD GENERATOR CONFIGURATION ===\r\n`;
+        content += `Date Exported: ${new Date().toLocaleString()}\r\n\r\n`;
+        content += `Project     : ${proj}\r\n`;
+        content += `Prompt      : ${prompt}\r\n`;
+        content += `Topic       : ${topic}\r\n`;
+        content += `WP Category : ${cat}\r\n`;
+        content += `Language    : ${lang}\r\n`;
+        content += `Audience    : ${aud}\r\n`;
+        content += `Style       : ${style}\r\n`;
+        content += `Length      : ${length}\r\n`;
+
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = `Config_${generateSlug(proj)}.txt`;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+        showToast("Configuration downloaded!");
     };
 
     // ================= 4. REAL API LOGIC: SETTINGS =================
     window.updateModelOptions = function() {
         const provider = document.getElementById('setting-provider').value;
         const modelSelect = document.getElementById('setting-model');
+        const customUrlBox = document.getElementById('setting-custom-url-box');
         let options = ""; 
         if (provider === 'openai') { 
             options = `<optgroup label="OpenAI"><option value="gpt-4o-mini" selected>GPT-4o Mini</option><option value="gpt-4o">GPT-4o</option></optgroup>`; 
@@ -1037,64 +1155,80 @@
             options = `<optgroup label="Google Gemini"><option value="gemini-2.5-flash" selected>Gemini 2.5 Flash</option><option value="gemini-2.5-pro">Gemini 2.5 Pro</option></optgroup>`; 
         } else if (provider === 'sumopod') { 
             options = `
-                <optgroup label="OpenAI">
-                    <option value="gpt-4o-mini" selected>GPT-4o Mini</option>
-                    <option value="gpt-4o">GPT-4o</option>
-                    <option value="gpt-4.1-nano">GPT-4.1 Nano</option>
-                    <option value="gpt-4.1-mini">GPT-4.1 Mini</option>
-                    <option value="gpt-4.1">GPT-4.1</option>
-                    <option value="gpt-5-nano">GPT-5 Nano</option>
-                    <option value="gpt-5-mini">GPT-5 Mini</option>
-                    <option value="gpt-5">GPT-5</option>
-                    <option value="gpt-5.1">GPT-5.1</option>
-                    <option value="gpt-5.1-codex">GPT-5.1 Codex</option>
-                    <option value="gpt-5.1-codex-mini">GPT-5.1 Codex Mini</option>
-                    <option value="gpt-5.2">GPT-5.2</option>
-                    <option value="gpt-5.2-codex">GPT-5.2 Codex</option>
-                    <option value="text-embedding-3-small">Text Embedding 3 Small</option>
-                    <option value="text-embedding-3-large">Text Embedding 3 Large</option>
+                <optgroup label="Alibaba (Qwen)">
+                    <option value="qwen3.6-flash">Qwen 3.6 Flash</option>
+                    <option value="qwen3.6-plus">Qwen 3.6 Plus</option>
+                </optgroup>
+                <optgroup label="Anthropic">
+                    <option value="claude-haiku-4-5">Claude Haiku 4.5</option>
+                    <option value="claude-opus-4-6">Claude Opus 4.6</option>
+                    <option value="claude-sonnet-4-6">Claude Sonnet 4.6</option>
+                </optgroup>
+                <optgroup label="BytePlus">
+                    <option value="deepseek-v3-2">DeepSeek V3.2</option>
+                    <option value="glm-4-7">GLM 4.7</option>
+                    <option value="kimi-k2-5-260127">Kimi K2.5</option>
+                    <option value="seed-2-0-code">Seed 2.0 Code</option>
+                    <option value="seed-2-0-lite">Seed 2.0 Lite</option>
+                    <option value="seed-2-0-mini">Seed 2.0 Mini</option>
+                    <option value="seed-2-0-pro">Seed 2.0 Pro</option>
+                </optgroup>
+                <optgroup label="Cloudeka">
+                    <option value="nvidia/nemotron-3-nano-30b">Nemotron 3 Nano</option>
+                    <option value="openai/gpt-oss-20b">GPT OSS 20B</option>
+                    <option value="qwen/qwen3-30b-a3b-instruct-2507">Qwen3 30B</option>
+                    <option value="zai/glm-4.7-fp8">GLM 4.7 FP8</option>
+                </optgroup>
+                <optgroup label="DeepSeek">
+                    <option value="deepseek-v4-flash">DeepSeek V4 Flash</option>
+                    <option value="deepseek-v4-pro">DeepSeek V4 Pro</option>
                 </optgroup>
                 <optgroup label="Google Gemini">
-                    <option value="gemini/gemini-2.0-flash-lite">Gemini 2.0 Flash Lite</option>
                     <option value="gemini/gemini-2.0-flash">Gemini 2.0 Flash</option>
-                    <option value="gemini/gemini-2.5-flash-lite">Gemini 2.5 Flash Lite</option>
+                    <option value="gemini/gemini-2.0-flash-lite">Gemini 2.0 Flash Lite</option>
                     <option value="gemini/gemini-2.5-flash">Gemini 2.5 Flash</option>
+                    <option value="gemini/gemini-2.5-flash-lite">Gemini 2.5 Flash Lite</option>
                     <option value="gemini/gemini-2.5-pro">Gemini 2.5 Pro</option>
                     <option value="gemini/gemini-3-flash-preview">Gemini 3 Flash Preview</option>
                     <option value="gemini/gemini-3-pro-preview">Gemini 3 Pro Preview</option>
                     <option value="gemini/gemini-3.1-flash-lite-preview">Gemini 3.1 Flash Lite Preview</option>
                     <option value="gemini/gemini-3.1-pro-preview">Gemini 3.1 Pro Preview</option>
                 </optgroup>
-                <optgroup label="Anthropic">
-                    <option value="claude-haiku-4-5">Claude Haiku 4.5 (30% Off)</option>
-                    <option value="claude-sonnet-4-6">Claude Sonnet 4.6</option>
-                    <option value="claude-opus-4-6">Claude Opus 4.6</option>
-                </optgroup>
-                <optgroup label="Alibaba (Qwen)">
-                    <option value="qwen3.6-flash">Qwen 3.6 Flash (50% Off)</option>
-                    <option value="qwen3.6-plus">Qwen 3.6 Plus (50% Off)</option>
-                </optgroup>
-                <optgroup label="BytePlus (DeepSeek, GLM, Seed, Kimi)">
-                    <option value="deepseek-v3-2">DeepSeek V3.2 (50% Off)</option>
-                    <option value="glm-4-7">GLM 4.7 (90% Off)</option>
-                    <option value="kimi-k2-5-260127">Kimi K2.5 (90% Off)</option>
-                    <option value="seed-2-0-mini">Seed 2.0 Mini (90% Off)</option>
-                    <option value="seed-2-0-lite">Seed 2.0 Lite (90% Off)</option>
-                    <option value="seed-2-0-pro">Seed 2.0 Pro (90% Off)</option>
-                </optgroup>
-                <optgroup label="Zhipu GLM (Z.ai)">
-                    <option value="glm-5">GLM 5 (90% Off)</option>
-                    <option value="glm-5-turbo">GLM 5 Turbo (90% Off)</option>
-                    <option value="glm-5.1">GLM 5.1 (90% Off)</option>
-                </optgroup>
-                <optgroup label="MiniMax">
-                    <option value="MiniMax-M2.7-highspeed">MiniMax M2.7 (90% Off)</option>
-                    <option value="minimax/speech-2.8-hd">MiniMax Speech 2.8 HD</option>
-                </optgroup>
                 <optgroup label="Mimo">
                     <option value="mimo-v2-flash">Mimo V2 Flash</option>
-                    <option value="mimo-v2-omni">Mimo V2 Omni (70% Off)</option>
-                    <option value="mimo-v2-pro">Mimo V2 Pro (70% Off)</option>
+                    <option value="mimo-v2-omni">Mimo V2 Omni</option>
+                    <option value="mimo-v2-pro">Mimo V2 Pro</option>
+                    <option value="mimo-v2.5">Mimo V2.5</option>
+                    <option value="mimo-v2.5-pro">Mimo V2.5 Pro</option>
+                </optgroup>
+                <optgroup label="MiniMax">
+                    <option value="MiniMax-M2.7-highspeed">MiniMax M2.7 Highspeed</option>
+                    <option value="minimax/speech-2.8-hd">MiniMax Speech 2.8 HD</option>
+                </optgroup>
+                <optgroup label="Moonshoot">
+                    <option value="kimi-k2.6">Kimi K2.6</option>
+                </optgroup>
+                <optgroup label="OpenAI">
+                    <option value="gpt-4.1">GPT-4.1</option>
+                    <option value="gpt-4.1-mini">GPT-4.1 Mini</option>
+                    <option value="gpt-4.1-nano">GPT-4.1 Nano</option>
+                    <option value="gpt-4o">GPT-4o</option>
+                    <option value="gpt-4o-mini" selected>GPT-4o Mini</option>
+                    <option value="gpt-5">GPT-5</option>
+                    <option value="gpt-5-mini">GPT-5 Mini</option>
+                    <option value="gpt-5-nano">GPT-5 Nano</option>
+                    <option value="gpt-5.1">GPT-5.1</option>
+                    <option value="gpt-5.1-codex">GPT-5.1 Codex</option>
+                    <option value="gpt-5.1-codex-mini">GPT-5.1 Codex Mini</option>
+                    <option value="gpt-5.2">GPT-5.2</option>
+                    <option value="gpt-5.2-codex">GPT-5.2 Codex</option>
+                    <option value="text-embedding-3-large">Text Embedding 3 Large</option>
+                    <option value="text-embedding-3-small">Text Embedding 3 Small</option>
+                </optgroup>
+                <optgroup label="Zhipu GLM (Z.ai)">
+                    <option value="glm-5">GLM 5</option>
+                    <option value="glm-5-turbo">GLM 5 Turbo</option>
+                    <option value="glm-5.1">GLM 5.1</option>
                 </optgroup>
                 <option value="custom">Custom Model ID</option>
             `; 
@@ -1333,6 +1467,7 @@
         renderArticleTable();
     }
 
+    // FUNGSI FILTER QC BARU DENGAN ICON SAJA
     window.toggleBadTitles = function() {
         showOnlyBadTitles = !showOnlyBadTitles;
         const btn = document.getElementById('btn-filter-bad-titles');
@@ -1354,11 +1489,13 @@
         if(showOnlyShortArticles) {
             btn.style.background = '#fef2f2';
             btn.innerHTML = '<i class="fa-solid fa-xmark" style="color: var(--danger);"></i>';
-            inputLimit.disabled = true; inputLimit.style.background = '#f8fafc';
+            inputLimit.disabled = true; 
+            inputLimit.style.background = '#f8fafc';
         } else {
             btn.style.background = 'transparent';
             btn.innerHTML = '<i class="fa-solid fa-down-long" style="color: var(--danger);"></i>';
-            inputLimit.disabled = false; inputLimit.style.background = '#fff';
+            inputLimit.disabled = false; 
+            inputLimit.style.background = '#fff';
         }
         renderArticleTable();
     };
@@ -1407,9 +1544,11 @@
             if (filterProject !== "ALL" && art.project !== filterProject) return;
             if (searchTerm && !art.title.toLowerCase().includes(searchTerm)) return; 
             
+            // Logika untuk Bad Titles
             const primaryKey = art.keyword ? art.keyword.split(':')[0].trim().toLowerCase() : '';
             if (showOnlyBadTitles && art.title.trim().toLowerCase() !== primaryKey) return;
             
+            // Logika untuk Kata Dinamis
             if (showOnlyShortArticles) {
                 let words = art.wordCount;
                 if (!words && art.body) words = getWordCount(art.body);
@@ -1417,6 +1556,7 @@
                 if (words >= targetLimit) return; 
             }
 
+            // Logika untuk Show Errors
             if (showOnlyErrors) {
                 const statusText = (art.status || '').toLowerCase();
                 const titleText = (art.title || '').toLowerCase();
@@ -1426,7 +1566,9 @@
 
             visibleArticles++; if(art.checked) selectedCount++;
             
-            if(art.wordCount === undefined) { art.wordCount = getWordCount(art.body); }
+            if(art.wordCount === undefined) {
+                art.wordCount = getWordCount(art.body);
+            }
             let wc = art.wordCount;
             let wcBadge = wc < 100 ? 'background: #fef2f2; color: var(--danger); border: 1px solid #fecaca;' : 'background: #ecfdf5; color: var(--success); border: 1px solid #a7f3d0;';
 
@@ -1516,457 +1658,844 @@
         const selectedArticles = appData.articles.filter(a => a.checked);
         if (selectedArticles.length === 0) return alert("Pilih minimal 1 artikel (centang kotaknya) untuk diubah kategorinya!");
         
-        const newCategory = prompt(`Masukkan nama kategori WordPress baru untuk ${selectedArticles.length} artikel terpilih:`);
+        const newCategory = prompt(`Masukkan nama kategori WordPress baru untuk ${selectedArticles.length} artikel terpilih:\n\n(Tips: Bisa multi-kategori, pisahkan dengan koma. Contoh: Tech, Gadget)`);
         
         if (newCategory !== null && newCategory.trim() !== "") {
-            selectedArticles.forEach(art => { art.category = newCategory.trim(); });
-            saveData(); renderArticleTable(); showToast(`Kategori untuk ${selectedArticles.length} artikel berhasil diubah!`);
+            selectedArticles.forEach(art => {
+                art.category = newCategory.trim();
+            });
+            
+            saveData();
+            renderArticleTable();
+            showToast(`Kategori untuk ${selectedArticles.length} artikel berhasil diubah!`);
         }
     };
-
-    // ================= FUNGSI WP CATEGORY RESOLVER =================
-    async function resolveCategory(catNameString, targetUrl, creds) {
-        if(!catNameString || catNameString.trim() === '') return [];
-        let names = catNameString.split(',').map(s => s.trim()).filter(s => s);
-        let ids = [];
-        for (let name of names) {
-            try {
-                let res = await fetch(`${targetUrl}/wp-json/wp/v2/categories?search=${encodeURIComponent(name)}`, { headers: { 'Authorization': `Basic ${creds}` } });
-                let data = await res.json();
-                let match = data.find(c => c.name.toLowerCase() === name.toLowerCase());
-                if(match) { ids.push(match.id); } else {
-                    let createRes = await fetch(`${targetUrl}/wp-json/wp/v2/categories`, {
-                        method: 'POST', headers: { 'Authorization': `Basic ${creds}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ name: name })
-                    });
-                    let createData = await createRes.json(); if(createData.id) ids.push(createData.id);
-                }
-            } catch(e) { console.error("Category Sync Error", e); }
-        }
-        return ids;
-    }
 
     // ================= FUNGSI BULK REGENERATE (MASAL) =================
     document.getElementById('btn-bulk-regenerate').onclick = async () => {
-        try {
-            const selectedArticles = appData.articles.filter(a => a.checked);
-            if (selectedArticles.length === 0) return alert("Pilih minimal 1 artikel untuk di-regenerate!");
+        const selectedArticles = appData.articles.filter(a => a.checked);
+        if (selectedArticles.length === 0) return alert("Pilih minimal 1 artikel (centang kotaknya) untuk di-regenerate!");
+        
+        if (isGenerating) return alert("Harap tunggu proses saat ini selesai atau klik Stop terlebih dahulu.");
+        if (!confirm(`Regenerate ${selectedArticles.length} artikel terpilih?\n\n(Ini akan menimpa artikel sebelumnya menggunakan pengaturan di sidebar kiri saat ini)`)) return;
+
+        const btnBulk = document.getElementById('btn-bulk-regenerate');
+        const origHtml = btnBulk.innerHTML;
+        btnBulk.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+        btnBulk.disabled = true;
+
+        const apiKey = appData.settings.apiKey.trim();
+        const provider = appData.settings.provider;
+        const modelStr = appData.settings.model; 
+        const temp = appData.settings.temp;
+        const isSimulation = !apiKey; 
+        const workerCount = parseInt(document.getElementById('setting-workers').value) || 1;
+
+        const selectedProject = document.getElementById('gen-select-project').value;
+        const selectedPromptName = document.getElementById('gen-select-prompt').value; 
+        const selectedCat = document.getElementById('gen-input-category').value.trim() || 'Uncategorized';
+        const valTopic = document.getElementById('gen-input-topic').value.trim() || 'General';
+        const valLanguage = document.getElementById('gen-input-language').value || 'English';
+        const valAudience = document.getElementById('gen-input-audience').value || 'General Audience';
+        const valStyle = document.getElementById('gen-input-style').value || 'Standard';
+        const valLength = document.getElementById('gen-input-length').value || 'Standard Length';
+
+        const promptTemplate = appData.prompts.find(p => p.name === selectedPromptName);
+        if(!promptTemplate && !isSimulation) {
+            btnBulk.innerHTML = origHtml; btnBulk.disabled = false;
+            return alert("Prompt Template is missing!");
+        }
+
+        isGenerating = true;
+        abortController = new AbortController(); 
+        const signal = abortController.signal;
+
+        const btnGen = document.getElementById('btn-generate');
+        btnGen.innerHTML = '<i class="fa-solid fa-stop"></i> Stop Generation';
+        btnGen.classList.remove('btn-dark'); btnGen.classList.add('btn-danger');
+
+        for (let i = 0; i < selectedArticles.length; i += workerCount) {
+            if (!isGenerating) break; 
+            const chunk = selectedArticles.slice(i, i + workerCount);
             
-            if (isGenerating) return alert("Harap tunggu proses selesai atau klik Stop.");
-            
-            const apiKey = (appData.settings.apiKey || "").trim();
-            if(!apiKey) return alert("API Key belum diisi! Silakan masukkan API Key di menu Global Settings.");
+            chunk.forEach(art => {
+                art.status = "Regenerating...";
+                art.project = selectedProject;
+                art.category = selectedCat;
+                art.usedPrompt = selectedPromptName;
+            });
+            renderArticleTable();
 
-            if (!confirm(`Regenerate ${selectedArticles.length} artikel terpilih?`)) return;
+            const chunkPromises = chunk.map(async (art) => {
+                const cleanTitle = art.keyword ? art.keyword.split(':')[0].trim() : art.title;
+                const replaceVars = (text) => {
+                    if(!text) return "";
+                    return text.replace(/\[KEYWORD\]/gi, art.keyword).replace(/\[TOPIC\]/gi, valTopic).replace(/\[LANGUAGE\]/gi, valLanguage).replace(/\[AUDIENCE\]/gi, valAudience).replace(/\[STYLE\]/gi, valStyle).replace(/\[LENGTH\]/gi, valLength);
+                };
 
-            const btnBulk = document.getElementById('btn-bulk-regenerate');
-            const origHtml = btnBulk.innerHTML;
-            btnBulk.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...'; btnBulk.disabled = true;
+                let finalPersona = replaceVars(promptTemplate ? promptTemplate.persona : "");
+                let finalTask = replaceVars(promptTemplate ? promptTemplate.task : "Write about [KEYWORD]");
+                let finalRules = replaceVars(promptTemplate ? promptTemplate.rules : "");
+                let userMessageContent = `${finalTask}\n\nSTRICT RULES:\n${finalRules}`;
 
-            const provider = appData.settings.provider;
-            const modelStr = appData.settings.model; 
-            const temp = appData.settings.temp;
-            const workerCount = parseInt(document.getElementById('setting-workers').value) || 1;
-
-            const selectedProject = document.getElementById('gen-select-project').value;
-            const selectedPromptName = document.getElementById('gen-select-prompt').value; 
-            const selectedCat = document.getElementById('gen-input-category').value.trim() || 'Uncategorized';
-            const valLanguage = document.getElementById('gen-input-language').value || 'English';
-
-            const promptTemplate = appData.prompts.find(p => p.name === selectedPromptName);
-            if(!promptTemplate) {
-                btnBulk.innerHTML = origHtml; btnBulk.disabled = false;
-                return alert("Prompt Template is missing! Silakan buat/pilih prompt terlebih dahulu.");
-            }
-
-            isGenerating = true; abortController = new AbortController(); const signal = abortController.signal;
-
-            const btnGen = document.getElementById('btn-generate');
-            btnGen.innerHTML = '<i class="fa-solid fa-stop"></i> Stop Generation';
-            btnGen.classList.remove('btn-dark'); btnGen.classList.add('btn-danger');
-
-            for (let i = 0; i < selectedArticles.length; i += workerCount) {
-                if (!isGenerating) break; 
-                const chunk = selectedArticles.slice(i, i + workerCount);
-                
-                chunk.forEach(art => {
-                    art.status = "Regenerating..."; art.project = selectedProject;
-                    art.category = selectedCat; art.usedPrompt = selectedPromptName;
-                });
-                renderArticleTable();
-
-                const chunkPromises = chunk.map(async (art) => {
-                    const replaceVars = (text) => text ? text.replace(/\[KEYWORD\]/gi, art.keyword).replace(/\[LANGUAGE\]/gi, valLanguage) : "";
-                    let finalPersona = replaceVars(promptTemplate?.persona || "");
-                    let finalTask = replaceVars(promptTemplate?.task || "Write about [KEYWORD]");
-                    let finalRules = replaceVars(promptTemplate?.rules || "");
-                    let userMessageContent = `${finalTask}\n\nSTRICT RULES:\n${finalRules}`;
-
-                    try {
-                        let aiText = "";
-                        if (provider === 'openai' || provider === 'sumopod') {
-                            let apiUrl = provider === 'openai' ? "https://api.openai.com/v1/chat/completions" : "https://ai.sumopod.com/v1/chat/completions";
-                            let apiModel = modelStr;
-                            if(provider === 'sumopod' && modelStr === 'custom') apiModel = document.querySelector('#setting-custom-url-box input#setting-custom-model').value.trim();
-
-                            let maxT = 8000;
-                            let reqMessages = [];
-                            if (finalPersona.trim() !== "") reqMessages.push({ role: "system", content: finalPersona });
-                            reqMessages.push({ role: "user", content: userMessageContent });
-                            
-                            if(apiModel.includes('mimo') || apiModel.includes('claude') || apiModel.includes('qwen')) {
-                                maxT = 4000; reqMessages = [ { role: "user", content: `SYSTEM INSTRUCTION:\n${finalPersona || "You are a helpful assistant."}\n\nUSER PROMPT:\n${userMessageContent}` } ];
+                if (isSimulation) {
+                    await new Promise(r => setTimeout(r, 600));
+                    art.status = "Draft (Sim)";
+                    art.body = `<h2>${cleanTitle}</h2><p><b>[REGENERATED SIMULATION]</b></p><p>Language: ${valLanguage} | Length: ${valLength}</p>`;
+                    art.wordCount = getWordCount(art.body);
+                } else {
+                    if (provider === 'openai' || provider === 'sumopod') {
+                        try {
+                            let apiModel = "gpt-4o-mini";
+                            let apiUrl = ["https://", "api.openai.com", "/v1/chat/completions"].join("");
+                            if (provider === 'openai') {
+                                apiModel = modelStr;
+                            } else if (provider === 'sumopod') {
+                                apiUrl = ["https://", "ai.sumopod.com", "/v1/chat/completions"].join("");
+                                apiModel = modelStr; 
+                                const customModelValue = document.querySelector('#setting-custom-url-box input#setting-custom-model').value.trim();
+                                if(modelStr === 'custom' && customModelValue) apiModel = customModelValue;
                             }
 
-                            const res = await fetch(apiUrl, {
+                            let maxT = 8000;
+                            let reqMessages = [ { role: "system", content: finalPersona || "You are a helpful assistant." }, { role: "user", content: userMessageContent } ];
+                            if(apiModel.includes('mimo') || apiModel.includes('claude') || apiModel.includes('qwen')) {
+                                maxT = 4000;
+                                reqMessages = [ { role: "user", content: `SYSTEM INSTRUCTION:\n${finalPersona || "You are a helpful assistant."}\n\nUSER PROMPT:\n${userMessageContent}` } ];
+                            }
+
+                            const response = await fetch(apiUrl, {
                                 method: 'POST', signal: signal, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
                                 body: JSON.stringify({ model: apiModel, temperature: temp, max_tokens: maxT, messages: reqMessages })
                             });
-                            const rawText = await res.text();
-                            if(res.ok) {
-                                const data = JSON.parse(rawText);
-                                aiText = data.choices[0].message.content.trim();
-                            } else {
-                                throw new Error(rawText);
-                            }
-                        } else if (provider === 'gemini') {
-                            let requestBody = { contents: [{ parts: [{ text: userMessageContent }] }], generationConfig: { temperature: temp } };
-                            if (finalPersona.trim() !== "") { requestBody.systemInstruction = { parts: [{ text: finalPersona }] }; }
-                            
-                            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelStr}:generateContent?key=${apiKey}`, {
-                                method: 'POST', signal: signal, headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify(requestBody)
-                            });
-                            const rawText = await res.text();
-                            if (res.ok) {
-                                const data = JSON.parse(rawText);
-                                aiText = data.candidates[0].content.parts[0].text.trim();
-                            } else {
-                                throw new Error(rawText);
-                            }
-                        }
-                        
-                        let parsedData = parseAIResponse(aiText, art.title);
-                        art.title = parsedData.title;
-                        art.meta = parsedData.meta;
-                        art.body = parsedData.content;
-                        art.status = "Draft";
-                    } catch(e) {
-                        if(e.name === 'AbortError') { art.status = "Stopped"; } else { art.status = "Error"; art.body = e.message; }
-                    }
-                    art.wordCount = getWordCount(art.body);
-                });
 
-                await Promise.all(chunkPromises); saveData(); renderArticleTable();
-            }
-            
-            isGenerating = false; btnBulk.innerHTML = origHtml; btnBulk.disabled = false;
-            btnGen.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Generate Articles';
-            btnGen.classList.remove('btn-danger'); btnGen.classList.add('btn-dark');
-            showToast(`Bulk Regeneration Completed!`);
-        } catch (globalErr) {
-            console.error(globalErr); alert("Sistem Error: " + globalErr.message);
-            isGenerating = false;
-            const btnBulk = document.getElementById('btn-bulk-regenerate');
-            btnBulk.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Regenerate';
-            btnBulk.disabled = false;
+                            const rawText = await response.text();
+                            if(!rawText || rawText.trim() === "") throw new Error("Server API membalas kosong.");
+                            let data; try { data = JSON.parse(rawText); } catch(e) { throw new Error("Invalid JSON dari API."); }
+
+                            if(response.ok) {
+                                let aiText = data.choices[0].message.content.trim();
+                                try {
+                                    let cleanJson = aiText;
+                                    if(cleanJson.startsWith('```json')) { cleanJson = cleanJson.substring(7); if(cleanJson.endsWith('```')) cleanJson = cleanJson.substring(0, cleanJson.length - 3); }
+                                    let parsed = JSON.parse(cleanJson.trim());
+                                    if(parsed.title) art.title = parsed.title;
+                                    if(parsed.meta || parsed.meta_description) art.meta = parsed.meta || parsed.meta_description;
+                                    if(parsed.content || parsed.content_html) aiText = parsed.content || parsed.content_html;
+                                } catch(e) {
+                                    let titleMatch = aiText.match(/"title"\s*:\s*"([^"]+)"/i); if(titleMatch) art.title = titleMatch[1];
+                                    let metaMatch = aiText.match(/"meta"\s*:\s*"([^"]+)"/i); if(metaMatch) art.meta = metaMatch[1];
+                                    let contentMatch = aiText.match(/"content"\s*:\s*"([\s\S]*)/i);
+                                    if(contentMatch) { aiText = contentMatch[1].replace(/"}$/g, '').replace(/\\"/g, '"').replace(/\\n/g, '<br>'); } 
+                                    else { aiText = aiText.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>'); if(!aiText.startsWith('<p>') && !aiText.startsWith('<h')) aiText = '<p>' + aiText + '</p>'; aiText = aiText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); }
+                                }
+                                aiText = cleanFinalHTML(aiText);
+                                art.body = aiText; art.wordCount = getWordCount(aiText); art.status = "Draft";
+                            } else {
+                                art.status = "API Error"; art.body = `API Error: ${data.error ? data.error.message : JSON.stringify(data)}`;
+                            }
+                        } catch (err) {
+                            if(err.name === 'AbortError') { art.status = "Stopped"; art.body = "Proses dihentikan."; } 
+                            else { art.status = "Network Error"; art.body = `Failed. Message: ${err.message}`; }
+                        }
+                    } else if (provider === 'gemini') {
+                        try {
+                            let apiModel = modelStr;
+                            let defaultGeminiUrl = ["https://", "generativelanguage.googleapis.com", "/v1beta/models/", apiModel, ":generateContent"].join("");
+                            const finalUrl = defaultGeminiUrl.includes('?') ? `${defaultGeminiUrl}&key=${apiKey}` : `${defaultGeminiUrl}?key=${apiKey}`;
+
+                            let requestBody = { contents: [{ parts: [{ text: userMessageContent }] }], generationConfig: { temperature: temp, maxOutputTokens: 8192 } };
+                            if (finalPersona) requestBody.systemInstruction = { parts: [{ text: finalPersona }] };
+
+                            const response = await fetch(finalUrl, { method: 'POST', signal: signal, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(requestBody) });
+
+                            const rawText = await response.text();
+                            if(!rawText || rawText.trim() === "") throw new Error("Server API membalas kosong.");
+                            let data; try { data = JSON.parse(rawText); } catch(e) { throw new Error("Invalid JSON dari API."); }
+
+                            if(response.ok) {
+                                let aiText = data.candidates[0].content.parts[0].text.trim();
+                                try {
+                                    let cleanJson = aiText;
+                                    if(cleanJson.startsWith('```json')) { cleanJson = cleanJson.substring(7); if(cleanJson.endsWith('```')) cleanJson = cleanJson.substring(0, cleanJson.length - 3); }
+                                    let parsed = JSON.parse(cleanJson.trim());
+                                    if(parsed.title) art.title = parsed.title;
+                                    if(parsed.meta || parsed.meta_description) art.meta = parsed.meta || parsed.meta_description;
+                                    if(parsed.content || parsed.content_html) aiText = parsed.content || parsed.content_html;
+                                } catch(e) {
+                                    let titleMatch = aiText.match(/"title"\s*:\s*"([^"]+)"/i); if(titleMatch) art.title = titleMatch[1];
+                                    let metaMatch = aiText.match(/"meta"\s*:\s*"([^"]+)"/i); if(metaMatch) art.meta = metaMatch[1];
+                                    let contentMatch = aiText.match(/"content"\s*:\s*"([\s\S]*)/i);
+                                    if(contentMatch) { aiText = contentMatch[1].replace(/"}$/g, '').replace(/\\"/g, '"').replace(/\\n/g, '<br>'); } 
+                                    else { aiText = aiText.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>'); if(!aiText.startsWith('<p>') && !aiText.startsWith('<h')) aiText = '<p>' + aiText + '</p>'; aiText = aiText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); }
+                                }
+                                aiText = cleanFinalHTML(aiText);
+                                art.body = aiText; art.wordCount = getWordCount(aiText); art.status = "Draft";
+                            } else {
+                                art.status = "API Error"; art.body = `Gemini Error: ${data.error ? data.error.message : JSON.stringify(data)}`;
+                            }
+                        } catch (err) {
+                            if(err.name === 'AbortError') { art.status = "Stopped"; art.body = "Proses dihentikan."; } 
+                            else { art.status = "Network Error"; art.body = `Failed. Message: ${err.message}`; }
+                        }
+                    }
+                }
+            });
+
+            await Promise.all(chunkPromises);
+            saveData();
+            renderArticleTable();
+            await new Promise(r => setTimeout(r, 100)); // Jeda UI
         }
+        
+        isGenerating = false;
+        btnBulk.innerHTML = origHtml;
+        btnBulk.disabled = false;
+        btnGen.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Generate Articles';
+        btnGen.classList.remove('btn-danger'); btnGen.classList.add('btn-dark');
+        
+        if(!isSimulation && (!abortController || !abortController.signal.aborted)) showToast(`Bulk Regeneration Completed!`);
     };
+
+    keywordInput.addEventListener('input', (e) => { document.getElementById('baris-count').innerText = `${e.target.value.split('\n').filter(l => l.trim() !== '').length} Lines`; });
+    document.getElementById('btn-clear').onclick = () => { keywordInput.value = ''; document.getElementById('baris-count').innerText = '0 Lines'; };
+    function generateSlug(text) { return text.toString().toLowerCase().trim().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '').replace(/\-\-+/g, '-'); }
 
     // ================= 9. REAL API LOGIC: GENERATE MULTI-WORKERS =================
     document.getElementById('btn-generate').onclick = async () => {
-        try {
-            const btnGen = document.getElementById('btn-generate');
-            if (isGenerating) {
-                isGenerating = false; if(abortController) abortController.abort(); 
-                btnGen.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Generate Articles';
-                btnGen.classList.remove('btn-danger'); btnGen.classList.add('btn-dark');
-                showToast("Generation stopped."); return;
-            }
-
-            const keywords = keywordInput.value.split('\n').filter(l => l.trim() !== '');
-            if(keywords.length === 0) return alert("Enter keywords first!");
-            
-            const apiKey = (appData.settings.apiKey || "").trim();
-            if(!apiKey) return alert("API Key belum diisi! Silakan masukkan API Key di menu Global Settings.");
-
-            const provider = appData.settings.provider;
-            const modelStr = appData.settings.model; 
-            const temp = appData.settings.temp;
-            const workerCount = parseInt(document.getElementById('setting-workers').value) || 1;
-            const valLanguage = document.getElementById('gen-input-language').value || 'English';
-            const selectedPromptName = document.getElementById('gen-select-prompt').value; 
-            const promptTemplate = appData.prompts.find(p => p.name === selectedPromptName);
-
-            if (!promptTemplate) return alert("Prompt Template is missing! Silakan buat/pilih prompt terlebih dahulu.");
-
-            isGenerating = true; abortController = new AbortController();
-            btnGen.innerHTML = '<i class="fa-solid fa-stop"></i> Stop Generation';
-            btnGen.classList.remove('btn-dark'); btnGen.classList.add('btn-danger');
-
-            for (let i = 0; i < keywords.length; i += workerCount) {
-                if (!isGenerating) break; 
-                const chunk = keywords.slice(i, i + workerCount);
-                const pendingArticles = chunk.map(kw => {
-                    const primaryKeyword = kw.split(':')[0].trim(); 
-                    let newArticle = { 
-                        id: generateId(), checked: false, keyword: kw, title: primaryKeyword, slug: generateSlug(primaryKeyword), meta: `Article about ${primaryKeyword}`, 
-                        project: document.getElementById('gen-select-project').value, category: document.getElementById('gen-input-category').value.trim() || 'Uncategorized', usedPrompt: selectedPromptName, 
-                        status: "Generating...", date: "-", body: "Waiting for AI...", wordCount: 0
-                    };
-                    appData.articles.unshift(newArticle); return newArticle;
-                });
-                renderArticleTable(); 
-
-                const chunkPromises = pendingArticles.map(async (art) => {
-                    const replaceVars = (text) => text ? text.replace(/\[KEYWORD\]/gi, art.keyword).replace(/\[LANGUAGE\]/gi, valLanguage) : "";
-                    let finalPersona = replaceVars(promptTemplate?.persona || "");
-                    let finalTask = replaceVars(promptTemplate?.task || "Write about [KEYWORD]");
-                    let finalRules = replaceVars(promptTemplate?.rules || "");
-                    let userMessageContent = `${finalTask}\n\nSTRICT RULES:\n${finalRules}`;
-
-                    try {
-                        let aiText = "";
-                        if(provider === 'openai' || provider === 'sumopod') {
-                            let apiUrl = provider === 'openai' ? "https://api.openai.com/v1/chat/completions" : "https://ai.sumopod.com/v1/chat/completions";
-                            let apiModel = modelStr;
-                            if(provider === 'sumopod' && modelStr === 'custom') apiModel = document.querySelector('#setting-custom-url-box input#setting-custom-model').value.trim();
-
-                            let maxT = 8000;
-                            let reqMessages = [];
-                            if (finalPersona.trim() !== "") reqMessages.push({ role: "system", content: finalPersona });
-                            reqMessages.push({ role: "user", content: userMessageContent });
-
-                            if(apiModel.includes('mimo') || apiModel.includes('claude') || apiModel.includes('qwen')) {
-                                maxT = 4000; reqMessages = [ { role: "user", content: `SYSTEM INSTRUCTION:\n${finalPersona || "You are a helpful assistant."}\n\nUSER PROMPT:\n${userMessageContent}` } ];
-                            }
-
-                            const res = await fetch(apiUrl, {
-                                method: 'POST', signal: abortController.signal, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                                body: JSON.stringify({ model: apiModel, temperature: appData.settings.temp, max_tokens: maxT, messages: reqMessages })
-                            });
-                            const rawText = await res.text();
-                            if(res.ok) {
-                                const data = JSON.parse(rawText); aiText = data.choices[0].message.content;
-                            } else { throw new Error(rawText); }
-                        } else {
-                            let requestBody = { contents: [{ parts: [{ text: userMessageContent }] }], generationConfig: { temperature: temp } };
-                            if (finalPersona.trim() !== "") { requestBody.systemInstruction = { parts: [{ text: finalPersona }] }; }
-
-                            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelStr}:generateContent?key=${apiKey}`, {
-                                method: 'POST', signal: abortController.signal, headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify(requestBody)
-                            });
-                            const rawText = await res.text();
-                            if (res.ok) {
-                                const data = JSON.parse(rawText); aiText = data.candidates[0].content.parts[0].text;
-                            } else { throw new Error(rawText); }
-                        }
-                        
-                        let parsedData = parseAIResponse(aiText, art.title);
-                        art.title = parsedData.title;
-                        art.meta = parsedData.meta;
-                        art.body = parsedData.content;
-                        art.status = "Draft";
-                    } catch(e) { 
-                        if(e.name === 'AbortError') { art.status = "Stopped"; } else { art.status = "Error"; art.body = e.message; }
-                    }
-                    art.wordCount = getWordCount(art.body);
-                });
-                await Promise.all(chunkPromises);
-                saveData(); renderArticleTable();
-            }
-            isGenerating = false; btnGen.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Generate Articles';
-            btnGen.classList.remove('btn-danger'); btnGen.classList.add('btn-dark');
-            showToast("Generation completed!");
-        } catch (globalErr) {
-            console.error(globalErr); alert("Sistem Error: " + globalErr.message);
+        const btnGen = document.getElementById('btn-generate');
+        
+        if (isGenerating) {
             isGenerating = false;
-            const btnGen = document.getElementById('btn-generate');
+            if(abortController) abortController.abort(); 
             btnGen.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Generate Articles';
             btnGen.classList.remove('btn-danger'); btnGen.classList.add('btn-dark');
+            showToast("Generation stopped by user.");
+            return;
         }
+
+        const keywords = keywordInput.value.split('\n').filter(l => l.trim() !== '');
+        if(keywords.length === 0) return alert("Please enter keywords first!");
+        
+        const workerCount = parseInt(document.getElementById('setting-workers').value) || 1;
+
+        const apiKey = appData.settings.apiKey.trim();
+        const provider = appData.settings.provider;
+        const modelStr = appData.settings.model; 
+        const temp = appData.settings.temp;
+        const isSimulation = !apiKey; 
+
+        const selectedProject = document.getElementById('gen-select-project').value;
+        const selectedPromptName = document.getElementById('gen-select-prompt').value; 
+        const selectedCat = document.getElementById('gen-input-category').value.trim() || 'Uncategorized';
+        
+        const valTopic = document.getElementById('gen-input-topic').value.trim() || 'General';
+        const valLanguage = document.getElementById('gen-input-language').value || 'English';
+        const valAudience = document.getElementById('gen-input-audience').value || 'General Audience';
+        const valStyle = document.getElementById('gen-input-style').value || 'Standard';
+        const valLength = document.getElementById('gen-input-length').value || 'Standard Length';
+        
+        const promptTemplate = appData.prompts.find(p => p.name === selectedPromptName);
+        if(!promptTemplate && !isSimulation) return alert("Prompt Template is missing!");
+
+        isGenerating = true;
+        abortController = new AbortController(); 
+        const signal = abortController.signal;
+
+        btnGen.innerHTML = '<i class="fa-solid fa-stop"></i> Stop Generation';
+        btnGen.classList.remove('btn-dark'); btnGen.classList.add('btn-danger');
+
+        for (let i = 0; i < keywords.length; i += workerCount) {
+            if (!isGenerating) break; 
+
+            const chunk = keywords.slice(i, i + workerCount);
+            
+            const pendingArticles = chunk.map(kw => {
+                const fullInput = kw.trim();
+                const primaryKeyword = fullInput.split(':')[0].trim(); 
+
+                let newArticle = { 
+                    id: generateId(), checked: false, keyword: fullInput, title: primaryKeyword, slug: generateSlug(primaryKeyword), meta: `Article about ${primaryKeyword}`, 
+                    project: selectedProject, category: selectedCat, usedPrompt: selectedPromptName, 
+                    status: "Generating...", date: "-", body: "Waiting for AI...", wordCount: 0
+                };
+                appData.articles.unshift(newArticle);
+                return newArticle;
+            });
+            renderArticleTable(); 
+
+            const chunkPromises = pendingArticles.map(async (art) => {
+                const replaceVars = (text) => {
+                    if(!text) return "";
+                    return text.replace(/\[KEYWORD\]/gi, art.keyword).replace(/\[TOPIC\]/gi, valTopic).replace(/\[LANGUAGE\]/gi, valLanguage).replace(/\[AUDIENCE\]/gi, valAudience).replace(/\[STYLE\]/gi, valStyle).replace(/\[LENGTH\]/gi, valLength);
+                };
+
+                let finalPersona = replaceVars(promptTemplate ? promptTemplate.persona : "");
+                let finalTask = replaceVars(promptTemplate ? promptTemplate.task : "Write about [KEYWORD]");
+                let finalRules = replaceVars(promptTemplate ? promptTemplate.rules : "");
+                let userMessageContent = `${finalTask}\n\nSTRICT RULES:\n${finalRules}`;
+
+                if (isSimulation) {
+                    await new Promise(r => setTimeout(r, 600 + Math.random() * 500));
+                    art.status = "Draft (Sim)";
+                    art.body = `<h2>${art.title}</h2><p><b>[SIMULATION MODE]</b> No API Key found.</p><p>Language: ${valLanguage} | Length: ${valLength}</p>`;
+                    art.wordCount = getWordCount(art.body);
+                } else {
+                    if (provider === 'openai' || provider === 'sumopod') {
+                        try {
+                            let apiModel = "gpt-4o-mini";
+                            let apiUrl = ["https://", "api.openai.com", "/v1/chat/completions"].join("");
+
+                            if (provider === 'openai') {
+                                apiModel = modelStr;
+                            } else if (provider === 'sumopod') {
+                                apiUrl = ["https://", "ai.sumopod.com", "/v1/chat/completions"].join("");
+                                apiModel = modelStr; 
+                                const customModelValue = document.querySelector('#setting-custom-url-box input#setting-custom-model').value.trim();
+                                if(modelStr === 'custom' && customModelValue) apiModel = customModelValue;
+                            }
+
+                            let maxT = 8000;
+                            let reqMessages = [ { role: "system", content: finalPersona || "You are a helpful assistant." }, { role: "user", content: userMessageContent } ];
+                            if(apiModel.includes('mimo') || apiModel.includes('claude') || apiModel.includes('qwen')) {
+                                maxT = 4000;
+                                reqMessages = [ { role: "user", content: `SYSTEM INSTRUCTION:\n${finalPersona || "You are a helpful assistant."}\n\nUSER PROMPT:\n${userMessageContent}` } ];
+                            }
+
+                            const response = await fetch(apiUrl, {
+                                method: 'POST',
+                                signal: signal, 
+                                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                                body: JSON.stringify({
+                                    model: apiModel, temperature: temp, max_tokens: maxT,
+                                    messages: reqMessages
+                                })
+                            });
+
+                            const rawText = await response.text();
+                            if(!rawText || rawText.trim() === "") throw new Error("Server API membalas kosong.");
+                            
+                            let data;
+                            try { data = JSON.parse(rawText); } catch(e) { throw new Error("Invalid JSON dari API."); }
+
+                            if(response.ok) {
+                                let aiText = data.choices[0].message.content.trim();
+                                try {
+                                    let cleanJson = aiText;
+                                    if(cleanJson.startsWith('```json')) { cleanJson = cleanJson.substring(7); if(cleanJson.endsWith('```')) cleanJson = cleanJson.substring(0, cleanJson.length - 3); }
+                                    let parsed = JSON.parse(cleanJson.trim());
+                                    if(parsed.title) art.title = parsed.title;
+                                    if(parsed.meta || parsed.meta_description) art.meta = parsed.meta || parsed.meta_description;
+                                    if(parsed.content || parsed.content_html) aiText = parsed.content || parsed.content_html;
+                                } catch(e) {
+                                    let titleMatch = aiText.match(/"title"\s*:\s*"([^"]+)"/i);
+                                    if(titleMatch) art.title = titleMatch[1];
+                                    let metaMatch = aiText.match(/"meta"\s*:\s*"([^"]+)"/i);
+                                    if(metaMatch) art.meta = metaMatch[1];
+                                    let contentMatch = aiText.match(/"content"\s*:\s*"([\s\S]*)/i);
+                                    if(contentMatch) { aiText = contentMatch[1].replace(/"}$/g, '').replace(/\\"/g, '"').replace(/\\n/g, '<br>'); } 
+                                    else { aiText = aiText.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>'); if(!aiText.startsWith('<p>') && !aiText.startsWith('<h')) aiText = '<p>' + aiText + '</p>'; aiText = aiText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); }
+                                }
+                                aiText = cleanFinalHTML(aiText);
+                                art.body = aiText; art.wordCount = getWordCount(aiText); art.status = "Draft";
+                            } else {
+                                art.status = "API Error"; art.body = `API Error: ${data.error ? data.error.message : JSON.stringify(data)}`;
+                            }
+                        } catch (err) {
+                            if(err.name === 'AbortError') { art.status = "Stopped"; art.body = "Proses dihentikan."; } 
+                            else { art.status = "Network Error"; art.body = `Failed. Message: ${err.message}`; }
+                        }
+
+                    } else if (provider === 'gemini') {
+                        try {
+                            let apiModel = modelStr;
+                            let defaultGeminiUrl = ["https://", "generativelanguage.googleapis.com", "/v1beta/models/", apiModel, ":generateContent"].join("");
+                            const finalUrl = defaultGeminiUrl.includes('?') ? `${defaultGeminiUrl}&key=${apiKey}` : `${defaultGeminiUrl}?key=${apiKey}`;
+
+                            let requestBody = { contents: [{ parts: [{ text: userMessageContent }] }], generationConfig: { temperature: temp, maxOutputTokens: 8192 } };
+                            if (finalPersona) requestBody.systemInstruction = { parts: [{ text: finalPersona }] };
+
+                            const response = await fetch(finalUrl, { method: 'POST', signal: signal, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(requestBody) });
+
+                            const rawText = await response.text();
+                            if(!rawText || rawText.trim() === "") throw new Error("Server API membalas kosong.");
+                            let data; try { data = JSON.parse(rawText); } catch(e) { throw new Error("Invalid JSON dari API."); }
+
+                            if(response.ok) {
+                                let aiText = data.candidates[0].content.parts[0].text.trim();
+                                try {
+                                    let cleanJson = aiText;
+                                    if(cleanJson.startsWith('
+```json')) { cleanJson = cleanJson.substring(7); if(cleanJson.endsWith('```')) cleanJson = cleanJson.substring(0, cleanJson.length - 3); }
+                                    let parsed = JSON.parse(cleanJson.trim());
+                                    if(parsed.title) art.title = parsed.title;
+                                    if(parsed.meta || parsed.meta_description) art.meta = parsed.meta || parsed.meta_description;
+                                    if(parsed.content || parsed.content_html) aiText = parsed.content || parsed.content_html;
+                                } catch(e) {
+                                    let titleMatch = aiText.match(/"title"\s*:\s*"([^"]+)"/i);
+                                    if(titleMatch) art.title = titleMatch[1];
+                                    let metaMatch = aiText.match(/"meta"\s*:\s*"([^"]+)"/i);
+                                    if(metaMatch) art.meta = metaMatch[1];
+                                    let contentMatch = aiText.match(/"content"\s*:\s*"([\s\S]*)/i);
+                                    if(contentMatch) { aiText = contentMatch[1].replace(/"}$/g, '').replace(/\\"/g, '"').replace(/\\n/g, '<br>'); } 
+                                    else { aiText = aiText.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>'); if(!aiText.startsWith('<p>') && !aiText.startsWith('<h')) aiText = '<p>' + aiText + '</p>'; aiText = aiText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); }
+                                }
+                                aiText = cleanFinalHTML(aiText);
+                                art.body = aiText; art.wordCount = getWordCount(aiText); art.status = "Draft";
+                            } else {
+                                art.status = "API Error"; art.body = `Gemini Error: ${data.error ? data.error.message : JSON.stringify(data)}`;
+                            }
+                        } catch (err) {
+                            if(err.name === 'AbortError') { art.status = "Stopped"; art.body = "Proses dihentikan."; } 
+                            else { art.status = "Network Error"; art.body = `Failed. Message: ${err.message}`; }
+                        }
+                    }
+                }
+            });
+
+            await Promise.all(chunkPromises);
+            saveData();
+            renderArticleTable();
+            await new Promise(r => setTimeout(r, 100)); // Jeda UI
+        }
+        
+        isGenerating = false;
+        btnGen.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Generate Articles';
+        btnGen.classList.remove('btn-danger'); btnGen.classList.add('btn-dark');
+        
+        if(!isSimulation && (!abortController || !abortController.signal.aborted)) showToast(`Generation Completed!`);
     };
 
     window.regenerateArticle = async function(id) {
-        try {
-            const art = appData.articles.find(a => a.id === id);
-            if(!art || isGenerating) return;
-            
-            const apiKey = (appData.settings.apiKey || "").trim();
-            if(!apiKey) return alert("API Key belum diisi! Silakan masukkan API Key di menu Global Settings.");
+        const art = appData.articles.find(a => a.id === id);
+        if(!art) return;
+        
+        if (isGenerating) return alert("Harap tunggu proses generate saat ini selesai atau Stop terlebih dahulu.");
+        if(!confirm(`Regenerate artikel untuk keyword: "${art.keyword}"?\n\n(Ini akan menimpa artikel sebelumnya menggunakan pengaturan di sidebar kiri saat ini)`)) return;
 
-            if(!confirm(`Regenerate: "${art.keyword}"?`)) return;
+        const apiKey = appData.settings.apiKey.trim();
+        const provider = appData.settings.provider;
+        const modelStr = appData.settings.model; 
+        const temp = appData.settings.temp;
+        const isSimulation = !apiKey; 
 
-            art.status = "Regenerating..."; renderArticleTable();
-            
-            const valLanguage = document.getElementById('gen-input-language').value || 'English';
-            const promptTemplate = appData.prompts.find(p => p.name === document.getElementById('gen-select-prompt').value);
+        const selectedProject = document.getElementById('gen-select-project').value;
+        const selectedPromptName = document.getElementById('gen-select-prompt').value; 
+        const selectedCat = document.getElementById('gen-input-category').value.trim() || 'Uncategorized';
+        const valTopic = document.getElementById('gen-input-topic').value.trim() || 'General';
+        const valLanguage = document.getElementById('gen-input-language').value || 'English';
+        const valAudience = document.getElementById('gen-input-audience').value || 'General Audience';
+        const valStyle = document.getElementById('gen-input-style').value || 'Standard';
+        const valLength = document.getElementById('gen-input-length').value || 'Standard Length';
+        
+        const promptTemplate = appData.prompts.find(p => p.name === selectedPromptName);
+        if(!promptTemplate && !isSimulation) return alert("Prompt Template is missing!");
 
-            if (!promptTemplate) return alert("Prompt Template is missing!");
+        art.status = "Regenerating...";
+        renderArticleTable();
 
-            const replaceVars = (text) => text ? text.replace(/\[KEYWORD\]/gi, art.keyword).replace(/\[LANGUAGE\]/gi, valLanguage) : "";
-            let finalPersona = replaceVars(promptTemplate?.persona || "");
-            let finalTask = replaceVars(promptTemplate?.task || "Write about [KEYWORD]");
-            let finalRules = replaceVars(promptTemplate?.rules || "");
-            let userMessageContent = `${finalTask}\n\nSTRICT RULES:\n${finalRules}`;
+        const cleanTitle = art.keyword;
+        const replaceVars = (text) => {
+            if(!text) return "";
+            return text.replace(/\[KEYWORD\]/gi, cleanTitle).replace(/\[TOPIC\]/gi, valTopic).replace(/\[LANGUAGE\]/gi, valLanguage).replace(/\[AUDIENCE\]/gi, valAudience).replace(/\[STYLE\]/gi, valStyle).replace(/\[LENGTH\]/gi, valLength);
+        };
 
-            let apiUrl = appData.settings.provider === 'gemini' ? `https://generativelanguage.googleapis.com/v1beta/models/${appData.settings.model}:generateContent?key=${apiKey}` : (appData.settings.provider === 'sumopod' ? "https://ai.sumopod.com/v1/chat/completions" : "https://api.openai.com/v1/chat/completions");
-            
-            let apiModel = appData.settings.model;
-            if(appData.settings.provider === 'sumopod' && apiModel === 'custom') apiModel = document.querySelector('#setting-custom-url-box input#setting-custom-model').value.trim();
+        let finalPersona = replaceVars(promptTemplate ? promptTemplate.persona : "");
+        let finalTask = replaceVars(promptTemplate ? promptTemplate.task : "Write about [KEYWORD]");
+        let finalRules = replaceVars(promptTemplate ? promptTemplate.rules : "");
+        let userMessageContent = `${finalTask}\n\nSTRICT RULES:\n${finalRules}`;
 
-            let reqBody;
-            if(appData.settings.provider === 'gemini') {
-                reqBody = { contents: [{ parts: [{ text: userMessageContent }] }], generationConfig: { temperature: appData.settings.temp } };
-                if (finalPersona.trim() !== "") { reqBody.systemInstruction = { parts: [{ text: finalPersona }] }; }
-            } else {
-                let maxT = 8000;
-                let reqMessages = [];
-                if (finalPersona.trim() !== "") reqMessages.push({ role: "system", content: finalPersona });
-                reqMessages.push({ role: "user", content: userMessageContent });
-                
-                if(apiModel.includes('mimo') || apiModel.includes('claude') || apiModel.includes('qwen')) {
-                    maxT = 4000; reqMessages = [{ role: "user", content: `SYSTEM INSTRUCTION:\n${finalPersona}\n\nUSER PROMPT:\n${userMessageContent}` }];
+        art.project = selectedProject;
+        art.category = selectedCat;
+        art.usedPrompt = selectedPromptName;
+
+        if (isSimulation) {
+            await new Promise(r => setTimeout(r, 600));
+            art.status = "Draft (Sim)";
+            art.body = `<h2>${cleanTitle.split(':')[0].trim()}</h2><p><b>[REGENERATED SIMULATION]</b></p><p>Language: ${valLanguage} | Length: ${valLength}</p>`;
+            art.wordCount = getWordCount(art.body);
+            saveData(); renderArticleTable();
+            showToast("Article Regenerated!");
+        } else {
+            let localAbort = new AbortController();
+            const signal = localAbort.signal;
+
+            if (provider === 'openai' || provider === 'sumopod') {
+                try {
+                    let apiModel = "gpt-4o-mini";
+                    let apiUrl = ["https://", "api.openai.com", "/v1/chat/completions"].join("");
+
+                    if (provider === 'openai') {
+                        apiModel = modelStr;
+                    } else if (provider === 'sumopod') {
+                        apiUrl = ["https://", "ai.sumopod.com", "/v1/chat/completions"].join("");
+                        apiModel = modelStr; 
+                        const customModelValue = document.querySelector('#setting-custom-url-box input#setting-custom-model').value.trim();
+                        if(modelStr === 'custom' && customModelValue) apiModel = customModelValue;
+                    }
+
+                    let maxT = 8000;
+                    let reqMessages = [ { role: "system", content: finalPersona || "You are a helpful assistant." }, { role: "user", content: userMessageContent } ];
+                    if(apiModel.includes('mimo') || apiModel.includes('claude') || apiModel.includes('qwen')) {
+                        maxT = 4000;
+                        reqMessages = [ { role: "user", content: `SYSTEM INSTRUCTION:\n${finalPersona || "You are a helpful assistant."}\n\nUSER PROMPT:\n${userMessageContent}` } ];
+                    }
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST', signal: signal, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                        body: JSON.stringify({ model: apiModel, temperature: temp, max_tokens: maxT, messages: reqMessages })
+                    });
+
+                    const rawText = await response.text();
+                    if(!rawText || rawText.trim() === "") throw new Error("Server API membalas kosong.");
+                    let data; try { data = JSON.parse(rawText); } catch(e) { throw new Error("Invalid JSON dari API."); }
+
+                    if(response.ok) {
+                        let aiText = data.choices[0].message.content.trim();
+                        try {
+                            let cleanJson = aiText;
+                            if(cleanJson.startsWith('```json')) { cleanJson = cleanJson.substring(7); if(cleanJson.endsWith('```')) cleanJson = cleanJson.substring(0, cleanJson.length - 3); }
+                            let parsed = JSON.parse(cleanJson.trim());
+                            if(parsed.title) art.title = parsed.title;
+                            if(parsed.meta || parsed.meta_description) art.meta = parsed.meta || parsed.meta_description;
+                            if(parsed.content || parsed.content_html) aiText = parsed.content || parsed.content_html;
+                        } catch(e) {
+                            let titleMatch = aiText.match(/"title"\s*:\s*"([^"]+)"/i); if(titleMatch) art.title = titleMatch[1];
+                            let metaMatch = aiText.match(/"meta"\s*:\s*"([^"]+)"/i); if(metaMatch) art.meta = metaMatch[1];
+                            let contentMatch = aiText.match(/"content"\s*:\s*"([\s\S]*)/i);
+                            if(contentMatch) { aiText = contentMatch[1].replace(/"}$/g, '').replace(/\\"/g, '"').replace(/\\n/g, '<br>'); } 
+                            else { aiText = aiText.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>'); if(!aiText.startsWith('<p>') && !aiText.startsWith('<h')) aiText = '<p>' + aiText + '</p>'; aiText = aiText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); }
+                        }
+                        aiText = cleanFinalHTML(aiText);
+                        art.body = aiText; art.wordCount = getWordCount(aiText); art.status = "Draft";
+                    } else {
+                        art.status = "API Error"; art.body = `API Error: ${data.error ? data.error.message : JSON.stringify(data)}`;
+                    }
+                } catch (err) {
+                    if(err.name === 'AbortError') { art.status = "Stopped"; art.body = "Proses dihentikan."; } 
+                    else { art.status = "Network Error"; art.body = `Failed. Message: ${err.message}`; }
                 }
-                reqBody = { model: apiModel, temperature: appData.settings.temp, max_tokens: maxT, messages: reqMessages };
+            } else if (provider === 'gemini') {
+                try {
+                    let apiModel = modelStr;
+                    let defaultGeminiUrl = ["https://", "generativelanguage.googleapis.com", "/v1beta/models/", apiModel, ":generateContent"].join("");
+                    const finalUrl = defaultGeminiUrl.includes('?') ? `${defaultGeminiUrl}&key=${apiKey}` : `${defaultGeminiUrl}?key=${apiKey}`;
+
+                    let requestBody = { contents: [{ parts: [{ text: userMessageContent }] }], generationConfig: { temperature: temp, maxOutputTokens: 8192 } };
+                    if (finalPersona) requestBody.systemInstruction = { parts: [{ text: finalPersona }] };
+
+                    const response = await fetch(finalUrl, { method: 'POST', signal: signal, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(requestBody) });
+
+                    const rawText = await response.text();
+                    if(!rawText || rawText.trim() === "") throw new Error("Server API membalas kosong.");
+                    let data; try { data = JSON.parse(rawText); } catch(e) { throw new Error("Invalid JSON dari API."); }
+
+                    if(response.ok) {
+                        let aiText = data.candidates[0].content.parts[0].text.trim();
+                        try {
+                            let cleanJson = aiText;
+                            if(cleanJson.startsWith('```json')) { cleanJson = cleanJson.substring(7); if(cleanJson.endsWith('```')) cleanJson = cleanJson.substring(0, cleanJson.length - 3); }
+                            let parsed = JSON.parse(cleanJson.trim());
+                            if(parsed.title) art.title = parsed.title;
+                            if(parsed.meta || parsed.meta_description) art.meta = parsed.meta || parsed.meta_description;
+                            if(parsed.content || parsed.content_html) aiText = parsed.content || parsed.content_html;
+                        } catch(e) {
+                            let titleMatch = aiText.match(/"title"\s*:\s*"([^"]+)"/i); if(titleMatch) art.title = titleMatch[1];
+                            let metaMatch = aiText.match(/"meta"\s*:\s*"([^"]+)"/i); if(metaMatch) art.meta = metaMatch[1];
+                            let contentMatch = aiText.match(/"content"\s*:\s*"([\s\S]*)/i);
+                            if(contentMatch) { aiText = contentMatch[1].replace(/"}$/g, '').replace(/\\"/g, '"').replace(/\\n/g, '<br>'); } 
+                            else { aiText = aiText.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>'); if(!aiText.startsWith('<p>') && !aiText.startsWith('<h')) aiText = '<p>' + aiText + '</p>'; aiText = aiText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); }
+                        }
+                        aiText = cleanFinalHTML(aiText);
+                        art.body = aiText; art.wordCount = getWordCount(aiText); art.status = "Draft";
+                    } else {
+                        art.status = "API Error"; art.body = `Gemini Error: ${data.error ? data.error.message : JSON.stringify(data)}`;
+                    }
+                } catch (err) {
+                    if(err.name === 'AbortError') { art.status = "Stopped"; art.body = "Proses dihentikan."; } 
+                    else { art.status = "Network Error"; art.body = `Failed. Message: ${err.message}`; }
+                }
             }
-
-            const res = await fetch(apiUrl, {
-                method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                body: JSON.stringify(reqBody)
-            });
-            const rawText = await res.text();
-            if(!res.ok) throw new Error(rawText);
-
-            const data = JSON.parse(rawText);
-            let aiText = appData.settings.provider === 'gemini' ? data.candidates[0].content.parts[0].text : data.choices[0].message.content;
-            
-            let parsedData = parseAIResponse(aiText, art.title);
-            art.title = parsedData.title;
-            art.meta = parsedData.meta;
-            art.body = parsedData.content;
-            art.status = "Draft";
-            
-            art.wordCount = getWordCount(art.body); saveData(); renderArticleTable(); showToast("Regenerated!");
-        } catch (err) {
-            alert("Error: " + err.message);
+            saveData(); renderArticleTable(); showToast("Article Regenerated!");
         }
     }
 
-    // ================= 10. ADVANCED EDITOR LOGIC =================
+    // ================= FUNGSI AUTO-GENERATE TITLE ONLY =================
     window.generateTitleOnly = async function() {
         if(!editId) return;
         const art = appData.articles.find(a => a.id === editId);
-        const keyword = document.getElementById('edit-keyword').value || art.title;
-        const apiKey = (appData.settings.apiKey || "").trim();
-        if(!apiKey) { alert("API Key belum diisi!"); return; }
+        if(!art) return;
+        
+        const keyword = document.getElementById('edit-keyword').value || (art.keyword ? art.keyword.split(':')[0].trim() : art.title);
+        if(!keyword) return alert("Please ensure the Keyword field is filled!");
+
+        const btn = document.querySelector('button[onclick="generateTitleOnly()"]');
+        const origIcon = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; btn.disabled = true;
+
+        const apiKey = appData.settings.apiKey.trim(); const provider = appData.settings.provider; const modelStr = appData.settings.model; const temp = appData.settings.temp; const isSimulation = !apiKey; 
+
+        if (isSimulation) {
+            await new Promise(r => setTimeout(r, 600));
+            document.getElementById('edit-judul').value = `Amazing Guide to ${keyword}`;
+            document.getElementById('edit-judul').dispatchEvent(new Event('input'));
+            btn.innerHTML = origIcon; btn.disabled = false; return;
+        }
+
+        const promptText = `Write a catchy, high-CTR SEO title for an article about "${keyword}". DO NOT include any year in the title. Respond ONLY with the raw title text. Do not use quotes.`;
 
         try {
-            const promptText = `Write a high-CTR SEO title for "${keyword}". Raw text only.`;
-            const provider = appData.settings.provider;
-            
-            let apiUrl = provider === 'gemini' ? `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}` : "https://ai.sumopod.com/v1/chat/completions";
-            let reqBody = provider === 'gemini' ? { contents: [{ parts: [{ text: promptText }] }] } : { model: "gpt-4o-mini", messages: [{role:"user",content:promptText}] };
+            let resultTitle = ""; let apiUrl = ""; let apiModel = ""; let requestBody = {}; let headers = { 'Content-Type': 'application/json' };
 
-            const res = await fetch(apiUrl, {
-                method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                body: JSON.stringify(reqBody)
-            });
-            if(!res.ok) throw new Error("API fail");
-            const data = await res.json();
-            let title = provider === 'gemini' ? data.candidates[0].content.parts[0].text : data.choices[0].message.content;
-            document.getElementById('edit-judul').value = title.replace(/"/g, '').trim();
-        } catch(e) { alert("Title error"); }
+            if (provider === 'openai' || provider === 'sumopod') {
+                apiModel = "gpt-4o-mini"; apiUrl = "[https://api.openai.com/v1/chat/completions](https://api.openai.com/v1/chat/completions)"; headers['Authorization'] = `Bearer ${apiKey}`;
+                if (provider === 'sumopod') { apiUrl = "[https://ai.sumopod.com/v1/chat/completions](https://ai.sumopod.com/v1/chat/completions)"; apiModel = modelStr; const customModelValue = document.getElementById('setting-custom-model').value.trim(); if(modelStr === 'custom' && customModelValue) apiModel = customModelValue; } else { apiModel = modelStr; }
+                
+                let maxT = 100;
+                let reqMessages = [ { role: "user", content: promptText } ];
+                requestBody = { model: apiModel, temperature: temp, max_tokens: maxT, messages: reqMessages };
+                
+            } else if (provider === 'gemini') {
+                apiModel = modelStr; apiUrl = `[https://generativelanguage.googleapis.com/v1beta/models/$](https://generativelanguage.googleapis.com/v1beta/models/$){apiModel}:generateContent`; apiUrl = apiUrl.includes('?') ? `${apiUrl}&key=${apiKey}` : `${apiUrl}?key=${apiKey}`;
+                requestBody = { contents: [{ parts: [{ text: promptText }] }], generationConfig: { temperature: temp } };
+            }
+
+            const response = await fetch(apiUrl, { method: 'POST', headers: headers, body: JSON.stringify(requestBody) });
+            const rawText = await response.text();
+            if(!rawText || rawText.trim() === "") throw new Error(`Server API membalas kosong.`);
+            let data; try { data = JSON.parse(rawText); } catch(e) { throw new Error(`Format balasan salah.`); }
+            if(!response.ok) { throw new Error("API Error"); }
+
+            if (provider === 'openai' || provider === 'sumopod') { resultTitle = data.choices[0].message.content.trim(); } else if (provider === 'gemini') { resultTitle = data.candidates[0].content.parts[0].text.trim(); }
+
+            if(resultTitle) {
+                resultTitle = resultTitle.replace(/^"|"$/g, '').replace(/^\*\*|\*\*$/g, '');
+                document.getElementById('edit-judul').value = resultTitle;
+                document.getElementById('edit-judul').dispatchEvent(new Event('input'));
+                showToast("Title generated successfully!");
+            }
+        } catch(err) { alert("Failed to generate title:\n" + err.message); }
+        btn.innerHTML = origIcon; btn.disabled = false;
     }
 
+    // ================= 10. ADVANCED EDITOR LOGIC =================
     const tabVisual = document.getElementById('tab-visual'); const tabCode = document.getElementById('tab-code');
     const editorVisual = document.getElementById('edit-body-visual'); const editorCode = document.getElementById('edit-body-code'); const editorToolbar = document.getElementById('editor-toolbar');
 
     tabVisual.onclick = () => { tabVisual.classList.add('active'); tabCode.classList.remove('active'); editorCode.style.display = 'none'; editorVisual.style.display = 'block'; editorToolbar.style.display = 'flex'; editorVisual.innerHTML = editorCode.value; };
     tabCode.onclick = () => { tabCode.classList.add('active'); tabVisual.classList.remove('active'); editorVisual.style.display = 'none'; editorCode.style.display = 'block'; editorToolbar.style.display = 'none'; editorCode.value = editorVisual.innerHTML; };
 
+    document.getElementById('edit-keyword').addEventListener('input', function() { 
+        if(!document.getElementById('edit-slug').dataset.manualEdit) {
+            document.getElementById('edit-slug').value = generateSlug(this.value.split(':')[0]); 
+        }
+    });
+    document.getElementById('edit-slug').addEventListener('input', function() { this.dataset.manualEdit = "true"; });
+    document.getElementById('edit-judul').addEventListener('input', function() {
+        if(!document.getElementById('edit-slug').dataset.manualEdit) {
+            document.getElementById('edit-slug').value = generateSlug(this.value); 
+        }
+    });
+
     window.openEditArticle = function(id) {
         editId = id; const art = appData.articles.find(a => a.id === id);
         if(!art) return;
         document.getElementById('edit-judul').value = art.title; 
-        document.getElementById('edit-keyword').value = art.keyword?.split(':')[0] || ""; 
+        document.getElementById('edit-keyword').value = art.keyword ? art.keyword.split(':')[0].trim() : ''; 
         document.getElementById('edit-slug').value = art.slug || generateSlug(art.title);
-        document.getElementById('edit-kategori').value = art.category || ""; document.getElementById('edit-meta').value = art.meta || "";
-        document.getElementById('edit-used-prompt').innerText = art.usedPrompt || "Default";
-        document.getElementById('edit-tanggal').value = art.date !== "-" ? art.date : "";
-        tabVisual.click(); editorVisual.innerHTML = art.body; editorCode.value = art.body;
+        document.getElementById('edit-kategori').value = art.category || ''; document.getElementById('edit-meta').value = art.meta || ''; document.getElementById('edit-used-prompt').innerText = art.usedPrompt || 'Default Template';
+        if(art.date && art.date !== '-') document.getElementById('edit-tanggal').value = art.date; else document.getElementById('edit-tanggal').value = '';
+        tabVisual.click(); document.getElementById('edit-body-visual').innerHTML = art.body; document.getElementById('edit-body-code').value = art.body; 
+        document.getElementById('edit-slug').dataset.manualEdit = "";
         openModal('edit-modal');
     };
 
+    window.regenerateFromModal = function() {
+        if(!editId) return;
+        closeModal('edit-modal');
+        regenerateArticle(editId);
+    };
+
     document.getElementById('btn-save-edit').onclick = () => {
-        const art = appData.articles.find(a => a.id === editId);
-        if(art) {
-            art.title = document.getElementById('edit-judul').value; art.slug = document.getElementById('edit-slug').value;
-            art.category = document.getElementById('edit-kategori').value || "Uncategorized"; art.meta = document.getElementById('edit-meta').value;
-            art.date = document.getElementById('edit-tanggal').value || "-";
-            art.body = tabVisual.classList.contains('active') ? editorVisual.innerHTML : editorCode.value;
-            art.wordCount = getWordCount(art.body); saveData(); renderArticleTable(); closeModal('edit-modal');
+        if(editId) {
+            const art = appData.articles.find(a => a.id === editId);
+            if(art) {
+                art.title = document.getElementById('edit-judul').value; 
+                art.keyword = document.getElementById('edit-keyword').value; 
+                art.slug = document.getElementById('edit-slug').value;
+                art.category = document.getElementById('edit-kategori').value || 'Uncategorized'; art.meta = document.getElementById('edit-meta').value;
+                const inputDate = document.getElementById('edit-tanggal').value; art.date = inputDate ? inputDate : '-';
+                
+                if(tabVisual.classList.contains('active')) art.body = document.getElementById('edit-body-visual').innerHTML; else art.body = document.getElementById('edit-body-code').value;
+                art.wordCount = getWordCount(art.body);
+                
+                saveData(); renderArticleTable(); closeModal('edit-modal'); showToast("Article updated.");
+            }
         }
     };
 
     // ================= 11. REAL API LOGIC: POST TO WORDPRESS =================
-    document.getElementById('btn-submit-wp').onclick = async () => {
-        const selected = appData.articles.filter(a => a.checked);
-        const wp = appData.wpAccounts.find(w => w.id == document.getElementById('wp-account').value);
-        const statusOpt = document.getElementById('wp-status').value;
-        
-        if(selected.length === 0) return alert("Pilih minimal 1 artikel.");
-        if(!wp) return alert("Akun WP tidak ditemukan.");
+    document.getElementById('wp-status').addEventListener('change', function() { document.getElementById('schedule-config').style.display = this.value === 'schedule' ? 'flex' : 'none'; });
 
-        closeModal('wp-modal'); showToast("Mulai posting ke WP...");
+    document.getElementById('btn-post-wp').onclick = () => {
+        const selected = appData.articles.filter(a => a.checked);
+        if(selected.length === 0) return alert("Select at least 1 article to post.");
+        openModal('wp-modal');
+    };
+
+    async function resolveCategory(catNameString, targetUrl, creds) {
+        if(!catNameString || catNameString.trim() === '') return [];
+        let names = catNameString.split(',').map(s => s.trim()).filter(s => s);
+        let ids = [];
+        for (let name of names) {
+            try {
+                let res = await fetch(`${targetUrl}/wp-json/wp/v2/categories?search=${encodeURIComponent(name)}`, {
+                    headers: { 'Authorization': `Basic ${creds}` }
+                });
+                let data = await res.json();
+                let match = data.find(c => c.name.toLowerCase() === name.toLowerCase());
+                if(match) {
+                    ids.push(match.id);
+                } else {
+                    let createRes = await fetch(`${targetUrl}/wp-json/wp/v2/categories`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Basic ${creds}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name: name })
+                    });
+                    let createData = await createRes.json();
+                    if(createData.id) ids.push(createData.id);
+                }
+            } catch(e) { console.error("Category Sync Error", e); }
+        }
+        return ids;
+    }
+    
+    document.getElementById('btn-submit-wp').onclick = async () => {
+        const selectedArticles = appData.articles.filter(a => a.checked);
+        const accountId = document.getElementById('wp-account').value;
+        const targetWp = appData.wpAccounts.find(w => w.id == accountId);
         
-        const credentials = btoa(`${wp.user}:${wp.pass}`);
+        if(!targetWp) return alert("WP Account not found.");
+
+        const statusOpt = document.getElementById('wp-status').value;
+        const credentials = btoa(`${targetWp.user}:${targetWp.pass}`);
+        const postsPerDay = parseInt(document.getElementById('wp-post-per-day').value) || 1;
         let currentDate = document.getElementById('wp-start-date').value ? new Date(document.getElementById('wp-start-date').value) : new Date();
-        let postsPerDay = parseInt(document.getElementById('wp-post-per-day').value) || 1;
         let postCounter = 0;
 
-        for (let art of selected) {
-            art.status = "Sync Kategori..."; renderArticleTable();
-            let catIds = await resolveCategory(art.category, wp.url, credentials);
+        const btnSubmit = document.getElementById('btn-submit-wp');
+        btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Posting...';
+        btnSubmit.disabled = true;
 
-            let postDateISO = null; let displayDate = "-";
-            if (statusOpt === 'schedule') {
-                const yyyy = currentDate.getFullYear(); const mm = String(currentDate.getMonth() + 1).padStart(2, '0'); const dd = String(currentDate.getDate()).padStart(2, '0');
-                displayDate = `${yyyy}-${mm}-${dd}`; postDateISO = currentDate.toISOString().split('.')[0]; 
-                postCounter++;
-                if (postCounter >= postsPerDay) { postCounter = 0; currentDate.setDate(currentDate.getDate() + 1); }
-            } else if (statusOpt === 'publish') {
-                const d = new Date(); displayDate = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        closeModal('wp-modal'); 
+        showToast(`Mulai memposting ke ${targetWp.url}...`);
+
+        for (let i = 0; i < appData.articles.length; i++) {
+            let art = appData.articles[i];
+            if(art.checked) {
+                art.status = "Syncing Kategori...";
+                renderArticleTable();
+
+                let catIds = await resolveCategory(art.category, targetWp.url, credentials);
+
+                let postDateISO = null;
+                let displayDate = "-";
+                
+                if (statusOpt === 'schedule') {
+                    const yyyy = currentDate.getFullYear();
+                    const mm = String(currentDate.getMonth() + 1).padStart(2, '0');
+                    const dd = String(currentDate.getDate()).padStart(2, '0');
+                    displayDate = `${yyyy}-${mm}-${dd}`;
+                    postDateISO = currentDate.toISOString().split('.')[0]; 
+
+                    postCounter++;
+                    if (postCounter >= postsPerDay) {
+                        postCounter = 0;
+                        currentDate.setDate(currentDate.getDate() + 1);
+                    }
+                } else if (statusOpt === 'publish') {
+                    const d = new Date();
+                    displayDate = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+                }
+
+                let payload = {
+                    title: art.title,
+                    content: art.body,
+                    slug: art.slug,
+                    status: statusOpt === 'schedule' ? 'future' : statusOpt,
+                    meta: {
+                        rank_math_focus_keyword: art.keyword ? art.keyword.split(':')[0].trim() : art.title,
+                        rank_math_description: art.meta || "",
+                        rank_math_title: art.title
+                    }
+                };
+                if (catIds.length > 0) payload.categories = catIds;
+                if (postDateISO) payload.date = postDateISO;
+
+                art.status = "Mengirim...";
+                renderArticleTable();
+
+                try {
+                    const response = await fetch(`${targetWp.url}/wp-json/wp/v2/posts`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Basic ${credentials}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if(response.ok) {
+                        art.status = statusOpt === 'publish' ? 'Published' : (statusOpt === 'draft' ? 'Draft (WP)' : 'Scheduled');
+                        art.date = displayDate;
+                        art.checked = false;
+                    } else {
+                        const errData = await response.json();
+                        art.status = "WP Error";
+                        console.error(errData);
+                    }
+                } catch(e) {
+                    art.status = "Network Error";
+                    console.error(e);
+                }
+                saveData(); 
+                renderArticleTable();
+                
+                await new Promise(r => setTimeout(r, 50));
             }
-
-            let payload = {
-                title: art.title, content: art.body, slug: art.slug, status: statusOpt === 'schedule' ? 'future' : statusOpt,
-                meta: { rank_math_focus_keyword: art.keyword?.split(':')[0].trim() || art.title, rank_math_description: art.meta || "", rank_math_title: art.title }
-            };
-            if(catIds.length > 0) payload.categories = catIds;
-            if(postDateISO) payload.date = postDateISO;
-
-            art.status = "Mengirim..."; renderArticleTable();
-
-            try {
-                const res = await fetch(`${wp.url}/wp-json/wp/v2/posts`, {
-                    method: 'POST', headers: { 'Authorization': `Basic ${credentials}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
-                });
-                if(res.ok) { art.status = statusOpt === 'publish' ? 'Published' : (statusOpt === 'draft' ? 'Draft (WP)' : 'Scheduled'); art.date = displayDate; art.checked = false; } else { art.status = "WP Error"; }
-            } catch(e) { art.status = "Net Error"; }
-            saveData(); renderArticleTable();
         }
-        showToast("Selesai posting!");
+
+        btnSubmit.innerHTML = 'Submit Post';
+        btnSubmit.disabled = false;
+        showToast("Proses posting selesai!");
     };
 
     // ================= 12. DANGER ZONE (RESET & CLEAR CACHE) =================
     window.clearAllArticles = function() {
-        if(confirm("Hapus SEMUA artikel di memori?")) { appData.articles = []; saveData(); renderArticleTable(); }
+        if(appData.articles.length === 0) return alert("Tabel artikel sudah kosong!");
+        
+        if(confirm("⚠ PERINGATAN!\n\nApakah Anda yakin ingin menghapus SELURUH artikel di memori?\nPastikan Anda sudah mem-backup atau mempostingnya ke WordPress.\n\nKlik OK untuk menghapus semuanya.")) {
+            appData.articles = [];
+            saveData();
+            renderArticleTable();
+            showToast("Semua artikel berhasil dibersihkan dari memori!");
+        }
     };
 
     window.factoryReset = function() {
-        if(prompt("Ketik 'RESET' untuk hapus semua data permanen:") === "RESET") {
-            localforage.removeItem('sumoArticleGenerator').then(() => window.location.reload());
+        if(confirm("☠ FACTORY RESET ☠\n\nTindakan ini akan MENGHAPUS SEMUA DATA secara permanen, termasuk:\n- Semua Artikel\n- Semua Prompt Template\n- API Keys & Global Settings\n- Akun WordPress\n\nApakah Anda benar-benar yakin ingin mengembalikan aplikasi ke pengaturan pabrik?")) {
+            
+            // Konfirmasi kedua untuk mencegah salah klik
+            if(prompt("Ketik 'RESET' (tanpa tanda kutip) untuk mengonfirmasi penghapusan permanen:") === "RESET") {
+                localforage.removeItem('sumoArticleGenerator').then(function() {
+                    alert("Data berhasil dihapus total. Aplikasi akan dimuat ulang.");
+                    window.location.reload();
+                }).catch(function(err) {
+                    alert("Terjadi kesalahan saat menghapus data: " + err);
+                });
+            } else {
+                alert("Factory reset dibatalkan.");
+            }
         }
     };
 
