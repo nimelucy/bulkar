@@ -1677,7 +1677,7 @@
                             let maxT = 8000;
                             let reqMessages = [ { role: "system", content: finalPersona || "You are a helpful assistant." }, { role: "user", content: userMessageContent } ];
                             if(apiModel.includes('mimo') || apiModel.includes('claude') || apiModel.includes('qwen')) {
-                                maxT = 4000;
+                                maxT = 8192;
                                 reqMessages = [ { role: "user", content: `SYSTEM INSTRUCTION:\n${finalPersona || "You are a helpful assistant."}\n\nUSER PROMPT:\n${userMessageContent}` } ];
                             }
 
@@ -1875,7 +1875,7 @@
                             let maxT = 8000;
                             let reqMessages = [ { role: "system", content: finalPersona || "You are a helpful assistant." }, { role: "user", content: userMessageContent } ];
                             if(apiModel.includes('mimo') || apiModel.includes('claude') || apiModel.includes('qwen')) {
-                                maxT = 4000;
+                                maxT = 8192;
                                 reqMessages = [ { role: "user", content: `SYSTEM INSTRUCTION:\n${finalPersona || "You are a helpful assistant."}\n\nUSER PROMPT:\n${userMessageContent}` } ];
                             }
 
@@ -2053,7 +2053,7 @@
                     let maxT = 8000;
                     let reqMessages = [ { role: "system", content: finalPersona || "You are a helpful assistant." }, { role: "user", content: userMessageContent } ];
                     if(apiModel.includes('mimo') || apiModel.includes('claude') || apiModel.includes('qwen')) {
-                        maxT = 4000;
+                        maxT = 8192;
                         reqMessages = [ { role: "user", content: `SYSTEM INSTRUCTION:\n${finalPersona || "You are a helpful assistant."}\n\nUSER PROMPT:\n${userMessageContent}` } ];
                     }
 
