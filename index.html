@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Article Generator</title>
+    <title>SumoPod AI Article Generator</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
@@ -149,7 +149,6 @@
         .export-box input:checked + .export-content { color: var(--primary); }
         .export-box.active { border-color: var(--primary); background: #eff6ff; }
 
-        /* ================= RESPONSIVE MEDIA QUERIES ================= */
         @media (max-width: 768px) {
             body { flex-direction: column; }
             .slim-sidebar { width: 100%; height: 60px; flex-direction: row; justify-content: space-around; padding: 0 10px; border-right: none; border-top: 1px solid var(--border); order: 2; }
@@ -163,34 +162,26 @@
             .view-section { padding: 10px; }
             .view-single-col { padding: 15px; }
             
-            /* Generator Layout */
             #view-generator { flex-direction: column; overflow-y: auto; display: flex; }
             aside { width: 100%; flex-shrink: 0; margin-bottom: 16px; height: auto; }
             main { flex-shrink: 0; min-height: 500px; display: flex; flex-direction: column; overflow: visible; }
             
-            /* Forms & Flex wrapping */
             .responsive-flex, .responsive-flex-16 { flex-direction: column; gap: 10px !important; }
             .flex-between { flex-wrap: wrap; gap: 10px; }
             
-            /* Tables */
             .table-container { border-radius: 8px; overflow-y: visible; }
             .toolbar { flex-direction: column; align-items: flex-start; gap: 10px; }
             .toolbar .flex-gap { width: 100%; flex-wrap: wrap; }
             .toolbar .btn { flex: 1; justify-content: center; }
             table { display: block; overflow-x: auto; white-space: nowrap; }
             
-            /* Prompts Layout */
             .prompt-layout { flex-direction: column; height: auto; }
             .prompt-sidebar { width: 100%; height: 250px; flex-shrink: 0; }
             .prompt-editor { padding: 15px; }
             
-            /* Modals */
             .modal-content { width: 95% !important; max-width: none !important; margin: 10px; max-height: 90vh; }
-            
-            /* Export & Settings Cards */
             .card { min-width: 0 !important; width: 100%; }
             .export-box { width: 100%; }
-            #export-xml-status { max-width: 100%; }
         }
     </style>
 </head>
@@ -509,6 +500,7 @@
                                 <option value="openai">OpenAI (ChatGPT)</option>
                                 <option value="gemini">Google Gemini</option>
                                 <option value="sumopod">SumoPod AI</option>
+                                <option value="mimo">Mimo (Token Plan)</option>
                             </select>
                         </div>
                         <div style="flex: 1;">
@@ -756,7 +748,7 @@
         ],
         wpAccounts: [], 
         articles: [],
-        settings: { provider: 'sumopod', model: 'gpt-4o-mini', apiKey: '', temp: 0.7, customModel: '', workers: 1 }
+        settings: { provider: 'mimo', model: 'mimo-v2.5-pro', apiKey: '', temp: 0.7, customModel: '', workers: 1 }
     };
 
     let appData = defaultAppData;
@@ -788,7 +780,6 @@
     localforage.getItem('sumoArticleGenerator').then(function(value) {
         if (value) { appData = value; }
         
-        // Anti-Error Patcher untuk data lama
         if(!appData.settings) appData.settings = defaultAppData.settings; 
         if(!appData.settings.workers) appData.settings.workers = 1;
         if(!appData.wpAccounts) appData.wpAccounts = [];
@@ -811,7 +802,6 @@
 
     // ================= 2. UI INITIALIZATION & SYNC =================
     
-    // Inisialisasi Routing / Navigasi
     function initUI() {
         const navItems = document.querySelectorAll('.nav-menu .nav-item, .nav-bottom .nav-item'); const views = document.querySelectorAll('.view-section');
         navItems.forEach(item => {
@@ -832,7 +822,7 @@
         
         document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e => { if (e.target === m) m.classList.remove('active'); }));
     }
-    initUI(); // Jalankan Routing
+    initUI();
 
     function syncAllData() {
         renderProjectsGrid(); renderPromptsList(); renderGeneratorDropdowns(); renderWpAccounts(); renderExportDropdown();
@@ -1222,6 +1212,19 @@
                 </optgroup>
                 <option value="custom">Custom Model ID</option>
             `; 
+        } else if (provider === 'mimo') {
+            options = `
+                <optgroup label="Mimo Token Plan">
+                    <option value="mimo-v2.5-pro" selected>Mimo V2.5 Pro</option>
+                    <option value="mimo-v2.5">Mimo V2.5</option>
+                    <option value="mimo-v2.5-tts-voiceclone">Mimo V2.5 TTS VoiceClone</option>
+                    <option value="mimo-v2.5-tts-voicedesign">Mimo V2.5 TTS VoiceDesign</option>
+                    <option value="mimo-v2.5-tts">Mimo V2.5 TTS</option>
+                    <option value="mimo-v2-pro">Mimo V2 Pro</option>
+                    <option value="mimo-v2-omni">Mimo V2 Omni</option>
+                    <option value="mimo-v2-tts">Mimo V2 TTS</option>
+                </optgroup>
+            `;
         }
         if(modelSelect) modelSelect.innerHTML = options;
         toggleCustomBoxes();
@@ -1229,13 +1232,17 @@
     
     window.toggleCustomBoxes = function() {
         const provider = document.getElementById('setting-provider').value; const modelSelect = document.getElementById('setting-model').value; const customUrlBox = document.getElementById('setting-custom-url-box');
-        if (provider === 'sumopod' && modelSelect === 'custom') { customUrlBox.style.display = 'block'; } else { customUrlBox.style.display = 'none'; }
+        if ((provider === 'sumopod' && modelSelect === 'custom') || provider === 'mimo') {
+            customUrlBox.style.display = 'none';
+        } else {
+            customUrlBox.style.display = 'none';
+        }
     }
 
     function loadSettingsUI() {
         if(appData.settings) {
-            document.getElementById('setting-provider').value = appData.settings.provider || 'sumopod'; updateModelOptions();
-            document.getElementById('setting-model').value = appData.settings.model || 'gpt-4o-mini';
+            document.getElementById('setting-provider').value = appData.settings.provider || 'mimo'; updateModelOptions();
+            document.getElementById('setting-model').value = appData.settings.model || 'mimo-v2.5-pro';
             document.getElementById('setting-api-key').value = appData.settings.apiKey || '';
             document.getElementById('setting-temp').value = appData.settings.temp || '0.7';
             document.getElementById('setting-custom-model').value = appData.settings.customModel || ''; 
@@ -1530,7 +1537,7 @@
                         <button class="btn-icon" onclick="openEditArticle('${art.id}')" title="Edit Content"><i class="fa-solid fa-pen-to-square"></i></button>
                         <button class="btn-icon text-danger" onclick="deleteSingleArticle('${art.id}')" title="Delete Article"><i class="fa-regular fa-trash-can"></i></button>
                     </td>
-                </tr>
+                </table>
             `;
         });
 
@@ -1674,17 +1681,21 @@
                     art.body = `<h2>${cleanTitle}</h2><p><b>[REGENERATED SIMULATION]</b></p><p>Language: ${valLanguage} | Length: ${valLength}</p>`;
                     art.wordCount = getWordCount(art.body);
                 } else {
-                    if (provider === 'openai' || provider === 'sumopod') {
+                    if (provider === 'openai' || provider === 'sumopod' || provider === 'mimo') {
                         try {
                             let apiModel = "gpt-4o-mini";
-                            let apiUrl = ["https://", "api.openai.com", "/v1/chat/completions"].join("");
+                            let apiUrl = "https://api.openai.com/v1/chat/completions";
+                            
                             if (provider === 'openai') {
                                 apiModel = modelStr;
                             } else if (provider === 'sumopod') {
-                                apiUrl = ["https://", "ai.sumopod.com", "/v1/chat/completions"].join("");
+                                apiUrl = "https://ai.sumopod.com/v1/chat/completions";
                                 apiModel = modelStr; 
                                 const customModelValue = document.querySelector('#setting-custom-url-box input#setting-custom-model').value.trim();
                                 if(modelStr === 'custom' && customModelValue) apiModel = customModelValue;
+                            } else if (provider === 'mimo') {
+                                apiUrl = "https://token-plan-sgp.xiaomimimo.com/v1/chat/completions";
+                                apiModel = modelStr;
                             }
 
                             let maxT = 8000;
@@ -1775,7 +1786,7 @@
             await Promise.all(chunkPromises);
             saveData();
             renderArticleTable();
-            await new Promise(r => setTimeout(r, 100)); // Jeda UI
+            await new Promise(r => setTimeout(r, 100));
         }
         
         isGenerating = false;
@@ -1871,18 +1882,21 @@
                     art.body = `<h2>${art.title}</h2><p><b>[SIMULATION MODE]</b> No API Key found.</p><p>Language: ${valLanguage} | Length: ${valLength}</p>`;
                     art.wordCount = getWordCount(art.body);
                 } else {
-                    if (provider === 'openai' || provider === 'sumopod') {
+                    if (provider === 'openai' || provider === 'sumopod' || provider === 'mimo') {
                         try {
                             let apiModel = "gpt-4o-mini";
-                            let apiUrl = ["https://", "api.openai.com", "/v1/chat/completions"].join("");
+                            let apiUrl = "https://api.openai.com/v1/chat/completions";
 
                             if (provider === 'openai') {
                                 apiModel = modelStr;
                             } else if (provider === 'sumopod') {
-                                apiUrl = ["https://", "ai.sumopod.com", "/v1/chat/completions"].join("");
+                                apiUrl = "https://ai.sumopod.com/v1/chat/completions";
                                 apiModel = modelStr; 
                                 const customModelValue = document.querySelector('#setting-custom-url-box input#setting-custom-model').value.trim();
                                 if(modelStr === 'custom' && customModelValue) apiModel = customModelValue;
+                            } else if (provider === 'mimo') {
+                                apiUrl = "https://token-plan-sgp.xiaomimimo.com/v1/chat/completions";
+                                apiModel = modelStr;
                             }
 
                             let maxT = 8000;
@@ -1985,7 +1999,7 @@
             await Promise.all(chunkPromises);
             saveData();
             renderArticleTable();
-            await new Promise(r => setTimeout(r, 100)); // Jeda UI
+            await new Promise(r => setTimeout(r, 100));
         }
         
         isGenerating = false;
@@ -2049,18 +2063,21 @@
             let localAbort = new AbortController();
             const signal = localAbort.signal;
 
-            if (provider === 'openai' || provider === 'sumopod') {
+            if (provider === 'openai' || provider === 'sumopod' || provider === 'mimo') {
                 try {
                     let apiModel = "gpt-4o-mini";
-                    let apiUrl = ["https://", "api.openai.com", "/v1/chat/completions"].join("");
+                    let apiUrl = "https://api.openai.com/v1/chat/completions";
 
                     if (provider === 'openai') {
                         apiModel = modelStr;
                     } else if (provider === 'sumopod') {
-                        apiUrl = ["https://", "ai.sumopod.com", "/v1/chat/completions"].join("");
+                        apiUrl = "https://ai.sumopod.com/v1/chat/completions";
                         apiModel = modelStr; 
                         const customModelValue = document.querySelector('#setting-custom-url-box input#setting-custom-model').value.trim();
                         if(modelStr === 'custom' && customModelValue) apiModel = customModelValue;
+                    } else if (provider === 'mimo') {
+                        apiUrl = "https://token-plan-sgp.xiaomimimo.com/v1/chat/completions";
+                        apiModel = modelStr;
                     }
 
                     let maxT = 8000;
@@ -2176,9 +2193,11 @@
         try {
             let resultTitle = ""; let apiUrl = ""; let apiModel = ""; let requestBody = {}; let headers = { 'Content-Type': 'application/json' };
 
-            if (provider === 'openai' || provider === 'sumopod') {
+            if (provider === 'openai' || provider === 'sumopod' || provider === 'mimo') {
                 apiModel = "gpt-4o-mini"; apiUrl = "https://api.openai.com/v1/chat/completions"; headers['Authorization'] = `Bearer ${apiKey}`;
-                if (provider === 'sumopod') { apiUrl = "https://ai.sumopod.com/v1/chat/completions"; apiModel = modelStr; const customModelValue = document.getElementById('setting-custom-model').value.trim(); if(modelStr === 'custom' && customModelValue) apiModel = customModelValue; } else { apiModel = modelStr; }
+                if (provider === 'sumopod') { apiUrl = "https://ai.sumopod.com/v1/chat/completions"; apiModel = modelStr; const customModelValue = document.getElementById('setting-custom-model').value.trim(); if(modelStr === 'custom' && customModelValue) apiModel = customModelValue; } 
+                else if (provider === 'mimo') { apiUrl = "https://token-plan-sgp.xiaomimimo.com/v1/chat/completions"; apiModel = modelStr; }
+                else { apiModel = modelStr; }
                 
                 let maxT = 100;
                 let reqMessages = [ { role: "user", content: promptText } ];
@@ -2195,7 +2214,7 @@
             let data; try { data = JSON.parse(rawText); } catch(e) { throw new Error(`Format balasan salah.`); }
             if(!response.ok) { throw new Error("API Error"); }
 
-            if (provider === 'openai' || provider === 'sumopod') { resultTitle = data.choices[0].message.content.trim(); } else if (provider === 'gemini') { resultTitle = data.candidates[0].content.parts[0].text.trim(); }
+            if (provider === 'openai' || provider === 'sumopod' || provider === 'mimo') { resultTitle = data.choices[0].message.content.trim(); } else if (provider === 'gemini') { resultTitle = data.candidates[0].content.parts[0].text.trim(); }
 
             if(resultTitle) {
                 resultTitle = resultTitle.replace(/^"|"$/g, '').replace(/^\*\*|\*\*$/g, '');
@@ -2411,7 +2430,6 @@
     window.factoryReset = function() {
         if(confirm("☠ FACTORY RESET ☠\n\nTindakan ini akan MENGHAPUS SEMUA DATA secara permanen, termasuk:\n- Semua Artikel\n- Semua Prompt Template\n- API Keys & Global Settings\n- Akun WordPress\n\nApakah Anda benar-benar yakin ingin mengembalikan aplikasi ke pengaturan pabrik?")) {
             
-            // Konfirmasi kedua untuk mencegah salah klik
             if(prompt("Ketik 'RESET' (tanpa tanda kutip) untuk mengonfirmasi penghapusan permanen:") === "RESET") {
                 localforage.removeItem('sumoArticleGenerator').then(function() {
                     alert("Data berhasil dihapus total. Aplikasi akan dimuat ulang.");
