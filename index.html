@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SumoPod AI Article Generator</title>
+    <title>Article Generator + Mimo AI</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
@@ -149,6 +149,7 @@
         .export-box input:checked + .export-content { color: var(--primary); }
         .export-box.active { border-color: var(--primary); background: #eff6ff; }
 
+        /* ================= RESPONSIVE MEDIA QUERIES ================= */
         @media (max-width: 768px) {
             body { flex-direction: column; }
             .slim-sidebar { width: 100%; height: 60px; flex-direction: row; justify-content: space-around; padding: 0 10px; border-right: none; border-top: 1px solid var(--border); order: 2; }
@@ -162,26 +163,34 @@
             .view-section { padding: 10px; }
             .view-single-col { padding: 15px; }
             
+            /* Generator Layout */
             #view-generator { flex-direction: column; overflow-y: auto; display: flex; }
             aside { width: 100%; flex-shrink: 0; margin-bottom: 16px; height: auto; }
             main { flex-shrink: 0; min-height: 500px; display: flex; flex-direction: column; overflow: visible; }
             
+            /* Forms & Flex wrapping */
             .responsive-flex, .responsive-flex-16 { flex-direction: column; gap: 10px !important; }
             .flex-between { flex-wrap: wrap; gap: 10px; }
             
+            /* Tables */
             .table-container { border-radius: 8px; overflow-y: visible; }
             .toolbar { flex-direction: column; align-items: flex-start; gap: 10px; }
             .toolbar .flex-gap { width: 100%; flex-wrap: wrap; }
             .toolbar .btn { flex: 1; justify-content: center; }
             table { display: block; overflow-x: auto; white-space: nowrap; }
             
+            /* Prompts Layout */
             .prompt-layout { flex-direction: column; height: auto; }
             .prompt-sidebar { width: 100%; height: 250px; flex-shrink: 0; }
             .prompt-editor { padding: 15px; }
             
+            /* Modals */
             .modal-content { width: 95% !important; max-width: none !important; margin: 10px; max-height: 90vh; }
+            
+            /* Export & Settings Cards */
             .card { min-width: 0 !important; width: 100%; }
             .export-box { width: 100%; }
+            #export-xml-status { max-width: 100%; }
         }
     </style>
 </head>
@@ -500,7 +509,7 @@
                                 <option value="openai">OpenAI (ChatGPT)</option>
                                 <option value="gemini">Google Gemini</option>
                                 <option value="sumopod">SumoPod AI</option>
-                                <option value="mimo">Mimo (Token Plan)</option>
+                                <option value="mimo">Mimo AI (Dedicated)</option>
                             </select>
                         </div>
                         <div style="flex: 1;">
@@ -521,6 +530,18 @@
                         <div style="flex: 1;">
                             <label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Workers <span style="font-weight:normal; font-size:11px;">(Speed)</span></label>
                             <input type="number" id="setting-workers" min="1" max="10" value="1" title="How many articles to generate concurrently">
+                        </div>
+                    </div>
+
+                    <!-- Mimo Base URL (khusus untuk provider Mimo) -->
+                    <div id="mimo-base-url-container" style="display: none; margin-top: 16px;">
+                        <hr style="border: none; border-top: 1px dashed var(--border); margin-bottom: 16px;">
+                        <div class="responsive-flex-16">
+                            <div style="flex: 1;">
+                                <label class="text-muted font-weight-600" style="display:block; margin-bottom:6px;">Mimo Base URL (OpenAI Compatible)</label>
+                                <input type="text" id="setting-mimo-base-url" placeholder="https://token-plan-sgp.xiaomimimo.com/v1">
+                                <div class="text-muted" style="font-size: 11px; margin-top: 4px;">Default: https://token-plan-sgp.xiaomimimo.com/v1</div>
+                            </div>
                         </div>
                     </div>
 
@@ -748,7 +769,7 @@
         ],
         wpAccounts: [], 
         articles: [],
-        settings: { provider: 'mimo', model: 'mimo-v2.5-pro', apiKey: '', temp: 0.7, customModel: '', workers: 1 }
+        settings: { provider: 'sumopod', model: 'gpt-4o-mini', apiKey: '', temp: 0.7, customModel: '', workers: 1, mimoBaseUrl: 'https://token-plan-sgp.xiaomimimo.com/v1' }
     };
 
     let appData = defaultAppData;
@@ -780,8 +801,10 @@
     localforage.getItem('sumoArticleGenerator').then(function(value) {
         if (value) { appData = value; }
         
+        // Anti-Error Patcher untuk data lama
         if(!appData.settings) appData.settings = defaultAppData.settings; 
         if(!appData.settings.workers) appData.settings.workers = 1;
+        if(!appData.settings.mimoBaseUrl) appData.settings.mimoBaseUrl = defaultAppData.settings.mimoBaseUrl;
         if(!appData.wpAccounts) appData.wpAccounts = [];
         if(!appData.articles) appData.articles = [];
         if(!appData.projects) appData.projects = defaultAppData.projects;
@@ -802,6 +825,7 @@
 
     // ================= 2. UI INITIALIZATION & SYNC =================
     
+    // Inisialisasi Routing / Navigasi
     function initUI() {
         const navItems = document.querySelectorAll('.nav-menu .nav-item, .nav-bottom .nav-item'); const views = document.querySelectorAll('.view-section');
         navItems.forEach(item => {
@@ -822,7 +846,7 @@
         
         document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e => { if (e.target === m) m.classList.remove('active'); }));
     }
-    initUI();
+    initUI(); // Jalankan Routing
 
     function syncAllData() {
         renderProjectsGrid(); renderPromptsList(); renderGeneratorDropdowns(); renderWpAccounts(); renderExportDropdown();
@@ -1115,6 +1139,7 @@
         const provider = document.getElementById('setting-provider').value;
         const modelSelect = document.getElementById('setting-model');
         const customUrlBox = document.getElementById('setting-custom-url-box');
+        const mimoUrlContainer = document.getElementById('mimo-base-url-container');
         let options = ""; 
 
         if (provider === 'openai') { 
@@ -1127,6 +1152,8 @@
                     <option value="gpt-5.4-mini">GPT-5.4 Mini</option>
                     <option value="gpt-5.4">GPT-5.4</option>
                 </optgroup>`; 
+            mimoUrlContainer.style.display = 'none';
+            customUrlBox.style.display = 'none';
         } else if (provider === 'gemini') { 
             options = `
                 <optgroup label="Google Gemini">
@@ -1135,6 +1162,8 @@
                     <option value="gemini-3.1-flash-lite">Gemini 3.1 Flash Lite</option>
                     <option value="gemini-3.1-pro-preview">Gemini 3.1 Pro</option>
                 </optgroup>`; 
+            mimoUrlContainer.style.display = 'none';
+            customUrlBox.style.display = 'none';
         } else if (provider === 'sumopod') { 
             options = `
                 <optgroup label="Alibaba (Qwen)">
@@ -1174,7 +1203,7 @@
                     <option value="mimo-v2-omni">Mimo V2 Omni</option>
                     <option value="mimo-v2-pro">Mimo V2 Pro</option>
                     <option value="mimo-v2.5">Mimo V2.5</option>
-                    <option value="mimo-v2.5-pro">Mimo V2.5 Pro</option>
+                    <option value="mimo-v2.5-pro" selected>Mimo V2.5 Pro</option>
                 </optgroup>
                 <optgroup label="MiniMax">
                     <option value="MiniMax-M2.7-highspeed">MiniMax M2.7 Highspeed</option>
@@ -1187,7 +1216,7 @@
                     <option value="gpt-4.1-mini">GPT-4.1 Mini</option>
                     <option value="gpt-4.1-nano">GPT-4.1 Nano</option>
                     <option value="gpt-4o">GPT-4o</option>
-                    <option value="gpt-4o-mini" selected>GPT-4o Mini</option>
+                    <option value="gpt-4o-mini">GPT-4o Mini</option>
                     <option value="gpt-5">GPT-5</option>
                     <option value="gpt-5-mini">GPT-5 Mini</option>
                     <option value="gpt-5-nano">GPT-5 Nano</option>
@@ -1212,41 +1241,42 @@
                 </optgroup>
                 <option value="custom">Custom Model ID</option>
             `; 
+            mimoUrlContainer.style.display = 'none';
+            customUrlBox.style.display = 'block';
         } else if (provider === 'mimo') {
             options = `
-                <optgroup label="Mimo Token Plan">
-                    <option value="mimo-v2.5-pro" selected>Mimo V2.5 Pro</option>
-                    <option value="mimo-v2.5">Mimo V2.5</option>
-                    <option value="mimo-v2.5-tts-voiceclone">Mimo V2.5 TTS VoiceClone</option>
-                    <option value="mimo-v2.5-tts-voicedesign">Mimo V2.5 TTS VoiceDesign</option>
-                    <option value="mimo-v2.5-tts">Mimo V2.5 TTS</option>
-                    <option value="mimo-v2-pro">Mimo V2 Pro</option>
-                    <option value="mimo-v2-omni">Mimo V2 Omni</option>
-                    <option value="mimo-v2-tts">Mimo V2 TTS</option>
+                <optgroup label="Mimo AI (Dedicated)">
+                    <option value="mimo-v2.5-pro" selected>mimo-v2.5-pro</option>
+                    <option value="mimo-v2-flash">mimo-v2-flash</option>
+                    <option value="mimo-v2-omni">mimo-v2-omni</option>
+                    <option value="mimo-v2-pro">mimo-v2-pro</option>
                 </optgroup>
             `;
+            mimoUrlContainer.style.display = 'block';
+            customUrlBox.style.display = 'none';
         }
         if(modelSelect) modelSelect.innerHTML = options;
         toggleCustomBoxes();
     }
     
     window.toggleCustomBoxes = function() {
-        const provider = document.getElementById('setting-provider').value; const modelSelect = document.getElementById('setting-model').value; const customUrlBox = document.getElementById('setting-custom-url-box');
-        if ((provider === 'sumopod' && modelSelect === 'custom') || provider === 'mimo') {
-            customUrlBox.style.display = 'none';
-        } else {
-            customUrlBox.style.display = 'none';
-        }
+        const provider = document.getElementById('setting-provider').value; 
+        const modelSelect = document.getElementById('setting-model').value; 
+        const customUrlBox = document.getElementById('setting-custom-url-box');
+        if (provider === 'sumopod' && modelSelect === 'custom') { customUrlBox.style.display = 'block'; } 
+        else if (provider !== 'sumopod') { customUrlBox.style.display = 'none'; }
+        else { customUrlBox.style.display = 'none'; }
     }
 
     function loadSettingsUI() {
         if(appData.settings) {
-            document.getElementById('setting-provider').value = appData.settings.provider || 'mimo'; updateModelOptions();
-            document.getElementById('setting-model').value = appData.settings.model || 'mimo-v2.5-pro';
+            document.getElementById('setting-provider').value = appData.settings.provider || 'sumopod'; updateModelOptions();
+            document.getElementById('setting-model').value = appData.settings.model || 'gpt-4o-mini';
             document.getElementById('setting-api-key').value = appData.settings.apiKey || '';
             document.getElementById('setting-temp').value = appData.settings.temp || '0.7';
             document.getElementById('setting-custom-model').value = appData.settings.customModel || ''; 
             document.getElementById('setting-workers').value = appData.settings.workers || 1;
+            document.getElementById('setting-mimo-base-url').value = appData.settings.mimoBaseUrl || 'https://token-plan-sgp.xiaomimimo.com/v1';
             toggleCustomBoxes();
         }
     }
@@ -1258,7 +1288,8 @@
             apiKey: document.getElementById('setting-api-key').value, 
             temp: parseFloat(document.getElementById('setting-temp').value) || 0.7, 
             customModel: document.getElementById('setting-custom-model').value,
-            workers: parseInt(document.getElementById('setting-workers').value) || 1 
+            workers: parseInt(document.getElementById('setting-workers').value) || 1,
+            mimoBaseUrl: document.getElementById('setting-mimo-base-url').value.trim() || 'https://token-plan-sgp.xiaomimimo.com/v1'
         };
         saveData(); showToast('Global Settings Saved Successfully!');
     }
@@ -1537,7 +1568,7 @@
                         <button class="btn-icon" onclick="openEditArticle('${art.id}')" title="Edit Content"><i class="fa-solid fa-pen-to-square"></i></button>
                         <button class="btn-icon text-danger" onclick="deleteSingleArticle('${art.id}')" title="Delete Article"><i class="fa-regular fa-trash-can"></i></button>
                     </td>
-                </table>
+                </tr>
             `;
         });
 
@@ -1683,18 +1714,21 @@
                 } else {
                     if (provider === 'openai' || provider === 'sumopod' || provider === 'mimo') {
                         try {
-                            let apiModel = "gpt-4o-mini";
-                            let apiUrl = "https://api.openai.com/v1/chat/completions";
-                            
+                            let apiModel = modelStr;
+                            let apiUrl = "";
+
                             if (provider === 'openai') {
+                                apiUrl = "https://api.openai.com/v1/chat/completions";
                                 apiModel = modelStr;
                             } else if (provider === 'sumopod') {
                                 apiUrl = "https://ai.sumopod.com/v1/chat/completions";
                                 apiModel = modelStr; 
-                                const customModelValue = document.querySelector('#setting-custom-url-box input#setting-custom-model').value.trim();
+                                const customModelValue = document.getElementById('setting-custom-model')?.value.trim();
                                 if(modelStr === 'custom' && customModelValue) apiModel = customModelValue;
                             } else if (provider === 'mimo') {
-                                apiUrl = "https://token-plan-sgp.xiaomimimo.com/v1/chat/completions";
+                                let baseUrl = appData.settings.mimoBaseUrl || 'https://token-plan-sgp.xiaomimimo.com/v1';
+                                if (!baseUrl.endsWith('/')) baseUrl += '/';
+                                apiUrl = `${baseUrl}chat/completions`;
                                 apiModel = modelStr;
                             }
 
@@ -1786,7 +1820,7 @@
             await Promise.all(chunkPromises);
             saveData();
             renderArticleTable();
-            await new Promise(r => setTimeout(r, 100));
+            await new Promise(r => setTimeout(r, 100)); // Jeda UI
         }
         
         isGenerating = false;
@@ -1884,18 +1918,21 @@
                 } else {
                     if (provider === 'openai' || provider === 'sumopod' || provider === 'mimo') {
                         try {
-                            let apiModel = "gpt-4o-mini";
-                            let apiUrl = "https://api.openai.com/v1/chat/completions";
+                            let apiModel = modelStr;
+                            let apiUrl = "";
 
                             if (provider === 'openai') {
+                                apiUrl = "https://api.openai.com/v1/chat/completions";
                                 apiModel = modelStr;
                             } else if (provider === 'sumopod') {
                                 apiUrl = "https://ai.sumopod.com/v1/chat/completions";
                                 apiModel = modelStr; 
-                                const customModelValue = document.querySelector('#setting-custom-url-box input#setting-custom-model').value.trim();
+                                const customModelValue = document.getElementById('setting-custom-model')?.value.trim();
                                 if(modelStr === 'custom' && customModelValue) apiModel = customModelValue;
                             } else if (provider === 'mimo') {
-                                apiUrl = "https://token-plan-sgp.xiaomimimo.com/v1/chat/completions";
+                                let baseUrl = appData.settings.mimoBaseUrl || 'https://token-plan-sgp.xiaomimimo.com/v1';
+                                if (!baseUrl.endsWith('/')) baseUrl += '/';
+                                apiUrl = `${baseUrl}chat/completions`;
                                 apiModel = modelStr;
                             }
 
@@ -1907,20 +1944,13 @@
                             }
 
                             const response = await fetch(apiUrl, {
-                                method: 'POST',
-                                signal: signal, 
-                                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                                body: JSON.stringify({
-                                    model: apiModel, temperature: temp, max_tokens: maxT,
-                                    messages: reqMessages
-                                })
+                                method: 'POST', signal: signal, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                                body: JSON.stringify({ model: apiModel, temperature: temp, max_tokens: maxT, messages: reqMessages })
                             });
 
                             const rawText = await response.text();
                             if(!rawText || rawText.trim() === "") throw new Error("Server API membalas kosong.");
-                            
-                            let data;
-                            try { data = JSON.parse(rawText); } catch(e) { throw new Error("Invalid JSON dari API."); }
+                            let data; try { data = JSON.parse(rawText); } catch(e) { throw new Error("Invalid JSON dari API."); }
 
                             if(response.ok) {
                                 let aiText = data.choices[0].message.content.trim();
@@ -1999,7 +2029,7 @@
             await Promise.all(chunkPromises);
             saveData();
             renderArticleTable();
-            await new Promise(r => setTimeout(r, 100));
+            await new Promise(r => setTimeout(r, 100)); // Jeda UI
         }
         
         isGenerating = false;
@@ -2065,18 +2095,21 @@
 
             if (provider === 'openai' || provider === 'sumopod' || provider === 'mimo') {
                 try {
-                    let apiModel = "gpt-4o-mini";
-                    let apiUrl = "https://api.openai.com/v1/chat/completions";
+                    let apiModel = modelStr;
+                    let apiUrl = "";
 
                     if (provider === 'openai') {
+                        apiUrl = "https://api.openai.com/v1/chat/completions";
                         apiModel = modelStr;
                     } else if (provider === 'sumopod') {
                         apiUrl = "https://ai.sumopod.com/v1/chat/completions";
                         apiModel = modelStr; 
-                        const customModelValue = document.querySelector('#setting-custom-url-box input#setting-custom-model').value.trim();
+                        const customModelValue = document.getElementById('setting-custom-model')?.value.trim();
                         if(modelStr === 'custom' && customModelValue) apiModel = customModelValue;
                     } else if (provider === 'mimo') {
-                        apiUrl = "https://token-plan-sgp.xiaomimimo.com/v1/chat/completions";
+                        let baseUrl = appData.settings.mimoBaseUrl || 'https://token-plan-sgp.xiaomimimo.com/v1';
+                        if (!baseUrl.endsWith('/')) baseUrl += '/';
+                        apiUrl = `${baseUrl}chat/completions`;
                         apiModel = modelStr;
                     }
 
@@ -2194,11 +2227,21 @@
             let resultTitle = ""; let apiUrl = ""; let apiModel = ""; let requestBody = {}; let headers = { 'Content-Type': 'application/json' };
 
             if (provider === 'openai' || provider === 'sumopod' || provider === 'mimo') {
-                apiModel = "gpt-4o-mini"; apiUrl = "https://api.openai.com/v1/chat/completions"; headers['Authorization'] = `Bearer ${apiKey}`;
-                if (provider === 'sumopod') { apiUrl = "https://ai.sumopod.com/v1/chat/completions"; apiModel = modelStr; const customModelValue = document.getElementById('setting-custom-model').value.trim(); if(modelStr === 'custom' && customModelValue) apiModel = customModelValue; } 
-                else if (provider === 'mimo') { apiUrl = "https://token-plan-sgp.xiaomimimo.com/v1/chat/completions"; apiModel = modelStr; }
-                else { apiModel = modelStr; }
-                
+                if (provider === 'openai') {
+                    apiUrl = "https://api.openai.com/v1/chat/completions";
+                    apiModel = modelStr;
+                } else if (provider === 'sumopod') {
+                    apiUrl = "https://ai.sumopod.com/v1/chat/completions";
+                    apiModel = modelStr;
+                    const customModelValue = document.getElementById('setting-custom-model')?.value.trim();
+                    if(modelStr === 'custom' && customModelValue) apiModel = customModelValue;
+                } else if (provider === 'mimo') {
+                    let baseUrl = appData.settings.mimoBaseUrl || 'https://token-plan-sgp.xiaomimimo.com/v1';
+                    if (!baseUrl.endsWith('/')) baseUrl += '/';
+                    apiUrl = `${baseUrl}chat/completions`;
+                    apiModel = modelStr;
+                }
+                headers['Authorization'] = `Bearer ${apiKey}`;
                 let maxT = 100;
                 let reqMessages = [ { role: "user", content: promptText } ];
                 requestBody = { model: apiModel, temperature: temp, max_tokens: maxT, messages: reqMessages };
@@ -2430,6 +2473,7 @@
     window.factoryReset = function() {
         if(confirm("☠ FACTORY RESET ☠\n\nTindakan ini akan MENGHAPUS SEMUA DATA secara permanen, termasuk:\n- Semua Artikel\n- Semua Prompt Template\n- API Keys & Global Settings\n- Akun WordPress\n\nApakah Anda benar-benar yakin ingin mengembalikan aplikasi ke pengaturan pabrik?")) {
             
+            // Konfirmasi kedua untuk mencegah salah klik
             if(prompt("Ketik 'RESET' (tanpa tanda kutip) untuk mengonfirmasi penghapusan permanen:") === "RESET") {
                 localforage.removeItem('sumoArticleGenerator').then(function() {
                     alert("Data berhasil dihapus total. Aplikasi akan dimuat ulang.");
